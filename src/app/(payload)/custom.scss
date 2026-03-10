@@ -1,4 +1,442 @@
-/* Force Payload admin to use light mode */
-:root {
-  --theme: light;
+/* ═══════════════════════════════════════════════════════════════════════
+ * Muno CMS — Custom Admin Theme Overrides
+ * Applied AFTER Payload styles and Tailwind utilities.
+ * Uses --cms-* tokens from admin-tailwind.css for consistency.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Base typography ─────────────────────────────────────────────────── */
+html {
+  font-size: 14px !important;
+}
+
+/* ── Collapsed nav width ─────────────────────────────────────────────── */
+:root[data-nav-collapsed='true'] {
+  --nav-width: 72px;
+}
+
+/* ── Nav / Sidebar container ─────────────────────────────────────────── */
+.nav {
+  opacity: 1 !important;
+  overflow: hidden;
+  border-right: none !important;
+}
+
+/* ── App layout background ───────────────────────────────────────────── */
+.template-default__wrap {
+  background-color: var(--cms-bg-elevated) !important;
+}
+
+/* ── App header (top bar) ────────────────────────────────────────────── */
+.app-header {
+  border-bottom: 1px solid var(--cms-border) !important;
+  height: 52px !important;
+  background-color: var(--cms-bg) !important;
+}
+
+/* ── Collection list controls ────────────────────────────────────────── */
+.collection-list__wrap {
+  padding-top: 0 !important;
+}
+
+/* ── Form fields ─────────────────────────────────────────────────────── */
+.field-type input[type='text'],
+.field-type input[type='email'],
+.field-type input[type='password'],
+.field-type input[type='url'],
+.field-type input[type='number'],
+.field-type input[type='search'] {
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  height: 40px !important;
+  padding: 0 12px !important;
+  border: 1.5px solid var(--cms-input-border) !important;
+  transition: border-color 0.1s, box-shadow 0.1s !important;
+  background: var(--cms-input-bg) !important;
+  color: var(--cms-text) !important;
+}
+
+.field-type textarea {
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  padding: 10px 12px !important;
+  border: 1.5px solid var(--cms-input-border) !important;
+  background: var(--cms-input-bg) !important;
+  color: var(--cms-text) !important;
+  resize: vertical;
+}
+
+.field-type input[type='text']:focus,
+.field-type input[type='email']:focus,
+.field-type input[type='password']:focus,
+.field-type input[type='url']:focus,
+.field-type input[type='number']:focus,
+.field-type textarea:focus {
+  border-color: var(--cms-primary) !important;
+  box-shadow: 0 0 0 3px var(--cms-input-focus-ring) !important;
+  outline: none !important;
+}
+
+/* ── Label ───────────────────────────────────────────────────────────── */
+.field-label {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  margin-bottom: 6px !important;
+  color: var(--cms-text-secondary) !important;
+}
+
+/* ── React-select (Payload's select fields) ──────────────────────────── */
+.rs__control {
+  border-radius: 8px !important;
+  border: 1.5px solid var(--cms-input-border) !important;
+  min-height: 40px !important;
+  font-size: 14px !important;
+  background-color: var(--cms-input-bg) !important;
+  transition: border-color 0.1s, box-shadow 0.1s !important;
+}
+
+.rs__control:hover {
+  border-color: var(--cms-text-muted) !important;
+}
+
+.rs__control--is-focused {
+  border-color: var(--cms-primary) !important;
+  box-shadow: 0 0 0 3px var(--cms-input-focus-ring) !important;
+}
+
+.rs__menu {
+  border-radius: 10px !important;
+  border: 1px solid var(--cms-border) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+  background: var(--cms-bg) !important;
+}
+
+.rs__option {
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  margin: 2px 4px !important;
+  width: calc(100% - 8px) !important;
+  color: var(--cms-text) !important;
+}
+
+.rs__option--is-selected {
+  background: var(--cms-primary-soft) !important;
+  color: var(--cms-primary-text) !important;
+}
+
+.rs__option--is-focused:not(.rs__option--is-selected) {
+  background: var(--cms-bg-muted) !important;
+}
+
+.rs__single-value {
+  color: var(--cms-text) !important;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+.btn {
+  border-radius: 8px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  height: 36px !important;
+  padding: 0 16px !important;
+  transition: all 0.15s !important;
+  letter-spacing: -0.01em !important;
+}
+
+.btn--style-primary,
+.btn--style-pill {
+  background-color: var(--cms-primary) !important;
+  color: white !important;
+}
+
+.btn--style-primary:hover {
+  background-color: var(--cms-primary-hover) !important;
+}
+
+.btn--style-secondary {
+  background-color: var(--cms-bg-muted) !important;
+  color: var(--cms-text) !important;
+  border: 1px solid var(--cms-border) !important;
+}
+
+.btn--style-secondary:hover {
+  background-color: var(--cms-bg-elevated) !important;
+}
+
+/* ── Doc controls (edit/create header bar) ───────────────────────────── */
+.doc-controls {
+  background: var(--cms-bg) !important;
+  border-bottom: 1px solid var(--cms-border) !important;
+  padding: 0 var(--gutter-h) !important;
+}
+
+/* ── Breadcrumbs ─────────────────────────────────────────────────────── */
+.step-nav {
+  font-size: 13.5px !important;
+}
+
+.step-nav a {
+  color: var(--cms-text-muted) !important;
+}
+
+.step-nav a:hover {
+  color: var(--cms-primary) !important;
+}
+
+/* ── Upload ──────────────────────────────────────────────────────────── */
+.upload__thumbnail,
+.thumbnail {
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+/* ── Rich text / Lexical ─────────────────────────────────────────────── */
+.rich-text-lexical {
+  border: 1.5px solid var(--cms-input-border) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+.rich-text-lexical:focus-within {
+  border-color: var(--cms-primary) !important;
+  box-shadow: 0 0 0 3px var(--cms-input-focus-ring) !important;
+}
+
+.ContentEditable__root {
+  font-size: 14px !important;
+  line-height: 1.65 !important;
+  padding: 12px !important;
+  min-height: 140px;
+  color: var(--cms-text) !important;
+  background: var(--cms-input-bg) !important;
+}
+
+.toolbar {
+  border-bottom: 1px solid var(--cms-border) !important;
+  background: var(--cms-bg-elevated) !important;
+  padding: 4px 8px !important;
+  border-radius: 0 !important;
+}
+
+/* ── Blocks field ────────────────────────────────────────────────────── */
+.blocks-field {
+  border: 1.5px solid var(--cms-input-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.blocks-field__add-increment-buttons {
+  background: var(--cms-bg-elevated);
+  border-top: 1px solid var(--cms-border);
+  padding: 10px 16px;
+}
+
+/* ── Login page ──────────────────────────────────────────────────────── */
+.template-minimal {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f8faff 50%, #f0f4ff 100%) !important;
+}
+
+[data-theme='dark'] .template-minimal {
+  background: linear-gradient(135deg, #0d1120 0%, #0f1117 50%, #0d1120 100%) !important;
+}
+
+/* ── Sonner toast ────────────────────────────────────────────────────── */
+[data-sonner-toaster] {
+  z-index: 9998 !important;
+}
+
+/* ── Command menu overlay ────────────────────────────────────────────── */
+.cmdk-overlay {
+  z-index: 9999;
+}
+
+/* ── Hide Payload's native NavHamburger (Sidebar has its own toggle) ─── */
+.hamburger,
+.app-header .hamburger,
+[class*='nav__hamburger'],
+[class*='hamburger-nav'] {
+  display: none !important;
+}
+
+/* ── Collection list view – unified card ─────────────────────────────── */
+.collection-list__wrap {
+  padding-left: var(--gutter-h) !important;
+  padding-right: var(--gutter-h) !important;
+  padding-bottom: var(--gutter-h) !important;
+}
+
+/* Controls bar: top of the unified card */
+.list-controls {
+  background: var(--cms-bg) !important;
+  border: 1px solid var(--cms-border) !important;
+  border-bottom: 1px solid var(--cms-border-subtle) !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 10px 16px !important;
+  margin-top: 16px !important;
+  box-shadow: var(--cms-card-shadow) !important;
+}
+
+.list-controls__wrap {
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+/* Pagination / list footer: bottom of the unified card */
+.list-footer {
+  background: var(--cms-bg) !important;
+  border: 1px solid var(--cms-border) !important;
+  border-top: 1px solid var(--cms-border-subtle) !important;
+  border-radius: 0 0 12px 12px !important;
+  padding: 10px 16px !important;
+  box-shadow: var(--cms-card-shadow) !important;
+}
+
+/* ── Collection list header ───────────────────────────────────────────── */
+.collection-list__header {
+  padding: 20px var(--gutter-h) 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.collection-list__header h1 {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--cms-text) !important;
+}
+
+/* ── Pagination buttons ───────────────────────────────────────────────── */
+.pagination__page-button {
+  min-width: 30px !important;
+  height: 30px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.1s !important;
+  padding: 0 6px !important;
+}
+
+.pagination__page-button--is-active {
+  background: var(--cms-primary) !important;
+  color: white !important;
+  border-color: var(--cms-primary) !important;
+}
+
+.pagination__page-button:not(.pagination__page-button--is-active):hover {
+  background: var(--cms-bg-muted) !important;
+  border-color: var(--cms-border) !important;
+}
+
+/* ── Search filter ────────────────────────────────────────────────────── */
+.search-filter__input,
+.search-filter input[type='text'],
+.search-filter input[type='search'] {
+  border-radius: 8px !important;
+  border: 1.5px solid var(--cms-input-border) !important;
+  font-size: 13.5px !important;
+  height: 36px !important;
+  background: var(--cms-bg-elevated) !important;
+  transition: all 0.15s !important;
+  color: var(--cms-text) !important;
+}
+
+.search-filter__input:focus,
+.search-filter input:focus {
+  border-color: var(--cms-primary) !important;
+  box-shadow: 0 0 0 3px var(--cms-input-focus-ring) !important;
+  background: var(--cms-bg) !important;
+  outline: none !important;
+}
+
+/* ── Columns/Filters pill buttons ────────────────────────────────────── */
+.pill,
+.list-controls__columns-button,
+.list-controls__filters-button {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  height: 36px !important;
+  padding: 0 12px !important;
+}
+
+/* ── Document edit view – fields area ────────────────────────────────── */
+.render-fields {
+  padding: 24px var(--gutter-h) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+
+.field-type {
+  margin-bottom: 0 !important;
+}
+
+/* ── Document sidebar (right panel) ─────────────────────────────────── */
+.doc-sidebar {
+  border-left: 1px solid var(--cms-border) !important;
+}
+
+.doc-sidebar__card {
+  border: 1px solid var(--cms-border) !important;
+  border-radius: 10px !important;
+  background: var(--cms-bg) !important;
+  margin: 12px !important;
+  overflow: hidden !important;
+}
+
+/* ── Document tabs ────────────────────────────────────────────────────── */
+.tabs-field__tabs-container {
+  border-bottom: 1px solid var(--cms-border) !important;
+  background: var(--cms-bg) !important;
+}
+
+.tabs-field__tab-button {
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  padding: 10px 20px !important;
+  transition: color 0.1s !important;
+  color: var(--cms-text-muted) !important;
+}
+
+.tabs-field__tab-button--active {
+  font-weight: 600 !important;
+  color: var(--cms-text) !important;
+}
+
+/* ── "No results" empty state ────────────────────────────────────────── */
+.list-selection,
+.no-results {
+  padding: 48px 24px !important;
+  font-size: 14px !important;
+  color: var(--cms-text-muted) !important;
+  text-align: center !important;
+}
+
+/* ── Column sort indicators ──────────────────────────────────────────── */
+.sort-column__button {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: var(--cms-text-muted) !important;
+}
+
+/* ── Section dividers in document view ───────────────────────────────── */
+.collapsible__header {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+/* ── Field error / description text ─────────────────────────────────── */
+.field-error {
+  font-size: 12px !important;
+  margin-top: 4px !important;
+}
+
+.field-description {
+  font-size: 12px !important;
+  color: var(--cms-text-muted) !important;
+  margin-top: 4px !important;
 }

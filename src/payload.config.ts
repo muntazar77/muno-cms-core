@@ -7,6 +7,11 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
+import { Forms } from './collections/Forms'
+import { FormSubmissions } from './collections/FormSubmissions'
+import { Services } from './collections/Services'
+import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -14,15 +19,26 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
-    theme: 'light',
+
     importMap: {
       baseDir: path.resolve(dirname),
     },
     components: {
-      Nav: '/components/admin/Sidebar',
+      actions: [
+        './components/admin/dashboard/UserActions',
+        './components/admin/dashboard/SearchAction',
+      ],
+      Nav: '/components/admin/Sidebar#default',
+      providers: ['/components/admin/GlobalProvider#default'],
+
+      views: {
+        dashboard: {
+          Component: '/components/admin/dashboard/DashboardView',
+        },
+      },
     },
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Pages, Forms, FormSubmissions, Services],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -35,4 +51,5 @@ export default buildConfig({
   }),
   sharp,
   plugins: [],
+  globals: [SiteSettings],
 })

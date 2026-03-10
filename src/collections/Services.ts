@@ -1,10 +1,10 @@
 import type { CollectionConfig } from 'payload'
 
-export const Media: CollectionConfig = {
-  slug: 'media',
+export const Services: CollectionConfig = {
+  slug: 'services',
   admin: {
-    useAsTitle: 'alt',
-    defaultColumns: ['filename', 'alt', 'mimeType', 'createdAt'],
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', 'updatedAt'],
     components: {
       views: {
         list: {
@@ -24,21 +24,29 @@ export const Media: CollectionConfig = {
   },
   fields: [
     {
-      name: 'alt',
+      name: 'title',
       type: 'text',
       required: true,
     },
     {
-      name: 'caption',
+      name: 'slug',
       type: 'text',
+      required: true,
+      unique: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'description',
+      type: 'richText',
+    },
+    {
+      name: 'featuredImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Featured Image',
     },
   ],
-  upload: {
-    mimeTypes: [
-      'image/*',
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ],
-  },
 }

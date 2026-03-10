@@ -1,0 +1,6 @@
+export { HeroBlock } from './HeroBlock'
+export { TextBlock } from './TextBlock'
+export { FeaturesBlock } from './FeaturesBlock'
+export { GalleryBlock } from './GalleryBlock'
+export { CTABlock } from './CTABlock'
+export { FormBlock } from './FormBlock'
