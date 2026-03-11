@@ -182,6 +182,9 @@ export interface Media {
 export interface Page {
   id: number;
   title: string;
+  /**
+   * URL path without leading slash, e.g. "about" not "/about"
+   */
   slug: string;
   status: 'draft' | 'published';
   blocks?:

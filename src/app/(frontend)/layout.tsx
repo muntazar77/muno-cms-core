@@ -1,19 +1,19 @@
 import React from 'react'
+import type { Metadata } from 'next'
 import './styles.css'
 
-export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
+export const metadata: Metadata = {
+  title: {
+    default: 'Muno CMS',
+    template: '%s | Muno CMS',
+  },
+  description: 'Built with Muno CMS',
 }
 
-export default async function RootLayout(props: { children: React.ReactNode }) {
-  const { children } = props
-
+export default function FrontendLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <main>{children}</main>
-      </body>
+      <body className="min-h-screen bg-white text-gray-900 antialiased">{children}</body>
     </html>
   )
 }

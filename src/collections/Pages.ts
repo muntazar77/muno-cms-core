@@ -14,6 +14,16 @@ export const Pages: CollectionConfig = {
       },
     },
   },
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        if (data?.slug) {
+          data.slug = data.slug.replace(/^\/+/, '')
+        }
+        return data
+      },
+    ],
+  },
   access: {
     read: ({ req: { user } }) => {
       if (user) return true
@@ -40,6 +50,7 @@ export const Pages: CollectionConfig = {
       index: true,
       admin: {
         position: 'sidebar',
+        description: 'URL path without leading slash, e.g. "about" not "/about"',
       },
     },
     {
