@@ -1,5 +1,6 @@
 /* Explicit content sources for Tailwind v4 class scanning */
 @source "../../components";
+@source "../../blocks";
 @source "../../app";
 
 /* Make dark: variants work with Payload's html[data-theme=dark] */

@@ -1,0 +1,262 @@
+'use client'
+
+import { Input } from '@/components/ui/input'
+import { Trash2, Plus } from 'lucide-react'
+
+export interface BuilderField {
+  name: string
+  type: string
+  label?: string
+  required?: boolean
+  options?: Array<{ label: string; value: string }>
+  fields?: BuilderField[]
+  relationTo?: string
+  defaultValue?: unknown
+  description?: string
+}
+
+interface FieldRendererProps {
+  field: BuilderField
+  value: unknown
+  onChange: (value: unknown) => void
+}
+
+export function FieldRenderer({ field, value, onChange }: FieldRendererProps) {
+  const label = field.label || formatLabel(field.name)
+
+  switch (field.type) {
+    case 'text':
+      return (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{label}</label>
+          <Input
+            value={(value as string) || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={label}
+          />
+          {field.description && <p className="text-[11px] text-gray-400">{field.description}</p>}
+        </div>
+      )
+
+    case 'textarea':
+      return (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{label}</label>
+          <textarea
+            value={(value as string) || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={label}
+            rows={3}
+            className="flex w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 transition-colors resize-y"
+          />
+        </div>
+      )
+
+    case 'richText':
+      return (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{label}</label>
+          <textarea
+            value={typeof value === 'string' ? value : ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Enter content..."
+            rows={5}
+            className="flex w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 font-mono placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 transition-colors resize-y"
+          />
+          <p className="text-[11px] text-gray-400">
+            Plain text in builder — full rich text via the page editor
+          </p>
+        </div>
+      )
+
+    case 'select':
+      return (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{label}</label>
+          <select
+            value={(value as string) || (field.defaultValue as string) || ''}
+            onChange={(e) => onChange(e.target.value)}
+            className="flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 transition-colors"
+          >
+            <option value="">Select...</option>
+            {field.options?.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )
+
+    case 'number':
+      return (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{label}</label>
+          <Input
+            type="number"
+            value={(value as number) ?? ''}
+            onChange={(e) => onChange(e.target.value ? Number(e.target.value) : undefined)}
+            placeholder="0"
+          />
+        </div>
+      )
+
+    case 'checkbox':
+      return (
+        <label className="flex items-center gap-2.5 py-1.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={Boolean(value)}
+            onChange={(e) => onChange(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700">{label}</span>
+        </label>
+      )
+
+    case 'upload':
+      return (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{label}</label>
+          <Input
+            type="number"
+            value={(value as number) ?? ''}
+            onChange={(e) => onChange(e.target.value ? Number(e.target.value) : undefined)}
+            placeholder={`${field.relationTo || 'media'} ID`}
+          />
+          <p className="text-[11px] text-gray-400">Enter {field.relationTo || 'media'} ID</p>
+        </div>
+      )
+
+    case 'relationship':
+      return (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{label}</label>
+          <Input
+            value={(value as string) || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={`${field.relationTo || 'document'} ID`}
+          />
+        </div>
+      )
+
+    case 'array':
+      return <ArrayFieldRenderer field={field} value={value} onChange={onChange} />
+
+    case 'group':
+      return <GroupFieldRenderer field={field} value={value} onChange={onChange} />
+
+    default:
+      return (
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-gray-500">{label}</label>
+          <p className="text-[11px] text-gray-400 italic">
+            Field type &quot;{field.type}&quot; is not editable in the builder
+          </p>
+        </div>
+      )
+  }
+}
+
+function ArrayFieldRenderer({ field, value, onChange }: FieldRendererProps) {
+  const items = (Array.isArray(value) ? value : []) as Record<string, unknown>[]
+  const subFields = field.fields || []
+  const label = field.label || formatLabel(field.name)
+
+  const addItem = () => {
+    const newItem: Record<string, unknown> = {
+      id: Math.random().toString(36).substring(2, 10),
+    }
+    onChange([...items, newItem])
+  }
+
+  const removeItem = (index: number) => {
+    onChange(items.filter((_, i) => i !== index))
+  }
+
+  const updateItem = (index: number, fieldName: string, fieldValue: unknown) => {
+    const updated = items.map((item, i) =>
+      i === index ? { ...item, [fieldName]: fieldValue } : item,
+    )
+    onChange(updated)
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-medium text-gray-500">{label}</label>
+        <button
+          onClick={addItem}
+          type="button"
+          className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+        >
+          <Plus className="h-3 w-3" />
+          Add
+        </button>
+      </div>
+      <div className="space-y-2">
+        {items.map((item, index) => (
+          <div
+            key={(item.id as string) || index}
+            className="relative border border-gray-200 rounded-lg p-3 space-y-3 bg-gray-50/50"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium text-gray-400">Item {index + 1}</span>
+              <button
+                onClick={() => removeItem(index)}
+                type="button"
+                className="text-gray-400 hover:text-red-500 transition-colors"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            {subFields.map((subField) => (
+              <FieldRenderer
+                key={subField.name}
+                field={subField}
+                value={item[subField.name]}
+                onChange={(val) => updateItem(index, subField.name, val)}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+      {items.length === 0 && (
+        <p className="text-[11px] text-gray-400 text-center py-2">No items yet</p>
+      )}
+    </div>
+  )
+}
+
+function GroupFieldRenderer({ field, value, onChange }: FieldRendererProps) {
+  const data = (value as Record<string, unknown>) || {}
+  const subFields = field.fields || []
+  const label = field.label || formatLabel(field.name)
+
+  const updateField = (fieldName: string, fieldValue: unknown) => {
+    onChange({ ...data, [fieldName]: fieldValue })
+  }
+
+  return (
+    <div className="space-y-3">
+      <label className="text-xs font-medium text-gray-500">{label}</label>
+      <div className="border-l-2 border-gray-200 pl-3 space-y-3">
+        {subFields.map((subField) => (
+          <FieldRenderer
+            key={subField.name}
+            field={subField}
+            value={data[subField.name]}
+            onChange={(val) => updateField(subField.name, val)}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function formatLabel(name: string): string {
+  return name
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (s) => s.toUpperCase())
+    .trim()
+}

@@ -1,5 +1,20 @@
 import type { CollectionConfig } from 'payload'
-import { HeroBlock, TextBlock, FeaturesBlock, GalleryBlock, CTABlock, FormBlock } from '../blocks'
+import {
+  HeroBlock,
+  TextBlock,
+  FeaturesBlock,
+  GalleryBlock,
+  CTABlock,
+  FormBlock,
+  HeroWithImageBlock,
+  ServicesCardsBlock,
+  StepsTimelineBlock,
+  StatisticsBlock,
+  TestimonialsBlock,
+  LogoCloudBlock,
+  PricingTableBlock,
+  FAQBlock,
+} from '../blocks'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -67,9 +82,36 @@ export const Pages: CollectionConfig = {
       },
     },
     {
+      name: 'builderLink',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/admin/builder/BuilderLink',
+        },
+      },
+    },
+    {
       name: 'blocks',
       type: 'blocks',
-      blocks: [HeroBlock, TextBlock, FeaturesBlock, GalleryBlock, CTABlock, FormBlock],
+      blocks: [
+        HeroBlock,
+        TextBlock,
+        FeaturesBlock,
+        GalleryBlock,
+        CTABlock,
+        FormBlock,
+        HeroWithImageBlock,
+        ServicesCardsBlock,
+        StepsTimelineBlock,
+        StatisticsBlock,
+        TestimonialsBlock,
+        LogoCloudBlock,
+        PricingTableBlock,
+        FAQBlock,
+      ],
+      admin: {
+        condition: () => false,
+      },
     },
     {
       name: 'meta',
