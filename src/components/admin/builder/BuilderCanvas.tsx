@@ -49,10 +49,10 @@ export function BuilderCanvas() {
   const { blocks, selectedBlockId, deviceMode } = state
 
   return (
-    <main className="flex-1 bg-gray-100 overflow-auto flex flex-col min-w-0">
+    <main className="flex-1 bg-[var(--cms-bg-muted)] overflow-auto flex flex-col min-w-0">
       <div className="flex-1 p-6 flex justify-center">
         <div
-          className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 self-start"
+          className="bg-[var(--cms-bg)] shadow-lg rounded-lg overflow-hidden transition-all duration-300 self-start border border-[var(--cms-border-subtle)]"
           style={{
             width: DEVICE_WIDTHS[deviceMode],
             maxWidth: '100%',
@@ -71,15 +71,15 @@ export function BuilderCanvas() {
                 <div
                   key={block.id}
                   onClick={() => selectBlock(block.id)}
-                  className={`relative group cursor-pointer transition-shadow ${
+                  className={`relative group cursor-pointer transition-all ${
                     isSelected
                       ? 'ring-2 ring-blue-500 ring-inset z-10'
-                      : 'hover:ring-2 hover:ring-blue-200 hover:ring-inset'
+                      : 'hover:ring-2 hover:ring-blue-200 dark:hover:ring-blue-800 hover:ring-inset'
                   }`}
                 >
                   {/* Block toolbar */}
                   <div
-                    className={`absolute top-2 right-2 z-20 flex items-center gap-0.5 bg-white rounded-md shadow-md border border-gray-200 transition-opacity ${
+                    className={`absolute top-2 right-2 z-20 flex items-center gap-0.5 rounded-md shadow-md border border-[var(--cms-border)] bg-[var(--cms-bg)] transition-opacity ${
                       isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     }`}
                   >
@@ -89,7 +89,7 @@ export function BuilderCanvas() {
                         if (index > 0) moveBlock(index, index - 1)
                       }}
                       disabled={index === 0}
-                      className="p-1.5 text-gray-400 hover:text-gray-700 disabled:opacity-30 transition-colors"
+                      className="p-1.5 text-[var(--cms-text-muted)] hover:text-[var(--cms-text)] disabled:opacity-30 transition-colors"
                       title="Move up"
                     >
                       <ChevronUp className="h-3.5 w-3.5" />
@@ -100,18 +100,18 @@ export function BuilderCanvas() {
                         if (index < blocks.length - 1) moveBlock(index, index + 1)
                       }}
                       disabled={index === blocks.length - 1}
-                      className="p-1.5 text-gray-400 hover:text-gray-700 disabled:opacity-30 transition-colors"
+                      className="p-1.5 text-[var(--cms-text-muted)] hover:text-[var(--cms-text)] disabled:opacity-30 transition-colors"
                       title="Move down"
                     >
                       <ChevronDown className="h-3.5 w-3.5" />
                     </button>
-                    <div className="w-px h-4 bg-gray-200" />
+                    <div className="w-px h-4 bg-[var(--cms-border)]" />
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
                         removeBlock(block.id)
                       }}
-                      className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                      className="p-1.5 text-[var(--cms-text-muted)] hover:text-red-500 transition-colors"
                       title="Remove block"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -120,10 +120,10 @@ export function BuilderCanvas() {
 
                   {/* Block type label */}
                   <div
-                    className={`absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium shadow-sm transition-opacity ${
+                    className={`absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium shadow-sm transition-opacity ${
                       isSelected
                         ? 'opacity-100 bg-blue-500 text-white'
-                        : 'opacity-0 group-hover:opacity-100 bg-white text-gray-600 border border-gray-200'
+                        : 'opacity-0 group-hover:opacity-100 bg-[var(--cms-bg)] text-[var(--cms-text-secondary)] border border-[var(--cms-border)]'
                     }`}
                   >
                     <GripVertical className="h-3 w-3" />
@@ -135,7 +135,7 @@ export function BuilderCanvas() {
                     {Component ? (
                       <Component {...block} />
                     ) : (
-                      <div className="flex items-center justify-center gap-2 py-16 text-gray-400">
+                      <div className="flex items-center justify-center gap-2 py-16 text-[var(--cms-text-muted)]">
                         <Layers className="h-5 w-5" />
                         <span className="text-sm">{meta?.label || block.blockType}</span>
                       </div>
@@ -154,12 +154,14 @@ export function BuilderCanvas() {
 function EmptyCanvas() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
-      <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-        <Layers className="h-8 w-8 text-gray-300" />
+      <div className="w-14 h-14 rounded-xl bg-[var(--cms-bg-muted)] flex items-center justify-center mb-3">
+        <Layers className="h-7 w-7 text-[var(--cms-text-muted)]" />
       </div>
-      <h3 className="text-lg font-semibold text-gray-400 mb-1">No blocks yet</h3>
-      <p className="text-sm text-gray-400 max-w-xs">
-        Click a block from the library on the left to start building your page
+      <h3 className="text-base font-semibold text-[var(--cms-text-secondary)] mb-1">
+        No blocks yet
+      </h3>
+      <p className="text-sm text-[var(--cms-text-muted)] max-w-[240px]">
+        Click a block from the library to start building your page
       </p>
     </div>
   )

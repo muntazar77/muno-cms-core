@@ -3,25 +3,27 @@
 import { useBuilder } from './BuilderProvider'
 import { FieldRenderer, type BuilderField } from './FieldRenderer'
 import { getBlockMeta } from '@/blocks/registry'
-import { Settings, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Settings, X, Trash2 } from 'lucide-react'
 
 interface BlockSettingsProps {
   blockFieldsMap: Record<string, BuilderField[]>
 }
 
 export function BlockSettings({ blockFieldsMap }: BlockSettingsProps) {
-  const { state, updateBlock, removeBlock, selectBlock, getSelectedBlock } = useBuilder()
+  const { updateBlock, removeBlock, selectBlock, getSelectedBlock } = useBuilder()
   const selectedBlock = getSelectedBlock()
 
   if (!selectedBlock) {
     return (
-      <aside className="w-[320px] shrink-0 border-l border-gray-200 bg-white flex flex-col items-center justify-center text-center p-6">
-        <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
-          <Settings className="h-6 w-6 text-gray-300" />
+      <aside className="flex flex-col items-center justify-center text-center p-6 border-l border-[var(--cms-border)]">
+        <div className="w-12 h-12 rounded-xl bg-[var(--cms-bg-muted)] flex items-center justify-center mb-3">
+          <Settings className="h-5 w-5 text-[var(--cms-text-muted)]" />
         </div>
-        <p className="text-sm font-medium text-gray-400">No block selected</p>
-        <p className="text-xs text-gray-300 mt-1">
-          Click a block on the canvas to edit its settings
+        <p className="text-sm font-medium text-[var(--cms-text-secondary)]">No block selected</p>
+        <p className="text-xs text-[var(--cms-text-muted)] mt-1">
+          Click a block on the canvas to edit
         </p>
       </aside>
     )
@@ -31,30 +33,28 @@ export function BlockSettings({ blockFieldsMap }: BlockSettingsProps) {
   const fields = blockFieldsMap[selectedBlock.blockType] || []
 
   return (
-    <aside className="w-[320px] shrink-0 border-l border-gray-200 bg-white flex flex-col overflow-hidden">
+    <aside className="flex flex-col overflow-hidden border-l border-[var(--cms-border)]">
       {/* Header */}
-      <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[var(--cms-border-subtle)] flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
           {meta && (
             <div
-              className="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
+              className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
               style={{
-                backgroundColor: `${meta.color}15`,
+                backgroundColor: `${meta.color}12`,
                 color: meta.color,
               }}
             >
               <meta.icon className="h-3.5 w-3.5" />
             </div>
           )}
-          <div className="min-w-0">
-            <h3 className="text-sm font-semibold text-gray-900 truncate">
-              {meta?.label || selectedBlock.blockType}
-            </h3>
-          </div>
+          <h3 className="text-xs font-semibold text-[var(--cms-text)] truncate">
+            {meta?.label || selectedBlock.blockType}
+          </h3>
         </div>
         <button
           onClick={() => selectBlock(null)}
-          className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+          className="p-1 rounded-md text-[var(--cms-text-muted)] hover:text-[var(--cms-text)] hover:bg-[var(--cms-bg-muted)] transition-colors shrink-0"
         >
           <X className="h-4 w-4" />
         </button>
@@ -72,21 +72,23 @@ export function BlockSettings({ blockFieldsMap }: BlockSettingsProps) {
             />
           ))
         ) : (
-          <p className="text-sm text-gray-400 text-center py-4">
-            No configurable fields for this block
+          <p className="text-sm text-[var(--cms-text-muted)] text-center py-4">
+            No configurable fields
           </p>
         )}
       </div>
 
-      {/* Footer actions */}
-      <div className="p-4 border-t border-gray-100">
-        <button
+      {/* Footer */}
+      <div className="p-4 border-t border-[var(--cms-border-subtle)]">
+        <Button
           onClick={() => removeBlock(selectedBlock.id)}
-          type="button"
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+          variant="destructive"
+          size="sm"
+          className="w-full"
         >
+          <Trash2 className="h-3.5 w-3.5" />
           Remove Block
-        </button>
+        </Button>
       </div>
     </aside>
   )

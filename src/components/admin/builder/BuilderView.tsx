@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect, useCallback } from 'react'
-import { ArrowLeft, Monitor, Tablet, Smartphone, Save, Loader2 } from 'lucide-react'
+import { Monitor, Tablet, Smartphone, Save, Loader2, ArrowLeft } from 'lucide-react'
 import { BuilderProvider, useBuilder, type BuilderBlock } from './BuilderProvider'
 import { BlockLibrary } from './BlockLibrary'
 import { BuilderCanvas } from './BuilderCanvas'
 import { BlockSettings } from './BlockSettings'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { BuilderField } from './FieldRenderer'
 
 interface BuilderViewProps {
@@ -23,14 +26,16 @@ export default function BuilderView({
 }: BuilderViewProps) {
   return (
     <BuilderProvider pageId={pageId} initialBlocks={initialBlocks}>
-      <div className="builder-root fixed inset-0 z-[9999] flex flex-col bg-white">
-        <BuilderToolbar pageTitle={pageTitle} pageId={pageId} />
-        <div className="flex flex-1 overflow-hidden">
-          <BlockLibrary />
-          <BuilderCanvas />
-          <BlockSettings blockFieldsMap={blockFieldsMap} />
+      <TooltipProvider delayDuration={200}>
+        <div className="builder-root">
+          <BuilderToolbar pageTitle={pageTitle} pageId={pageId} />
+          <div className="grid grid-cols-[280px_1fr_320px] flex-1 min-h-0 overflow-hidden">
+            <BlockLibrary />
+            <BuilderCanvas />
+            <BlockSettings blockFieldsMap={blockFieldsMap} />
+          </div>
         </div>
-      </div>
+      </TooltipProvider>
     </BuilderProvider>
   )
 }
@@ -44,7 +49,6 @@ function BuilderToolbar({ pageTitle, pageId }: { pageTitle: string; pageId: numb
     await saveBlocks()
   }, [isSaving, saveBlocks])
 
-  // Keyboard shortcut: Cmd/Ctrl + S to save
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
@@ -63,52 +67,56 @@ function BuilderToolbar({ pageTitle, pageId }: { pageTitle: string; pageId: numb
   ]
 
   return (
-    <header className="h-14 shrink-0 border-b border-gray-200 bg-white flex items-center justify-between px-4">
-      {/* Left: Back link */}
-      <div className="flex items-center gap-3 min-w-[200px]">
+    <header className="h-11 shrink-0 border-b border-[var(--cms-border)] bg-[var(--cms-bg)] flex items-center justify-between px-3">
+      {/* Left: Back + title */}
+      <div className="flex items-center gap-2 min-w-[200px]">
         <a
           href={`/admin/collections/pages/${pageId}`}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-medium text-[var(--cms-text-secondary)] hover:text-[var(--cms-text)] transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Page
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back
         </a>
+        <Separator orientation="vertical" className="!h-4" />
+        <span className="text-sm font-semibold text-[var(--cms-text)] truncate max-w-[180px]">
+          {pageTitle}
+        </span>
       </div>
 
-      {/* Center: Page title + device toggles */}
-      <div className="flex items-center gap-4">
-        <h1 className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">{pageTitle}</h1>
-        <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
-          {devices.map(({ mode, icon: Icon, label }) => (
-            <button
-              key={mode}
-              onClick={() => setDeviceMode(mode)}
-              title={label}
-              className={`p-1.5 rounded-md transition-all ${
-                deviceMode === mode
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <Icon className="h-4 w-4" />
-            </button>
-          ))}
-        </div>
+      {/* Center: Device toggles */}
+      <div className="flex items-center gap-0.5 rounded-lg border border-[var(--cms-border-subtle)] bg-[var(--cms-bg-elevated)] p-0.5">
+        {devices.map(({ mode, icon: Icon, label }) => (
+          <Tooltip key={mode}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setDeviceMode(mode)}
+                className={`p-1.5 rounded-md transition-all ${
+                  deviceMode === mode
+                    ? 'bg-[var(--cms-bg)] text-[var(--cms-text)] shadow-sm'
+                    : 'text-[var(--cms-text-muted)] hover:text-[var(--cms-text-secondary)]'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">{label}</TooltipContent>
+          </Tooltip>
+        ))}
       </div>
 
-      {/* Right: Save button */}
-      <div className="flex items-center gap-3 min-w-[200px] justify-end">
+      {/* Right: Save */}
+      <div className="flex items-center gap-2 min-w-[200px] justify-end">
         {isDirty && !isSaving && (
-          <span className="text-xs text-amber-500 font-medium">Unsaved changes</span>
+          <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Unsaved</span>
         )}
-        <button
-          onClick={handleSave}
-          disabled={isSaving || !isDirty}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700"
-        >
-          {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        <Button onClick={handleSave} disabled={isSaving || !isDirty} size="sm">
+          {isSaving ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Save className="h-3.5 w-3.5" />
+          )}
           {isSaving ? 'Saving...' : 'Save'}
-        </button>
+        </Button>
       </div>
     </header>
   )

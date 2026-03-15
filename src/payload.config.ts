@@ -35,6 +35,11 @@ export default buildConfig({
         dashboard: {
           Component: '/components/admin/dashboard/DashboardView',
         },
+        builder: {
+          path: '/pages/:id/builder',
+          Component: '/components/admin/builder/BuilderPage',
+          exact: true,
+        },
       },
     },
   },

@@ -19,11 +19,12 @@ import type { LucideIcon } from 'lucide-react'
 export type BlockCategory =
   | 'hero'
   | 'features'
-  | 'data'
-  | 'social-proof'
   | 'content'
-  | 'media'
+  | 'data'
+  | 'process'
+  | 'social-proof'
   | 'forms'
+  | 'media'
   | 'cta'
 
 export interface BlockRegistryItem {
@@ -38,11 +39,12 @@ export interface BlockRegistryItem {
 export const BLOCK_CATEGORIES: { id: BlockCategory; label: string }[] = [
   { id: 'hero', label: 'Hero' },
   { id: 'features', label: 'Features' },
-  { id: 'data', label: 'Data' },
-  { id: 'social-proof', label: 'Social Proof' },
   { id: 'content', label: 'Content' },
-  { id: 'media', label: 'Media' },
+  { id: 'data', label: 'Data' },
+  { id: 'process', label: 'Process' },
+  { id: 'social-proof', label: 'Social Proof' },
   { id: 'forms', label: 'Forms' },
+  { id: 'media', label: 'Media' },
   { id: 'cta', label: 'CTA' },
 ]
 
@@ -83,7 +85,7 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     slug: 'stepsTimeline',
     label: 'Steps Timeline',
     description: 'Step-by-step process timeline',
-    category: 'data',
+    category: 'process',
     icon: ArrowRight,
     color: '#34d399',
   },

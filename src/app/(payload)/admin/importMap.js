@@ -28,6 +28,7 @@ import { default as default_0a8df66eb6b1381af6f87d9d553b7329 } from '../../../co
 import { default as default_7130eca2f5356ca338458f80c216a64d } from '../../../components/admin/dashboard/SearchAction'
 import { default as default_87174a96e964349564e02fc37eed4968 } from '../../../components/admin/GlobalProvider'
 import { default as default_90d94a8a05a7cf2177ecc4e95646ec1f } from '../../../components/admin/dashboard/DashboardView'
+import { default as default_277896e5f7e20ebc50f56bcf621a4de8 } from '../../../components/admin/builder/BuilderPage'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
@@ -61,5 +62,6 @@ export const importMap = {
   "./components/admin/dashboard/SearchAction#default": default_7130eca2f5356ca338458f80c216a64d,
   "/components/admin/GlobalProvider#default": default_87174a96e964349564e02fc37eed4968,
   "/components/admin/dashboard/DashboardView#default": default_90d94a8a05a7cf2177ecc4e95646ec1f,
+  "/components/admin/builder/BuilderPage#default": default_277896e5f7e20ebc50f56bcf621a4de8,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

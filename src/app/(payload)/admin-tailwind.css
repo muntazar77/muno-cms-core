@@ -143,3 +143,28 @@
   --cms-input-border: #2a2d3d;
   --cms-input-focus-ring: rgba(59, 130, 246, 0.2);
 }
+
+/* ─── Builder CSS Isolation ──────────────────────────────────────────
+ * Scoped styles for the visual page builder.
+ * Prevents Payload admin styles from leaking into builder components.
+ * ─────────────────────────────────────────────────────────────────── */
+
+.builder-root {
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  color: var(--cms-text);
+  isolation: isolate;
+}
+
+.builder-root *,
+.builder-root *::before,
+.builder-root *::after {
+  box-sizing: border-box;
+}
+
+.builder-root a {
+  text-decoration: none;
+  color: inherit;
+}

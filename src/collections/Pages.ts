@@ -20,7 +20,7 @@ export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'status', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'status', 'updatedAt', 'createdAt'],
     components: {
       views: {
         list: {

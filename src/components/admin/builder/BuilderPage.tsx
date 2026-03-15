@@ -1,10 +1,10 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { headers } from 'next/headers'
-import { redirect, notFound } from 'next/navigation'
-import BuilderView from '@/components/admin/builder/BuilderView'
-import type { BuilderField } from '@/components/admin/builder/FieldRenderer'
-import type { BuilderBlock } from '@/components/admin/builder/BuilderProvider'
+import { redirect } from 'next/navigation'
+import BuilderView from './BuilderView'
+import type { BuilderField } from './FieldRenderer'
+import type { BuilderBlock } from './BuilderProvider'
 
 import {
   HeroBlock,
@@ -40,7 +40,6 @@ const allBlockConfigs = [
   FAQBlock,
 ]
 
-/** Convert Payload field definitions to serializable BuilderField objects */
 function serializeFields(fields: Record<string, unknown>[]): BuilderField[] {
   return fields
     .filter((f: any) => f.name && f.type)
@@ -73,17 +72,21 @@ function serializeFields(fields: Record<string, unknown>[]): BuilderField[] {
     })
 }
 
-export default async function BuilderPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+export default async function BuilderPage({ params }: { params: { segments: string[] } }) {
   const payload = await getPayload({ config })
-
-  // Check authentication
   const { user } = await payload.auth({ headers: await headers() })
-  if (!user) {
-    redirect('/admin/login')
+  if (!user) redirect('/admin/login')
+
+  // Route: /admin/pages/:id/builder → segments = ['pages', id, 'builder']
+  const id = params?.segments?.[1]
+  if (!id) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <p className="text-[var(--cms-text-muted)]">Page ID is required.</p>
+      </div>
+    )
   }
 
-  // Fetch page data
   let page: any
   try {
     page = await payload.findByID({
@@ -92,12 +95,21 @@ export default async function BuilderPage({ params }: { params: Promise<{ id: st
       depth: 0,
     })
   } catch {
-    notFound()
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <p className="text-[var(--cms-text-muted)]">Page not found.</p>
+      </div>
+    )
   }
 
-  if (!page) notFound()
+  if (!page) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <p className="text-[var(--cms-text-muted)]">Page not found.</p>
+      </div>
+    )
+  }
 
-  // Build block fields map from Payload block configs
   const blockFieldsMap: Record<string, BuilderField[]> = {}
   for (const blockConfig of allBlockConfigs) {
     blockFieldsMap[blockConfig.slug] = serializeFields(
@@ -105,7 +117,6 @@ export default async function BuilderPage({ params }: { params: Promise<{ id: st
     )
   }
 
-  // Normalize blocks for the builder state
   const initialBlocks: BuilderBlock[] = (page.blocks || []).map((block: any) => ({
     ...block,
     id: block.id || Math.random().toString(36).substring(2, 10),

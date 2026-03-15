@@ -8,7 +8,7 @@ export function HeroBlock({ heading, subheading, image, ctaLabel, ctaLink }: Her
   const media = typeof image === 'object' && image !== null ? (image as Media) : null
 
   return (
-    <section className="relative overflow-hidden bg-white py-24 sm:py-32">
+    <section className="relative overflow-hidden bg-amber-50 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 items-center gap-x-16 gap-y-12 lg:mx-0 lg:max-w-none lg:grid-cols-2">
           <div>

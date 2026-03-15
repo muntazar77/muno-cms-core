@@ -30,7 +30,7 @@ export function CTABlock({ heading, description, buttonLabel, buttonLink, style 
                 {description}
               </p>
             )}
-            {isCentered && (
+            {isCentered && buttonLink && buttonLabel && (
               <div className="mt-8">
                 <Link
                   href={buttonLink}
@@ -45,7 +45,7 @@ export function CTABlock({ heading, description, buttonLabel, buttonLink, style 
               </div>
             )}
           </div>
-          {!isCentered && (
+          {!isCentered && buttonLink && buttonLabel && (
             <Link
               href={buttonLink}
               className="shrink-0 rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-800"
