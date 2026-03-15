@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 export const Forms: CollectionConfig = {
   slug: 'forms',
+  trash: true,
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'createdAt'],

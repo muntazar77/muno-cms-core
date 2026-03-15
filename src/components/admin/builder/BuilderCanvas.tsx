@@ -49,7 +49,7 @@ export function BuilderCanvas() {
   const { blocks, selectedBlockId, deviceMode } = state
 
   return (
-    <main className="flex-1 bg-[var(--cms-bg-muted)] overflow-auto flex flex-col min-w-0">
+    <main className="flex-1 builder-canvas overflow-auto flex flex-col min-w-0">
       <div className="flex-1 p-6 flex justify-center">
         <div
           className="bg-[var(--cms-bg)] shadow-lg rounded-lg overflow-hidden transition-all duration-300 self-start border border-[var(--cms-border-subtle)]"
@@ -71,10 +71,10 @@ export function BuilderCanvas() {
                 <div
                   key={block.id}
                   onClick={() => selectBlock(block.id)}
-                  className={`relative group cursor-pointer transition-all ${
+                  className={`relative group cursor-pointer border-2 transition-all ${
                     isSelected
-                      ? 'ring-2 ring-blue-500 ring-inset z-10'
-                      : 'hover:ring-2 hover:ring-blue-200 dark:hover:ring-blue-800 hover:ring-inset'
+                      ? 'border-blue-500 z-10'
+                      : 'border-dashed border-transparent hover:border-blue-300 dark:hover:border-blue-700'
                   }`}
                 >
                   {/* Block toolbar */}

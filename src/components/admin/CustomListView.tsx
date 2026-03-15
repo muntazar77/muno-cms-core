@@ -18,11 +18,14 @@
 import React from 'react'
 import Link from 'next/link'
 import { useListQuery, useConfig, useAuth } from '@payloadcms/ui'
-import { useSearchParams, usePathname } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import {
   MoreHorizontal,
   Eye,
   Pencil,
+  Trash2,
+  RotateCcw,
+  ShieldAlert,
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
@@ -52,6 +55,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import UsersListStats from '@/components/admin/collection/UsersListStats'
+import AdminPageHeader from '@/components/admin/shared/AdminPageHeader'
 
 // ─── Per-Collection Config ───────────────────────────────────────────
 
@@ -66,6 +70,7 @@ interface ListViewCollectionConfig {
   statusConfig?: Record<string, StatusBadgeDef>
   columnLabels?: Record<string, string>
   columnType?: Record<string, 'email' | 'role'>
+  editURL?: (id: string) => string
 }
 
 const LIST_VIEW_CONFIGS: Record<string, ListViewCollectionConfig> = {
@@ -84,6 +89,7 @@ const LIST_VIEW_CONFIGS: Record<string, ListViewCollectionConfig> = {
       draft: { label: 'Draft', variant: 'warning' },
       published: { label: 'Published', variant: 'success' },
     },
+    editURL: (id: string) => `/admin/collections/pages/${id}`,
   },
   services: {
     description: 'Manage service listings',
@@ -117,7 +123,7 @@ const STATUS_VARIANT_CLASSES: Record<string, string> = {
 const ROLE_VARIANT_CLASSES: Record<string, string> = {
   admin: 'bg-[var(--cms-info-soft)] text-[var(--cms-info-text)] border-[var(--cms-info-soft)]',
   editor:
-    'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20',
+    'bg-[var(--cms-warning-soft)] text-[var(--cms-warning-text)] border-[var(--cms-warning-soft)]',
   user: 'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] border-[var(--cms-border-subtle)]',
 }
 
@@ -265,14 +271,100 @@ function SortIndicator({ field, currentSort }: { field: string; currentSort: str
   )
 }
 
-function ActionMenu({ editURL }: { editURL: string }) {
+function ActionMenu({
+  editURL,
+  slug,
+  id,
+  isTrashView,
+  canDelete,
+  onActionComplete,
+}: {
+  editURL: string
+  slug: string
+  id: string
+  isTrashView: boolean
+  canDelete: boolean
+  onActionComplete: () => void
+}) {
+  const [isWorking, setIsWorking] = React.useState(false)
+
+  async function runAction(request: RequestInfo | URL, init: RequestInit) {
+    const res = await fetch(request, {
+      credentials: 'include',
+      ...init,
+    })
+
+    if (!res.ok) {
+      throw new Error(`Request failed with status ${res.status}`)
+    }
+
+    onActionComplete()
+  }
+
+  async function handleTrash() {
+    if (!canDelete || isWorking) return
+
+    const confirmed = window.confirm('Move this document to trash? You can restore it later.')
+    if (!confirmed) return
+
+    try {
+      setIsWorking(true)
+      await runAction(`/api/${slug}/${id}`, { method: 'DELETE' })
+    } catch {
+      window.alert('Unable to move this document to trash. Please try again.')
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
+  async function handleRestore() {
+    if (!canDelete || isWorking) return
+
+    const confirmed = window.confirm('Restore this document from trash?')
+    if (!confirmed) return
+
+    try {
+      setIsWorking(true)
+      await runAction(`/api/${slug}/${id}?trash=true`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deletedAt: null }),
+      })
+    } catch {
+      window.alert('Unable to restore this document. Please try again.')
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
+  async function handlePermanentDelete() {
+    if (!canDelete || isWorking) return
+
+    const confirmed = window.confirm(
+      'Permanently delete this document? This action cannot be undone.',
+    )
+    if (!confirmed) return
+
+    try {
+      setIsWorking(true)
+      await runAction(`/api/${slug}/${id}?trash=true`, { method: 'DELETE' })
+    } catch {
+      window.alert('Unable to permanently delete this document. Please try again.')
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
+  const editHref = isTrashView ? `${editURL}?trash=true` : editURL
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon-sm"
-          className="h-8 w-8 rounded-lg text-[var(--cms-text-muted)] opacity-0 transition-all hover:bg-[var(--cms-bg-muted)] hover:text-[var(--cms-text)] group-hover:opacity-100"
+          disabled={isWorking}
+          className="h-8 w-8 rounded-lg text-[var(--cms-text-muted)] opacity-100 transition-all hover:bg-[var(--cms-bg-muted)] hover:text-[var(--cms-text)] sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40"
         >
           <MoreHorizontal className="size-4" />
           <span className="sr-only">Open menu</span>
@@ -283,18 +375,59 @@ function ActionMenu({ editURL }: { editURL: string }) {
         className="w-44 rounded-xl border-[var(--cms-border)] bg-[var(--cms-card-bg)] shadow-lg"
       >
         <DropdownMenuItem className="rounded-lg text-[var(--cms-text-secondary)]" asChild>
-          <Link href={editURL}>
+          <Link href={editHref}>
             <Eye className="mr-2 size-4" />
-            View
+            Open
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="rounded-lg text-[var(--cms-text-secondary)]" asChild>
-          <Link href={editURL}>
-            <Pencil className="mr-2 size-4" />
-            Edit
-          </Link>
-        </DropdownMenuItem>
+        {!isTrashView && (
+          <DropdownMenuItem className="rounded-lg text-[var(--cms-text-secondary)]" asChild>
+            <Link href={editURL}>
+              <Pencil className="mr-2 size-4" />
+              Edit
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator className="bg-[var(--cms-border-subtle)]" />
+
+        {isTrashView ? (
+          <>
+            <DropdownMenuItem
+              className="rounded-lg text-[var(--cms-text-secondary)]"
+              onSelect={(event) => {
+                event.preventDefault()
+                void handleRestore()
+              }}
+              disabled={!canDelete || isWorking}
+            >
+              <RotateCcw className="mr-2 size-4" />
+              Restore
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="rounded-lg text-[var(--cms-danger-text)] focus:bg-[var(--cms-danger-soft)] focus:text-[var(--cms-danger-text)]"
+              onSelect={(event) => {
+                event.preventDefault()
+                void handlePermanentDelete()
+              }}
+              disabled={!canDelete || isWorking}
+            >
+              <ShieldAlert className="mr-2 size-4" />
+              Delete Permanently
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <DropdownMenuItem
+            className="rounded-lg text-[var(--cms-danger-text)] focus:bg-[var(--cms-danger-soft)] focus:text-[var(--cms-danger-text)]"
+            onSelect={(event) => {
+              event.preventDefault()
+              void handleTrash()
+            }}
+            disabled={!canDelete || isWorking}
+          >
+            <Trash2 className="mr-2 size-4" />
+            Move to Trash
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
@@ -307,17 +440,25 @@ export default function CustomListView() {
   const { config } = useConfig()
   const { user } = useAuth()
   const pathname = usePathname()
+  const router = useRouter()
   const searchParams = useSearchParams()
 
   const pathParts = (pathname ?? '').split('/').filter(Boolean)
   const collectionsIdx = pathParts.lastIndexOf('collections')
   const slug = collectionsIdx !== -1 ? (pathParts[collectionsIdx + 1] ?? '') : ''
+  const isTrashView = pathParts.includes('trash')
 
   const collectionConfig = config?.collections?.find((c) => c.slug === slug)
   const listCfg = LIST_VIEW_CONFIGS[slug]
 
   const hasCreatePermission = Boolean(user)
+  const canDelete = (user as { role?: string } | null)?.role === 'admin'
   const newDocURL = slug ? `/admin/collections/${slug}/create` : undefined
+  const trashURL = slug
+    ? isTrashView
+      ? `/admin/collections/${slug}`
+      : `/admin/collections/${slug}/trash`
+    : undefined
 
   const docs = (data?.docs ?? []) as Record<string, unknown>[]
   const totalDocs = data?.totalDocs ?? 0
@@ -344,8 +485,26 @@ export default function CustomListView() {
 
   const StatsComponent = STATS_COMPONENTS[slug]
 
+  function refreshList() {
+    router.refresh()
+  }
+
   return (
     <div className="px-6 pb-6 pt-5">
+      <AdminPageHeader
+        title={isTrashView ? `${pluralLabel} Trash` : pluralLabel}
+        description={
+          isTrashView
+            ? `Restore or permanently delete archived ${pluralLabel.toLowerCase()}.`
+            : listCfg?.description ?? `Manage ${pluralLabel.toLowerCase()} for your workspace.`
+        }
+        isTrashView={isTrashView}
+        primaryActionLabel={!isTrashView && hasCreatePermission ? `New ${singularLabel}` : undefined}
+        primaryActionHref={!isTrashView && hasCreatePermission ? newDocURL : undefined}
+        trashActionHref={trashURL}
+        totalDocs={totalDocs}
+      />
+
       {StatsComponent && <StatsComponent />}
 
       <section
@@ -354,21 +513,20 @@ export default function CustomListView() {
         style={{ boxShadow: 'var(--cms-card-shadow)' }}
       >
         {/* Header */}
-        <div className="flex flex-col gap-3 border-b border-[var(--cms-border-subtle)] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 border-b border-[var(--cms-border-subtle)] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2
               id="list-heading"
-              className="text-[17px] font-semibold tracking-tight text-[var(--cms-text)]"
+              className="text-[16px] font-semibold tracking-tight text-[var(--cms-text)]"
             >
-              {pluralLabel}
+              {isTrashView ? `Deleted ${pluralLabel}` : pluralLabel}
             </h2>
             <p className="mt-0.5 text-[13px] text-[var(--cms-text-muted)]">
-              {listCfg?.description ??
-                `${totalDocs.toLocaleString()} ${totalDocs === 1 ? singularLabel.toLowerCase() : pluralLabel.toLowerCase()}`}
+              {`${totalDocs.toLocaleString()} ${totalDocs === 1 ? singularLabel.toLowerCase() : pluralLabel.toLowerCase()}`}
             </p>
           </div>
 
-          {hasCreatePermission && newDocURL && (
+          {!isTrashView && hasCreatePermission && newDocURL && (
             <Link href={newDocURL}>
               <Button className="rounded-xl bg-[var(--cms-primary)] px-4 text-white shadow-sm transition-colors hover:bg-[var(--cms-primary-hover)]">
                 <Plus className="mr-1.5 h-4 w-4" />
@@ -384,12 +542,16 @@ export default function CustomListView() {
               <Inbox className="h-6 w-6 text-[var(--cms-text-muted)]" />
             </div>
             <h3 className="text-[15px] font-semibold text-[var(--cms-text)]">
-              No {pluralLabel.toLowerCase()} yet
+              {isTrashView
+                ? `No deleted ${pluralLabel.toLowerCase()} yet`
+                : `No ${pluralLabel.toLowerCase()} yet`}
             </h3>
             <p className="mt-1 text-[13px] text-[var(--cms-text-muted)]">
-              Get started by creating your first {singularLabel.toLowerCase()}.
+              {isTrashView
+                ? `Documents moved to trash will appear here.`
+                : `Get started by creating your first ${singularLabel.toLowerCase()}.`}
             </p>
-            {hasCreatePermission && newDocURL && (
+            {!isTrashView && hasCreatePermission && newDocURL && (
               <Link href={newDocURL} className="mt-4">
                 <Button
                   variant="outline"
@@ -408,7 +570,7 @@ export default function CustomListView() {
             <div className="overflow-x-auto">
               <Table wrapperClassName="border-0 rounded-none shadow-none bg-transparent">
                 <TableHeader>
-                  <TableRow className="hover:bg-transparent">
+                  <TableRow className="hover:bg-transparent even:bg-transparent">
                     {columns.map((col) => {
                       if (listCfg?.statusField && col === listCfg.statusField) return null
                       return (
@@ -438,7 +600,8 @@ export default function CustomListView() {
 
                 <TableBody>
                   {docs.map((doc) => {
-                    const editURL = `/admin/collections/${slug}/${String(doc.id)}`
+                    const defaultURL = `/admin/collections/${slug}/${String(doc.id)}`
+                    const editURL = listCfg?.editURL ? listCfg.editURL(String(doc.id)) : defaultURL
                     return (
                       <TableRow key={String(doc.id)} className="group">
                         {columns.map((col, i) => {
@@ -475,7 +638,14 @@ export default function CustomListView() {
                         )}
 
                         <TableCell>
-                          <ActionMenu editURL={editURL} />
+                          <ActionMenu
+                            editURL={editURL}
+                            slug={slug}
+                            id={String(doc.id)}
+                            isTrashView={isTrashView}
+                            canDelete={canDelete}
+                            onActionComplete={refreshList}
+                          />
                         </TableCell>
                       </TableRow>
                     )

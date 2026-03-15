@@ -38,5 +38,7 @@ export async function getAllPageSlugs(): Promise<string[]> {
     depth: 0,
     select: { slug: true },
   })
-  return result.docs.map((doc) => doc.slug.replace(/^\/+/, ''))
+  return result.docs
+    .map((doc) => (typeof doc.slug === 'string' ? doc.slug.replace(/^\/+/, '') : null))
+    .filter((slug): slug is string => Boolean(slug))
 }

@@ -16,7 +16,7 @@ function Table({ className, wrapperClassName, ...props }: TableProps) {
         wrapperClassName,
       )}
     >
-      <table className={cn('w-full caption-bottom text-sm', className)} {...props} />
+      <table className={cn('w-full caption-bottom text-sm [border-collapse:separate]', className)} {...props} />
     </div>
   )
 }
@@ -37,7 +37,7 @@ function TableBody({ className, ...props }: React.HTMLAttributes<HTMLTableSectio
   return (
     <tbody
       className={cn(
-        'divide-y divide-[var(--cms-table-border)] [&_tr:last-child]:border-0',
+        'divide-y divide-[var(--cms-table-border)] [&_tr:last-child]:border-0 [&_tr:nth-child(even)]:bg-[var(--cms-bg-elevated)]',
         className,
       )}
       {...props}
@@ -74,7 +74,7 @@ function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCell
   return (
     <th
       className={cn(
-        'h-10 px-4 text-left align-middle text-[11px] font-semibold uppercase tracking-wider text-[var(--cms-text-muted)]',
+        'h-11 px-5 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--cms-text-muted)]',
         '[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         className,
       )}
@@ -87,7 +87,7 @@ function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCell
   return (
     <td
       className={cn(
-        'px-4 py-3 align-middle text-[13.5px] text-[var(--cms-text-secondary)]',
+        'px-5 py-3.5 align-middle text-[13.5px] text-[var(--cms-text-secondary)]',
         '[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         className,
       )}

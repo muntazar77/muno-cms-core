@@ -138,6 +138,7 @@ export interface User {
   role: 'admin' | 'editor' | 'user';
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -165,6 +166,7 @@ export interface Media {
   caption?: string | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -181,12 +183,37 @@ export interface Media {
  */
 export interface Page {
   id: number;
+  /**
+   * Primary page title shown in admin and page headers.
+   */
   title: string;
   /**
-   * URL path without leading slash, e.g. "about" not "/about"
+   * URL path without leading slash, e.g. "about" not "/about".
    */
   slug: string;
   status: 'draft' | 'published';
+  pageType?: ('landing' | 'blog' | 'about' | 'contact' | 'custom') | null;
+  template?: ('default' | 'full-width' | 'sidebar-left' | 'sidebar-right') | null;
+  parentPage?: (number | null) | Page;
+  pageName?: string | null;
+  shortDescription?: string | null;
+  author?: string | null;
+  branding?: {
+    logoUrl?: string | null;
+    faviconUrl?: string | null;
+    headerVariant?: ('default' | 'centered' | 'minimal' | 'transparent') | null;
+    footerVariant?: ('default' | 'centered' | 'minimal' | 'columns') | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    canonicalUrl?: string | null;
+    robotsIndex?: boolean | null;
+    image?: (number | null) | Media;
+    twitterImage?: (number | null) | Media;
+  };
+  publishDate?: string | null;
+  visibility?: ('public' | 'private' | 'password-protected') | null;
   blocks?:
     | (
         | {
@@ -397,13 +424,9 @@ export interface Page {
           }
       )[]
     | null;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    image?: (number | null) | Media;
-  };
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -434,6 +457,7 @@ export interface Form {
   confirmationMessage?: string | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -456,6 +480,7 @@ export interface FormSubmission {
     | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -483,6 +508,7 @@ export interface Service {
   featuredImage?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -582,6 +608,7 @@ export interface UsersSelect<T extends boolean = true> {
   role?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   email?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
@@ -606,6 +633,7 @@ export interface MediaSelect<T extends boolean = true> {
   caption?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;
@@ -624,6 +652,32 @@ export interface PagesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   status?: T;
+  pageType?: T;
+  template?: T;
+  parentPage?: T;
+  pageName?: T;
+  shortDescription?: T;
+  author?: T;
+  branding?:
+    | T
+    | {
+        logoUrl?: T;
+        faviconUrl?: T;
+        headerVariant?: T;
+        footerVariant?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        canonicalUrl?: T;
+        robotsIndex?: T;
+        image?: T;
+        twitterImage?: T;
+      };
+  publishDate?: T;
+  visibility?: T;
   blocks?:
     | T
     | {
@@ -819,15 +873,9 @@ export interface PagesSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
-  meta?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        image?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -854,6 +902,7 @@ export interface FormsSelect<T extends boolean = true> {
   confirmationMessage?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -864,6 +913,7 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   data?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -876,6 +926,7 @@ export interface ServicesSelect<T extends boolean = true> {
   featuredImage?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

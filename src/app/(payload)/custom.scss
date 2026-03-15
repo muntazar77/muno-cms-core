@@ -92,6 +92,7 @@ html {
   font-size: 14px !important;
   background-color: var(--cms-input-bg) !important;
   transition: border-color 0.1s, box-shadow 0.1s !important;
+  box-shadow: none !important;
 }
 
 .rs__control:hover {
@@ -103,12 +104,53 @@ html {
   box-shadow: 0 0 0 3px var(--cms-input-focus-ring) !important;
 }
 
+.rs__value-container {
+  min-height: 38px !important;
+  padding: 1px 10px !important;
+  gap: 6px !important;
+}
+
+.rs__input-container,
+.rs__single-value,
+.rs__placeholder {
+  margin: 0 !important;
+  font-size: 13.5px !important;
+  line-height: 1.35 !important;
+}
+
+.rs__placeholder {
+  color: var(--cms-text-muted) !important;
+}
+
+.rs__indicators {
+  padding-right: 2px !important;
+}
+
+.rs__indicator-separator {
+  background-color: var(--cms-border-subtle) !important;
+}
+
+.rs__dropdown-indicator,
+.rs__clear-indicator {
+  color: var(--cms-text-muted) !important;
+}
+
+.rs__dropdown-indicator:hover,
+.rs__clear-indicator:hover {
+  color: var(--cms-text-secondary) !important;
+}
+
 .rs__menu {
   border-radius: 10px !important;
   border: 1px solid var(--cms-border) !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
   overflow: hidden !important;
   background: var(--cms-bg) !important;
+  z-index: 80 !important;
+}
+
+.rs__menu-list {
+  padding: 6px !important;
 }
 
 .rs__option {
@@ -131,6 +173,28 @@ html {
 
 .rs__single-value {
   color: var(--cms-text) !important;
+}
+
+.rs__multi-value {
+  border-radius: 999px !important;
+  background: var(--cms-bg-muted) !important;
+  border: 1px solid var(--cms-border-subtle) !important;
+}
+
+.rs__multi-value__label {
+  color: var(--cms-text-secondary) !important;
+  font-size: 12px !important;
+  padding: 1px 6px !important;
+}
+
+.rs__multi-value__remove {
+  border-top-right-radius: 999px !important;
+  border-bottom-right-radius: 999px !important;
+}
+
+.rs__multi-value__remove:hover {
+  background: var(--cms-danger-soft) !important;
+  color: var(--cms-danger-text) !important;
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────── */
@@ -439,4 +503,90 @@ html {
   font-size: 12px !important;
   color: var(--cms-text-muted) !important;
   margin-top: 4px !important;
+}
+
+/* ── Pages settings (single unified edit view) ──────────────────────── */
+.pages-settings-tabs {
+  background: transparent !important;
+
+  > .tabs-field__tabs {
+    margin-bottom: 20px !important;
+    border: 1px solid var(--cms-border) !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
+    background: var(--cms-bg) !important;
+    gap: 6px !important;
+  }
+
+  .tabs-field__tab-button {
+    margin: 0 !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    opacity: 1 !important;
+    color: var(--cms-text-muted) !important;
+  }
+
+  .tabs-field__tab-button:after {
+    display: none !important;
+  }
+
+  .tabs-field__tab-button--active {
+    background: var(--cms-primary-soft) !important;
+    color: var(--cms-primary-text) !important;
+    font-weight: 600 !important;
+  }
+
+  .tabs-field__content-wrap {
+    border: 1px solid var(--cms-border) !important;
+    border-radius: 14px !important;
+    padding: 20px !important;
+    background: var(--cms-bg) !important;
+    box-shadow: var(--cms-card-shadow) !important;
+  }
+}
+
+.pages-settings-card {
+  border: 1px solid var(--cms-border) !important;
+  border-radius: 12px !important;
+  background: var(--cms-bg) !important;
+  padding: 20px !important;
+}
+
+.pages-settings-card--subtle {
+  background: var(--cms-bg-elevated) !important;
+}
+
+.pages-settings-card__header {
+  margin-bottom: 12px;
+}
+
+.pages-settings-card__title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--cms-text);
+}
+
+.pages-settings-card__description {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--cms-text-muted);
+}
+
+.pages-settings-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--cms-border) !important;
+  border-radius: 12px !important;
+  padding: 18px 20px !important;
+  background: linear-gradient(180deg, var(--cms-bg) 0%, var(--cms-bg-elevated) 100%) !important;
+}
+
+@media (max-width: 768px) {
+  .pages-settings-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
