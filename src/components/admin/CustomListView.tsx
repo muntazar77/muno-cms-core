@@ -19,6 +19,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useListQuery, useConfig, useAuth } from '@payloadcms/ui'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { toast } from 'sonner'
 import {
   MoreHorizontal,
   Eye,
@@ -55,6 +56,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import UsersListStats from '@/components/admin/collection/UsersListStats'
+import PagesListStats from '@/components/admin/collection/PagesListStats'
 import AdminPageHeader from '@/components/admin/shared/AdminPageHeader'
 
 // ─── Per-Collection Config ───────────────────────────────────────────
@@ -104,6 +106,7 @@ const LIST_VIEW_CONFIGS: Record<string, ListViewCollectionConfig> = {
 
 const STATS_COMPONENTS: Record<string, React.ComponentType> = {
   users: UsersListStats,
+  pages: PagesListStats,
 }
 
 // ─── Status Variant Styles ───────────────────────────────────────────
@@ -273,20 +276,38 @@ function SortIndicator({ field, currentSort }: { field: string; currentSort: str
 
 function ActionMenu({
   editURL,
+  apiRoute,
   slug,
   id,
+  singularLabel,
   isTrashView,
   canDelete,
   onActionComplete,
 }: {
   editURL: string
+  apiRoute: string
   slug: string
   id: string
+  singularLabel: string
   isTrashView: boolean
   canDelete: boolean
   onActionComplete: () => void
 }) {
   const [isWorking, setIsWorking] = React.useState(false)
+
+  function formatError(action: string, error: unknown) {
+    const message = error instanceof Error ? error.message : ''
+    return `${action}${message ? ` (${message})` : ''}`
+  }
+
+  function buildCollectionTrashWherePath() {
+    const query = new URLSearchParams()
+    query.set('trash', 'true')
+    query.set('limit', '0')
+    query.set('where[and][0][id][equals]', id)
+    query.set('where[and][1][deletedAt][exists]', 'true')
+    return `${apiRoute}/${slug}?${query.toString()}`
+  }
 
   async function runAction(request: RequestInfo | URL, init: RequestInit) {
     const res = await fetch(request, {
@@ -309,9 +330,14 @@ function ActionMenu({
 
     try {
       setIsWorking(true)
-      await runAction(`/api/${slug}/${id}`, { method: 'DELETE' })
-    } catch {
-      window.alert('Unable to move this document to trash. Please try again.')
+      await runAction(`${apiRoute}/${slug}/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deletedAt: new Date().toISOString() }),
+      })
+      toast.success(`${singularLabel} moved to trash.`)
+    } catch (error) {
+      toast.error(formatError('Unable to move document to trash', error))
     } finally {
       setIsWorking(false)
     }
@@ -325,13 +351,14 @@ function ActionMenu({
 
     try {
       setIsWorking(true)
-      await runAction(`/api/${slug}/${id}?trash=true`, {
+      await runAction(buildCollectionTrashWherePath(), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ deletedAt: null }),
       })
-    } catch {
-      window.alert('Unable to restore this document. Please try again.')
+      toast.success(`${singularLabel} restored.`)
+    } catch (error) {
+      toast.error(formatError('Unable to restore document', error))
     } finally {
       setIsWorking(false)
     }
@@ -347,9 +374,10 @@ function ActionMenu({
 
     try {
       setIsWorking(true)
-      await runAction(`/api/${slug}/${id}?trash=true`, { method: 'DELETE' })
-    } catch {
-      window.alert('Unable to permanently delete this document. Please try again.')
+      await runAction(buildCollectionTrashWherePath(), { method: 'DELETE' })
+      toast.success(`${singularLabel} permanently deleted.`)
+    } catch (error) {
+      toast.error(formatError('Unable to permanently delete document', error))
     } finally {
       setIsWorking(false)
     }
@@ -453,6 +481,7 @@ export default function CustomListView() {
 
   const hasCreatePermission = Boolean(user)
   const canDelete = (user as { role?: string } | null)?.role === 'admin'
+  const apiRoute = (config?.routes?.api as string | undefined) ?? '/api'
   const newDocURL = slug ? `/admin/collections/${slug}/create` : undefined
   const trashURL = slug
     ? isTrashView
@@ -496,10 +525,12 @@ export default function CustomListView() {
         description={
           isTrashView
             ? `Restore or permanently delete archived ${pluralLabel.toLowerCase()}.`
-            : listCfg?.description ?? `Manage ${pluralLabel.toLowerCase()} for your workspace.`
+            : (listCfg?.description ?? `Manage ${pluralLabel.toLowerCase()} for your workspace.`)
         }
         isTrashView={isTrashView}
-        primaryActionLabel={!isTrashView && hasCreatePermission ? `New ${singularLabel}` : undefined}
+        primaryActionLabel={
+          !isTrashView && hasCreatePermission ? `New ${singularLabel}` : undefined
+        }
         primaryActionHref={!isTrashView && hasCreatePermission ? newDocURL : undefined}
         trashActionHref={trashURL}
         totalDocs={totalDocs}
@@ -640,8 +671,10 @@ export default function CustomListView() {
                         <TableCell>
                           <ActionMenu
                             editURL={editURL}
+                            apiRoute={apiRoute}
                             slug={slug}
                             id={String(doc.id)}
+                            singularLabel={singularLabel}
                             isTrashView={isTrashView}
                             canDelete={canDelete}
                             onActionComplete={refreshList}

@@ -88,7 +88,9 @@ export default function AdminStatCard({
         <CardTitle className="mt-0.5 text-xs font-normal text-[var(--cms-text-muted)]">
           {label}
         </CardTitle>
-        {description && <p className="mt-1 text-[11px] text-[var(--cms-text-muted)]">{description}</p>}
+        {description && (
+          <p className="mt-1 text-[11px] text-[var(--cms-text-muted)]">{description}</p>
+        )}
       </CardContent>
     </Card>
   )

@@ -16,7 +16,10 @@ function Table({ className, wrapperClassName, ...props }: TableProps) {
         wrapperClassName,
       )}
     >
-      <table className={cn('w-full caption-bottom text-sm [border-collapse:separate]', className)} {...props} />
+      <table
+        className={cn('w-full caption-bottom text-sm [border-collapse:separate]', className)}
+        {...props}
+      />
     </div>
   )
 }
