@@ -5,8 +5,8 @@ import StatsGrid, { type StatCardData } from '@/components/admin/dashboard/Stats
 
 /**
  * Collection list stats example for Pages.
- * Demonstrates reusable AdminStatCard usage through StatsGrid.
- */
+ * Demonstrates reusable AdminStatCard usage through StatsGrid.d fd
+ */ 
 export default function PagesListStats() {
   const [stats, setStats] = useState<StatCardData[] | null>(null)
 
