@@ -25,12 +25,107 @@ export const Pages: CollectionConfig = {
     components: {
       views: {
         list: {
-          Component: '/components/admin/CustomListView',
+          Component: '/components/admin/CollectionCardList',
         },
       },
     },
   },
   hooks: {
+    beforeValidate: [
+      ({ data, operation }) => {
+        if (operation === 'create' && data?.template && (!data.blocks || data.blocks.length === 0)) {
+          switch (data.template) {
+            case 'landing-page':
+              data.blocks = [
+                {
+                  blockType: 'hero',
+                  layout: 'centered',
+                  backgroundStyle: 'pattern',
+                  heading: 'Welcome to our platform',
+                  subheading: 'We help you build faster and better with modern tools.',
+                  primaryCTA: { label: 'Get Started', url: '/contact' },
+                  secondaryCTA: { label: 'Learn More', url: '/about' },
+                },
+                {
+                  blockType: 'features',
+                  heading: 'Why choose us?',
+                  subheading: 'Everything you need to succeed in one place.',
+                  columns: '3',
+                  backgroundStyle: 'light',
+                  features: [
+                    { title: 'Fast', description: 'Blazing fast load times.', icon: 'lightning' },
+                    { title: 'Secure', description: 'Enterprise-grade security.', icon: 'shield' },
+                    { title: 'Reliable', description: '99.9% uptime guaranteed.', icon: 'check' },
+                  ],
+                },
+                {
+                  blockType: 'cta',
+                  headline: 'Ready to get started?',
+                  subheadline: 'Join thousands of satisfied customers today.',
+                  style: 'default',
+                  links: [{ label: 'Sign Up', url: '/register', appearance: 'primary' }],
+                },
+              ]
+              break
+            case 'about-page':
+              data.blocks = [
+                {
+                  blockType: 'hero',
+                  layout: 'split-left',
+                  heading: 'About Us',
+                  subheading: 'Learn more about our mission and history.',
+                },
+                {
+                  blockType: 'features',
+                  heading: 'Our Core Values',
+                  columns: '3',
+                  features: [
+                    { title: 'Innovation', description: 'We innovate constantly.', icon: 'star' },
+                    { title: 'Trust', description: 'We build trust.', icon: 'heart' },
+                    { title: 'Community', description: 'We give back.', icon: 'globe' },
+                  ],
+                },
+              ]
+              break
+            case 'services-page':
+              data.blocks = [
+                {
+                  blockType: 'hero',
+                  layout: 'centered',
+                  backgroundStyle: 'gradient',
+                  heading: 'Our Services',
+                  subheading: 'Explore what we have to offer.',
+                },
+                {
+                  blockType: 'services-cards',
+                  headline: 'What we provide',
+                  services: [
+                    { title: 'Consulting', description: 'Expert advice.' },
+                    { title: 'Development', description: 'Custom solutions.' },
+                    { title: 'Support', description: '24/7 assistance.' },
+                  ],
+                },
+              ]
+              break
+            case 'contact-page':
+              data.blocks = [
+                {
+                  blockType: 'hero',
+                  layout: 'centered',
+                  heading: 'Contact Us',
+                  subheading: "We'd love to hear from you.",
+                },
+                {
+                  blockType: 'form',
+                  form: null, // User will select a form later
+                },
+              ]
+              break
+          }
+        }
+        return data
+      },
+    ],
     beforeChange: [
       ({ data }) => {
         if (data?.slug) {
@@ -117,9 +212,10 @@ export const Pages: CollectionConfig = {
               type: 'select',
               options: [
                 { label: 'Default', value: 'default' },
-                { label: 'Full Width', value: 'full-width' },
-                { label: 'Sidebar Left', value: 'sidebar-left' },
-                { label: 'Sidebar Right', value: 'sidebar-right' },
+                { label: 'Landing Page', value: 'landing-page' },
+                { label: 'About Page', value: 'about-page' },
+                { label: 'Services Page', value: 'services-page' },
+                { label: 'Contact Page', value: 'contact-page' },
               ],
             },
             {

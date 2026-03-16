@@ -193,7 +193,7 @@ export interface Page {
   slug: string;
   status: 'draft' | 'published';
   pageType?: ('landing' | 'blog' | 'about' | 'contact' | 'custom') | null;
-  template?: ('default' | 'full-width' | 'sidebar-left' | 'sidebar-right') | null;
+  template?: ('default' | 'landing-page' | 'about-page' | 'services-page' | 'contact-page') | null;
   parentPage?: (number | null) | Page;
   pageName?: string | null;
   shortDescription?: string | null;
@@ -217,11 +217,25 @@ export interface Page {
   blocks?:
     | (
         | {
+            /**
+             * Choose the layout style for the hero section.
+             */
+            layout?: ('centered' | 'split-left' | 'split-right') | null;
+            backgroundStyle?: ('none' | 'pattern' | 'gradient') | null;
             heading: string;
             subheading?: string | null;
+            /**
+             * Image displayed alongside or below the hero text based on layout.
+             */
             image?: (number | null) | Media;
-            ctaLabel?: string | null;
-            ctaLink?: string | null;
+            primaryCTA?: {
+              label?: string | null;
+              url?: string | null;
+            };
+            secondaryCTA?: {
+              label?: string | null;
+              url?: string | null;
+            };
             id?: string | null;
             blockName?: string | null;
             blockType: 'hero';
@@ -247,15 +261,20 @@ export interface Page {
             blockType: 'text';
           }
         | {
+            columns?: ('2' | '3' | '4') | null;
+            backgroundStyle?: ('light' | 'muted' | 'dark') | null;
             heading?: string | null;
+            subheading?: string | null;
             features?:
               | {
+                  /**
+                   * Select an icon to display with this feature.
+                   */
+                  icon?:
+                    | ('check' | 'lightning' | 'shield' | 'star' | 'heart' | 'users' | 'settings' | 'globe' | 'book')
+                    | null;
                   title: string;
                   description?: string | null;
-                  /**
-                   * Icon name or identifier
-                   */
-                  icon?: string | null;
                   id?: string | null;
                 }[]
               | null;
@@ -684,11 +703,23 @@ export interface PagesSelect<T extends boolean = true> {
         hero?:
           | T
           | {
+              layout?: T;
+              backgroundStyle?: T;
               heading?: T;
               subheading?: T;
               image?: T;
-              ctaLabel?: T;
-              ctaLink?: T;
+              primaryCTA?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
+              secondaryCTA?:
+                | T
+                | {
+                    label?: T;
+                    url?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -702,13 +733,16 @@ export interface PagesSelect<T extends boolean = true> {
         features?:
           | T
           | {
+              columns?: T;
+              backgroundStyle?: T;
               heading?: T;
+              subheading?: T;
               features?:
                 | T
                 | {
+                    icon?: T;
                     title?: T;
                     description?: T;
-                    icon?: T;
                     id?: T;
                   };
               id?: T;
@@ -975,15 +1009,35 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface SiteSetting {
   id: number;
   siteName: string;
+  siteDescription?: string | null;
+  /**
+   * The main URL of the website. Used for SEO and absolute links.
+   */
+  siteUrl?: string | null;
   logo?: (number | null) | Media;
-  contact?: {
-    email?: string | null;
-    phone?: string | null;
-  };
+  /**
+   * Recommended size: 32x32 or 64x64 pixels.
+   */
+  favicon?: (number | null) | Media;
+  /**
+   * These will be used if a specific page does not have its own SEO data defined.
+   */
   seo?: {
     title?: string | null;
     description?: string | null;
     ogImage?: (number | null) | Media;
+  };
+  socialLinks?: {
+    twitter?: string | null;
+    facebook?: string | null;
+    instagram?: string | null;
+    linkedin?: string | null;
+    github?: string | null;
+    youtube?: string | null;
+  };
+  contact?: {
+    email?: string | null;
+    phone?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -994,19 +1048,32 @@ export interface SiteSetting {
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
   siteName?: T;
+  siteDescription?: T;
+  siteUrl?: T;
   logo?: T;
-  contact?:
-    | T
-    | {
-        email?: T;
-        phone?: T;
-      };
+  favicon?: T;
   seo?:
     | T
     | {
         title?: T;
         description?: T;
         ogImage?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        twitter?: T;
+        facebook?: T;
+        instagram?: T;
+        linkedin?: T;
+        github?: T;
+        youtube?: T;
+      };
+  contact?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
       };
   updatedAt?: T;
   createdAt?: T;
