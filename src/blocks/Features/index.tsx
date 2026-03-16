@@ -37,4 +37,4 @@ export function FeaturesBlock({ heading, features }: FeaturesBlockData) {
     </section>
   )
 }
-}
+
