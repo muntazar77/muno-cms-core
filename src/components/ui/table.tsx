@@ -77,7 +77,7 @@ function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCell
   return (
     <th
       className={cn(
-        'h-11 px-5 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--cms-text-muted)]',
+        'h-12 px-5 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--cms-text-secondary)]',
         '[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         className,
       )}
@@ -90,7 +90,7 @@ function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCell
   return (
     <td
       className={cn(
-        'px-5 py-3.5 align-middle text-[13.5px] text-[var(--cms-text-secondary)]',
+        'px-5 py-4 align-middle text-[13.5px] text-[var(--cms-text-secondary)]',
         '[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         className,
       )}

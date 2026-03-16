@@ -55,6 +55,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import UsersListStats from '@/components/admin/collection/UsersListStats'
 import PagesListStats from '@/components/admin/collection/PagesListStats'
 import AdminPageHeader from '@/components/admin/shared/AdminPageHeader'
@@ -294,6 +304,14 @@ function ActionMenu({
   onActionComplete: () => void
 }) {
   const [isWorking, setIsWorking] = React.useState(false)
+  const [confirm, setConfirm] = React.useState<{
+    open: boolean
+    title: string
+    description: string
+    label: string
+    variant: 'default' | 'danger'
+    action: () => Promise<void>
+  }>({ open: false, title: '', description: '', label: 'Confirm', variant: 'default', action: async () => {} })
 
   function formatError(action: string, error: unknown) {
     const message = error instanceof Error ? error.message : ''
@@ -322,142 +340,178 @@ function ActionMenu({
     onActionComplete()
   }
 
-  async function handleTrash() {
+  function handleTrash() {
     if (!canDelete || isWorking) return
-
-    const confirmed = window.confirm('Move this document to trash? You can restore it later.')
-    if (!confirmed) return
-
-    try {
-      setIsWorking(true)
-      await runAction(`${apiRoute}/${slug}/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deletedAt: new Date().toISOString() }),
-      })
-      toast.success(`${singularLabel} moved to trash.`)
-    } catch (error) {
-      toast.error(formatError('Unable to move document to trash', error))
-    } finally {
-      setIsWorking(false)
-    }
+    setConfirm({
+      open: true,
+      title: 'Move to Trash',
+      description: `This ${singularLabel.toLowerCase()} will be moved to trash. You can restore it later.`,
+      label: 'Move to Trash',
+      variant: 'danger',
+      action: async () => {
+        try {
+          setIsWorking(true)
+          await runAction(`${apiRoute}/${slug}/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deletedAt: new Date().toISOString() }),
+          })
+          toast.success(`${singularLabel} moved to trash.`)
+        } catch (error) {
+          toast.error(formatError('Unable to move document to trash', error))
+        } finally {
+          setIsWorking(false)
+        }
+      },
+    })
   }
 
-  async function handleRestore() {
+  function handleRestore() {
     if (!canDelete || isWorking) return
-
-    const confirmed = window.confirm('Restore this document from trash?')
-    if (!confirmed) return
-
-    try {
-      setIsWorking(true)
-      await runAction(buildCollectionTrashWherePath(), {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ deletedAt: null }),
-      })
-      toast.success(`${singularLabel} restored.`)
-    } catch (error) {
-      toast.error(formatError('Unable to restore document', error))
-    } finally {
-      setIsWorking(false)
-    }
+    setConfirm({
+      open: true,
+      title: 'Restore Document',
+      description: `Restore this ${singularLabel.toLowerCase()} so it becomes active again?`,
+      label: 'Restore',
+      variant: 'default',
+      action: async () => {
+        try {
+          setIsWorking(true)
+          await runAction(buildCollectionTrashWherePath(), {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deletedAt: null }),
+          })
+          toast.success(`${singularLabel} restored.`)
+        } catch (error) {
+          toast.error(formatError('Unable to restore document', error))
+        } finally {
+          setIsWorking(false)
+        }
+      },
+    })
   }
 
-  async function handlePermanentDelete() {
+  function handlePermanentDelete() {
     if (!canDelete || isWorking) return
-
-    const confirmed = window.confirm(
-      'Permanently delete this document? This action cannot be undone.',
-    )
-    if (!confirmed) return
-
-    try {
-      setIsWorking(true)
-      await runAction(buildCollectionTrashWherePath(), { method: 'DELETE' })
-      toast.success(`${singularLabel} permanently deleted.`)
-    } catch (error) {
-      toast.error(formatError('Unable to permanently delete document', error))
-    } finally {
-      setIsWorking(false)
-    }
+    setConfirm({
+      open: true,
+      title: 'Delete Permanently',
+      description: `This ${singularLabel.toLowerCase()} will be permanently deleted. This cannot be undone.`,
+      label: 'Delete Permanently',
+      variant: 'danger',
+      action: async () => {
+        try {
+          setIsWorking(true)
+          await runAction(buildCollectionTrashWherePath(), { method: 'DELETE' })
+          toast.success(`${singularLabel} permanently deleted.`)
+        } catch (error) {
+          toast.error(formatError('Unable to permanently delete document', error))
+        } finally {
+          setIsWorking(false)
+        }
+      },
+    })
   }
 
   const editHref = isTrashView ? `${editURL}?trash=true` : editURL
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          disabled={isWorking}
-          className="h-8 w-8 rounded-lg text-[var(--cms-text-muted)] opacity-100 transition-all hover:bg-[var(--cms-bg-muted)] hover:text-[var(--cms-text)] sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40"
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            disabled={isWorking}
+            className="h-8 w-8 rounded-lg text-[var(--cms-text-muted)] opacity-100 transition-all hover:bg-[var(--cms-bg-muted)] hover:text-[var(--cms-text)] sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40"
+          >
+            <MoreHorizontal className="size-4" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-44 rounded-xl border-[var(--cms-border)] bg-[var(--cms-card-bg)] shadow-lg"
         >
-          <MoreHorizontal className="size-4" />
-          <span className="sr-only">Open menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-44 rounded-xl border-[var(--cms-border)] bg-[var(--cms-card-bg)] shadow-lg"
-      >
-        <DropdownMenuItem className="rounded-lg text-[var(--cms-text-secondary)]" asChild>
-          <Link href={editHref}>
-            <Eye className="mr-2 size-4" />
-            Open
-          </Link>
-        </DropdownMenuItem>
-        {!isTrashView && (
           <DropdownMenuItem className="rounded-lg text-[var(--cms-text-secondary)]" asChild>
-            <Link href={editURL}>
-              <Pencil className="mr-2 size-4" />
-              Edit
+            <Link href={editHref}>
+              <Eye className="mr-2 size-4" />
+              Open
             </Link>
           </DropdownMenuItem>
-        )}
-        <DropdownMenuSeparator className="bg-[var(--cms-border-subtle)]" />
-
-        {isTrashView ? (
-          <>
-            <DropdownMenuItem
-              className="rounded-lg text-[var(--cms-text-secondary)]"
-              onSelect={(event) => {
-                event.preventDefault()
-                void handleRestore()
-              }}
-              disabled={!canDelete || isWorking}
-            >
-              <RotateCcw className="mr-2 size-4" />
-              Restore
+          {!isTrashView && (
+            <DropdownMenuItem className="rounded-lg text-[var(--cms-text-secondary)]" asChild>
+              <Link href={editURL}>
+                <Pencil className="mr-2 size-4" />
+                Edit
+              </Link>
             </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator className="bg-[var(--cms-border-subtle)]" />
+
+          {isTrashView ? (
+            <>
+              <DropdownMenuItem
+                className="rounded-lg text-[var(--cms-text-secondary)]"
+                onSelect={(event) => {
+                  event.preventDefault()
+                  handleRestore()
+                }}
+                disabled={!canDelete || isWorking}
+              >
+                <RotateCcw className="mr-2 size-4" />
+                Restore
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="rounded-lg text-[var(--cms-danger-text)] focus:bg-[var(--cms-danger-soft)] focus:text-[var(--cms-danger-text)]"
+                onSelect={(event) => {
+                  event.preventDefault()
+                  handlePermanentDelete()
+                }}
+                disabled={!canDelete || isWorking}
+              >
+                <ShieldAlert className="mr-2 size-4" />
+                Delete Permanently
+              </DropdownMenuItem>
+            </>
+          ) : (
             <DropdownMenuItem
               className="rounded-lg text-[var(--cms-danger-text)] focus:bg-[var(--cms-danger-soft)] focus:text-[var(--cms-danger-text)]"
               onSelect={(event) => {
                 event.preventDefault()
-                void handlePermanentDelete()
+                handleTrash()
               }}
               disabled={!canDelete || isWorking}
             >
-              <ShieldAlert className="mr-2 size-4" />
-              Delete Permanently
+              <Trash2 className="mr-2 size-4" />
+              Move to Trash
             </DropdownMenuItem>
-          </>
-        ) : (
-          <DropdownMenuItem
-            className="rounded-lg text-[var(--cms-danger-text)] focus:bg-[var(--cms-danger-soft)] focus:text-[var(--cms-danger-text)]"
-            onSelect={(event) => {
-              event.preventDefault()
-              void handleTrash()
-            }}
-            disabled={!canDelete || isWorking}
-          >
-            <Trash2 className="mr-2 size-4" />
-            Move to Trash
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={confirm.open} onOpenChange={(open) => setConfirm((s) => ({ ...s, open }))}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{confirm.title}</AlertDialogTitle>
+            <AlertDialogDescription>{confirm.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant={confirm.variant}
+              onClick={() => {
+                setConfirm((s) => ({ ...s, open: false }))
+                void confirm.action()
+              }}
+            >
+              {confirm.label}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
 

@@ -50,7 +50,15 @@ export function BuilderCanvas() {
 
   return (
     <main className="flex-1 builder-canvas overflow-auto flex flex-col min-w-0">
-      <div className="flex-1 p-6 flex justify-center">
+      <div
+        className="flex-1 p-6 flex justify-center"
+        style={{
+          backgroundColor: 'var(--cms-bg-elevated)',
+          backgroundImage:
+            'radial-gradient(circle, var(--cms-border) 1px, transparent 1px)',
+          backgroundSize: '20px 20px',
+        }}
+      >
         <div
           className="bg-[var(--cms-bg)] shadow-lg rounded-lg overflow-hidden transition-all duration-300 self-start border border-[var(--cms-border-subtle)]"
           style={{
@@ -73,8 +81,8 @@ export function BuilderCanvas() {
                   onClick={() => selectBlock(block.id)}
                   className={`relative group cursor-pointer border-2 transition-all ${
                     isSelected
-                      ? 'border-blue-500 z-10'
-                      : 'border-dashed border-transparent hover:border-blue-300 dark:hover:border-blue-700'
+                      ? 'border-[var(--cms-primary)] z-10'
+                      : 'border-dashed border-transparent hover:border-[var(--cms-primary-hover)]'
                   }`}
                 >
                   {/* Block toolbar */}
@@ -122,7 +130,7 @@ export function BuilderCanvas() {
                   <div
                     className={`absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium shadow-sm transition-opacity ${
                       isSelected
-                        ? 'opacity-100 bg-blue-500 text-white'
+                        ? 'opacity-100 bg-[var(--cms-primary)] text-white'
                         : 'opacity-0 group-hover:opacity-100 bg-[var(--cms-bg)] text-[var(--cms-text-secondary)] border border-[var(--cms-border)]'
                     }`}
                   >

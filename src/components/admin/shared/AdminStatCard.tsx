@@ -41,8 +41,8 @@ const ICON_COLORS: Record<AdminStatIcon, string> = {
   media: 'bg-[var(--cms-primary-soft)] text-[var(--cms-primary)]',
   pages: 'bg-[var(--cms-success-soft)] text-[var(--cms-success-text)]',
   applications: 'bg-[var(--cms-warning-soft)] text-[var(--cms-warning-text)]',
-  services: 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-300',
-  forms: 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300',
+  services: 'bg-[var(--cms-danger-soft)] text-[var(--cms-danger-text)]',
+  forms: 'bg-[var(--cms-info-soft)] text-[var(--cms-info-text)]',
 }
 
 export default function AdminStatCard({

@@ -108,18 +108,18 @@ export default async function DashboardView() {
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
+    <div className="min-h-screen bg-[var(--cms-bg-elevated)]">
       {/* Page Header */}
-      <div className="border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-5">
+      <div className="border-b border-[var(--cms-border-subtle)] bg-[var(--cms-card-bg)] px-6 py-5">
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-[var(--cms-primary)] text-white shadow-sm">
             <LayoutDashboard className="size-4" />
           </div>
           <div>
-            <h1 className="text-base font-semibold text-gray-900 dark:text-gray-50">
-              {greeting} 👋
+            <h1 className="text-base font-semibold text-[var(--cms-text)]">
+              {greeting}
             </h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-[var(--cms-text-muted)]">
               {now.toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -149,12 +149,12 @@ export default async function DashboardView() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-sm font-semibold text-gray-900">
+                  <CardTitle className="text-sm font-semibold">
                     Recent Activity
                   </CardTitle>
                   <CardDescription>Latest changes across your content</CardDescription>
                 </div>
-                <span className="text-[11px] font-medium text-blue-600 cursor-pointer hover:underline">
+                <span className="text-[11px] font-medium text-[var(--cms-primary)] cursor-pointer hover:underline">
                   View all
                 </span>
               </div>
