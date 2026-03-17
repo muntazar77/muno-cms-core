@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Media } from '@/payload-types'
+import { cn } from '@/lib/utils'
 
 interface HeroWithImageBlockProps {
   eyebrow?: string | null
@@ -27,46 +28,51 @@ export function HeroWithImageBlock({
   const isCenter = alignment === 'center'
 
   return (
-    <section className="relative overflow-hidden bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className="fe-bg-gradient-hero relative overflow-hidden py-24 sm:py-32">
+      {/* Decorative glow blobs at corners */}
+      <div className="fe-glow-blob -left-64 -top-64 opacity-30" />
+      <div className="fe-glow-blob -bottom-64 -right-64 opacity-20" />
+
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <div
-          className={`grid grid-cols-1 items-center gap-16 lg:grid-cols-2 ${alignment === 'right' ? 'lg:grid-flow-col-dense' : ''}`}
+          className={cn(
+            'grid grid-cols-1 items-center gap-16 lg:grid-cols-2',
+            alignment === 'right' && 'lg:grid-flow-col-dense',
+          )}
         >
-          <div className={isCenter ? 'text-center lg:col-span-2' : ''}>
-            {eyebrow && (
-              <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
-                {eyebrow}
+          <div className={cn(isCenter && 'text-center lg:col-span-2')}>
+            {eyebrow && <span className="fe-badge mb-4 inline-flex rounded-full">{eyebrow}</span>}
+            <h1 className="fe-heading-display mt-2">{heading}</h1>
+            {subheading && (
+              <p className={cn('fe-subheading mt-6', isCenter ? 'mx-auto max-w-lg' : 'max-w-lg')}>
+                {subheading}
               </p>
             )}
-            <h1 className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-              {heading}
-            </h1>
-            {subheading && <p className="mt-6 text-lg leading-8 text-gray-600">{subheading}</p>}
-            <div className={`mt-10 flex items-center gap-4 ${isCenter ? 'justify-center' : ''}`}>
+            <div className={cn('mt-10 flex items-center gap-4', isCenter && 'justify-center')}>
               {primaryCtaLabel && primaryCtaLink && (
-                <Link
-                  href={primaryCtaLink}
-                  className="rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-800"
-                >
+                <Link href={primaryCtaLink} className="fe-btn-primary">
                   {primaryCtaLabel}
                 </Link>
               )}
               {secondaryCtaLabel && (
-                <span className="text-sm font-semibold text-gray-900">
-                  {secondaryCtaLabel} &rarr;
-                </span>
+                <span className="fe-btn-secondary cursor-pointer">{secondaryCtaLabel} &rarr;</span>
               )}
             </div>
           </div>
+
           {media?.url && !isCenter && (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-              <Image
-                src={media.url}
-                alt={media.alt || heading}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
+            <div className="relative">
+              {/* Glow blob behind image */}
+              <div className="fe-glow-blob left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-50" />
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--fe-radius-2xl)] shadow-2xl ring-1 ring-[var(--fe-border-subtle)]">
+                <Image
+                  src={media.url}
+                  alt={media.alt || heading}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+              </div>
             </div>
           )}
         </div>

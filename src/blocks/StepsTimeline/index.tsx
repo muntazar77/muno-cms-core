@@ -14,31 +14,40 @@ export function StepsTimelineBlock({ heading, subheading, steps }: StepsTimeline
   if (!steps?.length) return null
 
   return (
-    <section className="bg-gray-50 py-20 sm:py-28">
+    <section className="fe-section-light py-[var(--fe-section-py)] sm:py-[var(--fe-section-py-lg)]">
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         {heading && (
-          <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            {heading}
-          </h2>
+          <>
+            <p className="fe-eyebrow text-center">HOW IT WORKS</p>
+            <h2 className="fe-heading-section mt-3 text-center">{heading}</h2>
+          </>
         )}
         {subheading && (
-          <p className="mx-auto mt-4 max-w-xl text-center text-lg text-gray-600">{subheading}</p>
+          <p className="fe-subheading mx-auto mt-4 max-w-xl text-center">{subheading}</p>
         )}
-        <div className="mt-12 space-y-0">
+
+        <div className="mt-16 space-y-0">
           {steps.map((step, index) => (
-            <div key={step.id ?? index} className="relative flex gap-6 pb-10 last:pb-0">
+            <div key={step.id ?? index} className="relative flex gap-6 pb-12 last:pb-0">
               {/* Timeline line */}
               {index < steps.length - 1 && (
-                <div className="absolute left-5 top-10 h-full w-px bg-gray-200" />
+                <div className="absolute left-5 top-12 h-full w-px bg-gradient-to-b from-[var(--fe-primary)] to-[var(--fe-primary-light)]" />
               )}
-              {/* Step number */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-900 text-sm font-bold text-white">
+
+              {/* Step number circle */}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--fe-primary)] text-sm font-bold text-white shadow-lg shadow-indigo-500/25 ring-4 ring-[var(--fe-primary-soft)]">
                 {index + 1}
               </div>
-              <div className="pt-1.5">
-                <h3 className="text-lg font-semibold text-gray-900">{step.title}</h3>
+
+              {/* Step content */}
+              <div className="flex-1 rounded-[var(--fe-radius-lg)] bg-[var(--fe-surface-secondary)] p-6">
+                <h3 className="text-lg font-semibold text-[var(--fe-text-primary)]">
+                  {step.title}
+                </h3>
                 {step.description && (
-                  <p className="mt-1 text-sm leading-6 text-gray-600">{step.description}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-[var(--fe-text-secondary)]">
+                    {step.description}
+                  </p>
                 )}
               </div>
             </div>

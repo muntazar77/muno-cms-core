@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils'
+
 interface PricingTableBlockProps {
   heading?: string | null
   subheading?: string | null
@@ -19,70 +21,110 @@ export function PricingTableBlock({ heading, subheading, plans }: PricingTableBl
   if (!plans?.length) return null
 
   return (
-    <section className="bg-white py-20 sm:py-28">
+    <section className="fe-section-light py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {heading && (
-          <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            {heading}
-          </h2>
+          <div className="text-center">
+            <p className="fe-eyebrow">PRICING</p>
+            <h2 className="fe-heading-section mt-3 text-center">{heading}</h2>
+          </div>
         )}
         {subheading && (
-          <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-gray-600">{subheading}</p>
+          <p className="fe-subheading mx-auto mt-4 max-w-2xl text-center">{subheading}</p>
         )}
-        <div className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-5xl grid-cols-1 items-center gap-8 lg:grid-cols-3">
           {plans.map((plan) => {
             const featureList = plan.features?.split('\n').filter(Boolean) || []
+            const isHighlighted = !!plan.highlighted
+
             return (
               <div
                 key={plan.id ?? plan.name}
-                className={`rounded-2xl p-8 ring-1 ${
-                  plan.highlighted
-                    ? 'bg-gray-900 text-white ring-gray-900 shadow-xl'
-                    : 'bg-white ring-gray-200'
-                }`}
+                className={cn(
+                  'relative p-8',
+                  isHighlighted ? 'fe-card-highlighted z-10 lg:scale-105' : 'fe-card',
+                )}
               >
+                {/* "Most Popular" badge */}
+                {isHighlighted && (
+                  <span className="fe-badge absolute -top-3 left-1/2 -translate-x-1/2">
+                    Most Popular
+                  </span>
+                )}
+
                 <h3
-                  className={`text-lg font-semibold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}
+                  className={cn(
+                    'text-lg font-semibold',
+                    isHighlighted ? 'text-white' : 'text-[var(--fe-text-primary)]',
+                  )}
                 >
                   {plan.name}
                 </h3>
+
                 <p className="mt-4">
                   <span
-                    className={`text-4xl font-bold ${plan.highlighted ? 'text-white' : 'text-gray-900'}`}
+                    className={cn(
+                      'text-5xl font-extrabold',
+                      isHighlighted ? 'text-white' : 'text-[var(--fe-text-primary)]',
+                    )}
                   >
                     {plan.price}
                   </span>
                 </p>
+
                 {plan.description && (
                   <p
-                    className={`mt-4 text-sm ${plan.highlighted ? 'text-gray-300' : 'text-gray-600'}`}
+                    className={cn(
+                      'mt-4 text-sm',
+                      isHighlighted
+                        ? 'text-[var(--fe-text-on-dark-secondary)]'
+                        : 'text-[var(--fe-text-secondary)]',
+                    )}
                   >
                     {plan.description}
                   </p>
                 )}
+
+                {/* Divider */}
+                <hr className="fe-divider my-6" />
+
                 {featureList.length > 0 && (
-                  <ul className="mt-6 space-y-2">
+                  <ul className="space-y-3">
                     {featureList.map((f, i) => (
-                      <li
-                        key={i}
-                        className={`flex items-center gap-2 text-sm ${plan.highlighted ? 'text-gray-300' : 'text-gray-600'}`}
-                      >
-                        <span className={plan.highlighted ? 'text-green-400' : 'text-green-600'}>
-                          ✓
+                      <li key={i} className="flex items-center gap-3">
+                        <span
+                          className={cn(
+                            'flex h-5 w-5 items-center justify-center rounded-full text-xs',
+                            isHighlighted
+                              ? 'bg-indigo-500/20 text-indigo-300'
+                              : 'bg-[var(--fe-primary-soft)] text-[var(--fe-primary)]',
+                          )}
+                        >
+                          &#10003;
                         </span>
-                        {f}
+                        <span
+                          className={cn(
+                            'text-sm',
+                            isHighlighted
+                              ? 'text-[var(--fe-text-on-dark-secondary)]'
+                              : 'text-[var(--fe-text-secondary)]',
+                          )}
+                        >
+                          {f}
+                        </span>
                       </li>
                     ))}
                   </ul>
                 )}
+
                 {plan.ctaLabel && (
                   <a
                     href={plan.ctaLink || '#'}
-                    className={`mt-8 block rounded-xl px-4 py-2.5 text-center text-sm font-semibold transition-colors ${
-                      plan.highlighted
-                        ? 'bg-white text-gray-900 hover:bg-gray-100'
-                        : 'bg-gray-900 text-white hover:bg-gray-800'
-                    }`}
+                    className={cn(
+                      isHighlighted
+                        ? 'mt-8 block w-full rounded-[var(--fe-radius-md)] bg-white py-3 text-center text-sm font-semibold text-[var(--fe-primary-dark)] shadow-lg transition hover:bg-[var(--fe-gray-50)]'
+                        : 'fe-btn-secondary mt-8 w-full',
+                    )}
                   >
                     {plan.ctaLabel}
                   </a>

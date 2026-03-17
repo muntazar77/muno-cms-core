@@ -11,14 +11,15 @@ export function FormBlock({ form, heading, description }: FormBlockData) {
   if (!formData?.fields?.length) return null
 
   return (
-    <section className="bg-gray-50 py-20 sm:py-28">
+    <section className="fe-section-brand py-[var(--fe-section-py)] sm:py-[var(--fe-section-py-lg)]">
       <div className="mx-auto max-w-2xl px-6 lg:px-8">
         {heading && (
-          <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            {heading}
-          </h2>
+          <>
+            <p className="fe-eyebrow text-center">GET IN TOUCH</p>
+            <h2 className="fe-heading-section mt-3 text-center">{heading}</h2>
+          </>
         )}
-        {description && <p className="mt-4 text-center text-lg text-gray-600">{description}</p>}
+        {description && <p className="fe-subheading mt-4 text-center">{description}</p>}
         <FormInner form={formData} />
       </div>
     </section>
@@ -49,69 +50,88 @@ function FormInner({ form }: { form: Form }) {
 
   if (status === 'success') {
     return (
-      <div className="mt-10 rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-100">
-        <p className="text-lg font-medium text-gray-900">
+      <div className="fe-card mt-10 p-8 text-center shadow-[var(--fe-shadow-xl)] sm:p-10">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p className="text-lg font-medium text-[var(--fe-text-primary)]">
           {form.confirmationMessage || 'Thank you! Your submission has been received.'}
         </p>
       </div>
     )
   }
 
+  const inputClasses =
+    'block w-full rounded-[var(--fe-radius-md)] border border-[var(--fe-border)] bg-[var(--fe-surface-primary)] px-4 py-2.5 text-[var(--fe-text-primary)] shadow-sm placeholder:text-[var(--fe-text-muted)] focus:border-[var(--fe-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--fe-primary-ghost)] transition-colors'
+
   return (
-    <form onSubmit={handleSubmit} className="mt-10 space-y-6">
-      {form.fields?.map((field) => (
-        <div key={field.id ?? field.name}>
-          <label htmlFor={field.name} className="block text-sm font-medium text-gray-900">
-            {field.label}
-            {field.required && <span className="ml-0.5 text-red-500">*</span>}
-          </label>
-          <div className="mt-1.5">
-            {field.type === 'textarea' ? (
-              <textarea
-                id={field.name}
-                name={field.name}
-                required={field.required ?? false}
-                rows={4}
-                className="block w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200"
-              />
-            ) : field.type === 'select' ? (
-              <select
-                id={field.name}
-                name={field.name}
-                required={field.required ?? false}
-                className="block w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200"
-              >
-                <option value="">Select...</option>
-                {field.options?.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input
-                id={field.name}
-                name={field.name}
-                type={field.type === 'email' ? 'email' : field.type === 'file' ? 'file' : 'text'}
-                required={field.required ?? false}
-                className="block w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200"
-              />
-            )}
+    <div className="fe-card mt-10 p-8 shadow-[var(--fe-shadow-xl)] sm:p-10">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {form.fields?.map((field) => (
+          <div key={field.id ?? field.name}>
+            <label
+              htmlFor={field.name}
+              className="block text-sm font-medium text-[var(--fe-text-primary)]"
+            >
+              {field.label}
+              {field.required && <span className="ml-0.5 text-[var(--fe-primary)]">*</span>}
+            </label>
+            <div className="mt-1.5">
+              {field.type === 'textarea' ? (
+                <textarea
+                  id={field.name}
+                  name={field.name}
+                  required={field.required ?? false}
+                  rows={4}
+                  className={inputClasses}
+                />
+              ) : field.type === 'select' ? (
+                <select
+                  id={field.name}
+                  name={field.name}
+                  required={field.required ?? false}
+                  className={inputClasses}
+                >
+                  <option value="">Select...</option>
+                  {field.options?.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id={field.name}
+                  name={field.name}
+                  type={field.type === 'email' ? 'email' : field.type === 'file' ? 'file' : 'text'}
+                  required={field.required ?? false}
+                  className={inputClasses}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-      {status === 'error' && (
-        <p className="text-sm text-red-600">Something went wrong. Please try again.</p>
-      )}
+        {status === 'error' && (
+          <p className="text-sm text-red-600">Something went wrong. Please try again.</p>
+        )}
 
-      <button
-        type="submit"
-        disabled={status === 'submitting'}
-        className="w-full rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-gray-800 disabled:opacity-50"
-      >
-        {status === 'submitting' ? 'Submitting...' : 'Submit'}
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={status === 'submitting'}
+          className="fe-btn-primary w-full disabled:opacity-50"
+        >
+          {status === 'submitting' ? 'Submitting...' : 'Submit'}
+        </button>
+      </form>
+    </div>
   )
 }

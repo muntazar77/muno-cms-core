@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import * as Accordion from '@radix-ui/react-accordion'
+import { ChevronDown } from 'lucide-react'
 
 interface FAQBlockProps {
   heading?: string | null
@@ -17,37 +18,35 @@ export function FAQBlock({ heading, items }: FAQBlockProps) {
   if (!items?.length) return null
 
   return (
-    <section className="bg-white py-20 sm:py-28">
+    <section className="fe-bg-gradient-brand py-[var(--fe-section-py)] sm:py-[var(--fe-section-py-lg)]">
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         {heading && (
-          <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            {heading}
-          </h2>
+          <>
+            <p className="fe-eyebrow text-center">FAQ</p>
+            <h2 className="fe-heading-section mt-3 text-center">{heading}</h2>
+          </>
         )}
-        <div className="mt-12 divide-y divide-gray-200">
+
+        <Accordion.Root type="single" collapsible className="mt-12 space-y-3">
           {items.map((item, index) => (
-            <AccordionItem key={item.id ?? index} question={item.question} answer={item.answer} />
+            <Accordion.Item
+              key={item.id ?? index}
+              value={item.id ?? `faq-${index}`}
+              className="overflow-hidden rounded-[var(--fe-radius-lg)] border border-[var(--fe-border-subtle)] bg-[var(--fe-surface-primary)] transition-colors data-[state=open]:border-[var(--fe-primary-light)]"
+            >
+              <Accordion.Trigger className="group flex w-full items-center justify-between px-6 py-5 text-left text-base font-semibold text-[var(--fe-text-primary)] transition-colors hover:text-[var(--fe-primary)]">
+                {item.question}
+                <ChevronDown className="h-5 w-5 shrink-0 text-[var(--fe-text-muted)] transition-transform duration-200 group-data-[state=open]:rotate-180" />
+              </Accordion.Trigger>
+              <Accordion.Content className="fe-accordion-content overflow-hidden">
+                <div className="px-6 pb-5 text-sm leading-relaxed text-[var(--fe-text-secondary)]">
+                  {item.answer}
+                </div>
+              </Accordion.Content>
+            </Accordion.Item>
           ))}
-        </div>
+        </Accordion.Root>
       </div>
     </section>
-  )
-}
-
-function AccordionItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <div className="py-5">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between text-left"
-      >
-        <span className="text-base font-semibold text-gray-900">{question}</span>
-        <span className="ml-4 shrink-0 text-gray-400">{open ? '−' : '+'}</span>
-      </button>
-      {open && <p className="mt-3 text-sm leading-6 text-gray-600">{answer}</p>}
-    </div>
   )
 }

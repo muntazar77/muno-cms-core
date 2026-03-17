@@ -16,14 +16,18 @@ export function LogoCloudBlock({ heading, logos }: LogoCloudBlockProps) {
   if (!logos?.length) return null
 
   return (
-    <section className="bg-white py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {heading && (
-          <p className="text-center text-sm font-semibold uppercase tracking-widest text-gray-500">
-            {heading}
-          </p>
-        )}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+    <section className="fe-section-light py-[var(--fe-section-py-sm)]">
+      <hr className="fe-divider" />
+      <div className="mx-auto max-w-7xl px-6 py-[var(--fe-section-py-sm)] lg:px-8">
+        {heading && <p className="fe-eyebrow text-center text-[var(--fe-text-muted)]">{heading}</p>}
+        <div
+          className="mt-8 flex flex-wrap items-center justify-center gap-x-16 gap-y-8"
+          style={{
+            maskImage: 'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)',
+            WebkitMaskImage:
+              'linear-gradient(90deg, transparent, black 10%, black 90%, transparent)',
+          }}
+        >
           {logos.map((logo) => {
             const media =
               typeof logo.image === 'object' && logo.image !== null ? (logo.image as Media) : null
@@ -35,12 +39,13 @@ export function LogoCloudBlock({ heading, logos }: LogoCloudBlockProps) {
                 alt={logo.name || 'Logo'}
                 width={158}
                 height={48}
-                className="max-h-12 w-auto object-contain grayscale transition-all hover:grayscale-0"
+                className="max-h-12 w-auto object-contain opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
               />
             )
           })}
         </div>
       </div>
+      <hr className="fe-divider" />
     </section>
   )
 }
