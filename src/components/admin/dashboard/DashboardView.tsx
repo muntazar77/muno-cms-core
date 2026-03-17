@@ -110,16 +110,19 @@ export default async function DashboardView() {
   return (
     <div className="min-h-screen bg-[var(--cms-bg-elevated)]">
       {/* Page Header */}
-      <div className="border-b border-[var(--cms-border-subtle)] bg-[var(--cms-card-bg)] px-6 py-5">
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-[var(--cms-primary)] text-white shadow-sm">
-            <LayoutDashboard className="size-4" />
+      <div className="border-b border-[var(--cms-border-subtle)] bg-[var(--cms-card-bg)] px-6 py-6">
+        <div className="flex items-center gap-4">
+          <div
+            className="flex size-12 items-center justify-center rounded-2xl text-white shadow-sm"
+            style={{ background: 'linear-gradient(135deg, var(--cms-primary), var(--cms-primary-hover))' }}
+          >
+            <LayoutDashboard className="size-5" />
           </div>
           <div>
-            <h1 className="text-base font-semibold text-[var(--cms-text)]">
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--cms-text)]">
               {greeting}
             </h1>
-            <p className="text-xs text-[var(--cms-text-muted)]">
+            <p className="text-xs text-[var(--cms-text-muted)] mt-0.5">
               {now.toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -149,7 +152,7 @@ export default async function DashboardView() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-sm font-semibold">
+                  <CardTitle className="text-base font-semibold">
                     Recent Activity
                   </CardTitle>
                   <CardDescription>Latest changes across your content</CardDescription>

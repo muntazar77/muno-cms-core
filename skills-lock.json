@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "payload": {
+      "source": "payloadcms/payload",
+      "sourceType": "github",
+      "computedHash": "72d39c67fd7f25ed377e273276b7262e60e874399f38846a374c482e4cf18403"
+    },
+    "web-component-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "computedHash": "784a5a753400c54579a62974bdd867c6455555d1a7f806de8483ea5da899d154"
+    }
+  }
+}
