@@ -85,7 +85,7 @@ function reducer(state: BuilderState, action: BuilderAction): BuilderState {
 
 interface BuilderContextValue {
   state: BuilderState
-  addBlock: (blockType: string, index?: number) => void
+  addBlock: (blockType: string, index?: number, defaultData?: Record<string, unknown>) => void
   updateBlock: (id: string, data: Record<string, unknown>) => void
   removeBlock: (id: string) => void
   moveBlock: (fromIndex: number, toIndex: number) => void
@@ -117,8 +117,8 @@ export function BuilderProvider({ children, pageId, initialBlocks }: BuilderProv
     isSaving: false,
   })
 
-  const addBlock = useCallback((blockType: string, index?: number) => {
-    const block: BuilderBlock = { id: generateId(), blockType }
+  const addBlock = useCallback((blockType: string, index?: number, defaultData?: Record<string, unknown>) => {
+    const block: BuilderBlock = { id: generateId(), blockType, ...defaultData }
     dispatch({ type: 'ADD_BLOCK', block, index })
   }, [])
 

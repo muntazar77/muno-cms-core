@@ -217,6 +217,7 @@ export interface Page {
   blocks?:
     | (
         | {
+            style?: ('gradient' | 'minimal' | 'split') | null;
             heading: string;
             subheading?: string | null;
             image?: (number | null) | Media;
@@ -247,6 +248,7 @@ export interface Page {
             blockType: 'text';
           }
         | {
+            style?: ('cards' | 'list' | 'minimal') | null;
             heading?: string | null;
             features?:
               | {
@@ -308,6 +310,7 @@ export interface Page {
             blockType: 'heroWithImage';
           }
         | {
+            style?: ('cards' | 'list') | null;
             heading?: string | null;
             subheading?: string | null;
             services?:
@@ -327,6 +330,7 @@ export interface Page {
             blockType: 'servicesCards';
           }
         | {
+            style?: ('timeline' | 'cards') | null;
             heading?: string | null;
             subheading?: string | null;
             steps?:
@@ -341,6 +345,7 @@ export interface Page {
             blockType: 'stepsTimeline';
           }
         | {
+            style?: ('dark' | 'light' | 'branded') | null;
             heading?: string | null;
             stats?:
               | {
@@ -357,6 +362,7 @@ export interface Page {
             blockType: 'statistics';
           }
         | {
+            style?: ('cards' | 'single' | 'minimal') | null;
             heading?: string | null;
             testimonials?:
               | {
@@ -410,6 +416,7 @@ export interface Page {
             blockType: 'pricingTable';
           }
         | {
+            style?: ('accordion' | 'grid') | null;
             heading?: string | null;
             items?:
               | {
@@ -684,6 +691,7 @@ export interface PagesSelect<T extends boolean = true> {
         hero?:
           | T
           | {
+              style?: T;
               heading?: T;
               subheading?: T;
               image?: T;
@@ -702,6 +710,7 @@ export interface PagesSelect<T extends boolean = true> {
         features?:
           | T
           | {
+              style?: T;
               heading?: T;
               features?:
                 | T
@@ -765,6 +774,7 @@ export interface PagesSelect<T extends boolean = true> {
         servicesCards?:
           | T
           | {
+              style?: T;
               heading?: T;
               subheading?: T;
               services?:
@@ -782,6 +792,7 @@ export interface PagesSelect<T extends boolean = true> {
         stepsTimeline?:
           | T
           | {
+              style?: T;
               heading?: T;
               subheading?: T;
               steps?:
@@ -797,6 +808,7 @@ export interface PagesSelect<T extends boolean = true> {
         statistics?:
           | T
           | {
+              style?: T;
               heading?: T;
               stats?:
                 | T
@@ -811,6 +823,7 @@ export interface PagesSelect<T extends boolean = true> {
         testimonials?:
           | T
           | {
+              style?: T;
               heading?: T;
               testimonials?:
                 | T
@@ -861,6 +874,7 @@ export interface PagesSelect<T extends boolean = true> {
         faq?:
           | T
           | {
+              style?: T;
               heading?: T;
               items?:
                 | T

@@ -5,6 +5,16 @@ export const HeroBlock: Block = {
   labels: { singular: 'Hero', plural: 'Heroes' },
   fields: [
     {
+      name: 'style',
+      type: 'select',
+      defaultValue: 'gradient',
+      options: [
+        { label: 'Gradient', value: 'gradient' },
+        { label: 'Minimal', value: 'minimal' },
+        { label: 'Split', value: 'split' },
+      ],
+    },
+    {
       name: 'heading',
       type: 'text',
       required: true,

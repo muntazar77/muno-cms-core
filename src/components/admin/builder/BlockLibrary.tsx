@@ -47,7 +47,7 @@ export function BlockLibrary() {
                 .map((block) => (
                   <button
                     key={block.slug}
-                    onClick={() => addBlock(block.slug)}
+                    onClick={() => addBlock(block.slug, undefined, block.defaultData)}
                     className="flex flex-col items-center gap-1.5 p-2.5 rounded-lg border border-[var(--cms-border-subtle)] bg-[var(--cms-bg)] hover:border-blue-500/50 hover:shadow-sm transition-all text-center group cursor-pointer"
                   >
                     <div

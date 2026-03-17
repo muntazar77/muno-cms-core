@@ -5,6 +5,16 @@ export const TestimonialsBlock: Block = {
   labels: { singular: 'Testimonials', plural: 'Testimonials Blocks' },
   fields: [
     {
+      name: 'style',
+      type: 'select',
+      defaultValue: 'cards',
+      options: [
+        { label: 'Cards', value: 'cards' },
+        { label: 'Single', value: 'single' },
+        { label: 'Minimal', value: 'minimal' },
+      ],
+    },
+    {
       name: 'heading',
       type: 'text',
     },

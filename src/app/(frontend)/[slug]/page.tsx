@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getPage, getAllPageSlugs } from '@/lib/getPage'
+import { RenderBlocks } from '@/components/RenderBlocks'
+import { Header } from '@/components/frontend/Header'
+import { Footer } from '@/components/frontend/Footer'
+import type { Media } from '@/payload-types'
 
 export const revalidate = 60
-import { RenderBlocks } from '@/components/RenderBlocks'
-import type { Media } from '@/payload-types'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -35,9 +37,16 @@ export default async function DynamicPage({ params }: PageProps) {
 
   if (!page) notFound()
 
+  const headerVariant = page.branding?.headerVariant ?? 'default'
+  const footerVariant = page.branding?.footerVariant ?? 'default'
+
   return (
-    <article>
-      <RenderBlocks blocks={page.blocks} />
-    </article>
+    <>
+      <Header variant={headerVariant} />
+      <main>
+        <RenderBlocks blocks={page.blocks} />
+      </main>
+      <Footer variant={footerVariant} />
+    </>
   )
 }

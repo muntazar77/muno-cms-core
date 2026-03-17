@@ -5,6 +5,16 @@ export const StatisticsBlock: Block = {
   labels: { singular: 'Statistics', plural: 'Statistics Blocks' },
   fields: [
     {
+      name: 'style',
+      type: 'select',
+      defaultValue: 'dark',
+      options: [
+        { label: 'Dark', value: 'dark' },
+        { label: 'Light', value: 'light' },
+        { label: 'Branded', value: 'branded' },
+      ],
+    },
+    {
       name: 'heading',
       type: 'text',
     },

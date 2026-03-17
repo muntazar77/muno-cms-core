@@ -5,6 +5,15 @@ export const StepsTimelineBlock: Block = {
   labels: { singular: 'Steps Timeline', plural: 'Steps Timeline Blocks' },
   fields: [
     {
+      name: 'style',
+      type: 'select',
+      defaultValue: 'timeline',
+      options: [
+        { label: 'Timeline', value: 'timeline' },
+        { label: 'Cards', value: 'cards' },
+      ],
+    },
+    {
       name: 'heading',
       type: 'text',
     },

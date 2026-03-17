@@ -5,6 +5,15 @@ export const ServicesCardsBlock: Block = {
   labels: { singular: 'Services Cards', plural: 'Services Cards Blocks' },
   fields: [
     {
+      name: 'style',
+      type: 'select',
+      defaultValue: 'cards',
+      options: [
+        { label: 'Cards', value: 'cards' },
+        { label: 'List', value: 'list' },
+      ],
+    },
+    {
       name: 'heading',
       type: 'text',
     },

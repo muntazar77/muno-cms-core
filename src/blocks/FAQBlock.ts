@@ -5,6 +5,15 @@ export const FAQBlock: Block = {
   labels: { singular: 'FAQ', plural: 'FAQ Blocks' },
   fields: [
     {
+      name: 'style',
+      type: 'select',
+      defaultValue: 'accordion',
+      options: [
+        { label: 'Accordion', value: 'accordion' },
+        { label: 'Grid', value: 'grid' },
+      ],
+    },
+    {
       name: 'heading',
       type: 'text',
     },

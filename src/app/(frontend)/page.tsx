@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { getPage } from '@/lib/getPage'
 import { RenderBlocks } from '@/components/RenderBlocks'
+import { Header } from '@/components/frontend/Header'
+import { Footer } from '@/components/frontend/Footer'
 import type { Media } from '@/payload-types'
 import Link from 'next/link'
 
@@ -24,27 +26,36 @@ export default async function HomePage() {
 
   if (!page) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-white px-6 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-          Welcome to Muno CMS
-        </h1>
-        <p className="mt-4 text-lg text-gray-600">
-          Create a page with slug &quot;home&quot; in the{' '}
-          <Link
-            href="/admin/collections/pages/create"
-            className="font-medium text-gray-900 underline underline-offset-4 hover:text-gray-700"
-          >
-            admin panel
-          </Link>{' '}
-          to get started.
-        </p>
-      </div>
+      <>
+        <Header />
+        <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
+          <h1 className="fe-heading-display">Welcome to Muno CMS</h1>
+          <p className="fe-subheading mt-4">
+            Create a page with slug &quot;home&quot; in the{' '}
+            <Link
+              href="/admin/collections/pages/create"
+              className="font-medium text-[var(--fe-primary)] underline underline-offset-4 hover:text-[var(--fe-primary-dark)]"
+            >
+              admin panel
+            </Link>{' '}
+            to get started.
+          </p>
+        </div>
+        <Footer />
+      </>
     )
   }
 
+  const headerVariant = page.branding?.headerVariant ?? 'default'
+  const footerVariant = page.branding?.footerVariant ?? 'default'
+
   return (
-    <article>
-      <RenderBlocks blocks={page.blocks} />
-    </article>
+    <>
+      <Header variant={headerVariant} />
+      <main>
+        <RenderBlocks blocks={page.blocks} />
+      </main>
+      <Footer variant={footerVariant} />
+    </>
   )
 }

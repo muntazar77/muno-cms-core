@@ -5,6 +5,16 @@ export const FeaturesBlock: Block = {
   labels: { singular: 'Features', plural: 'Features Blocks' },
   fields: [
     {
+      name: 'style',
+      type: 'select',
+      defaultValue: 'cards',
+      options: [
+        { label: 'Cards', value: 'cards' },
+        { label: 'List', value: 'list' },
+        { label: 'Minimal', value: 'minimal' },
+      ],
+    },
+    {
       name: 'heading',
       type: 'text',
     },
