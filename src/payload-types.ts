@@ -988,17 +988,79 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface SiteSetting {
   id: number;
+  /**
+   * Displayed in the browser tab and as fallback when no logo is set
+   */
   siteName: string;
+  /**
+   * A short sentence describing what your site is about
+   */
+  description?: string | null;
+  /**
+   * Shown in the header. SVG or PNG with transparent background recommended.
+   */
   logo?: (number | null) | Media;
+  /**
+   * 32×32 or 64×64 PNG/ICO file
+   */
+  favicon?: (number | null) | Media;
   contact?: {
     email?: string | null;
     phone?: string | null;
+    address?: string | null;
   };
-  seo?: {
-    title?: string | null;
-    description?: string | null;
-    ogImage?: (number | null) | Media;
-  };
+  /**
+   * Hex color used for buttons, links, and accents. Example: #6366f1
+   */
+  primaryColor?: string | null;
+  /**
+   * Secondary accent color. Example: #f59e0b
+   */
+  accentColor?: string | null;
+  /**
+   * Font loaded from Google Fonts and applied site-wide
+   */
+  fontFamily?: ('inter' | 'geist' | 'poppins' | 'outfit' | 'plus-jakarta-sans' | 'dm-sans') | null;
+  /**
+   * Links displayed in the top navigation bar
+   */
+  headerNav?:
+    | {
+        label: string;
+        /**
+         * Use /slug for internal pages or https://... for external
+         */
+        url: string;
+        isButton?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Short text shown under the site name in the footer
+   */
+  footerTagline?: string | null;
+  /**
+   * Links displayed in the footer
+   */
+  footerNav?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Used as the fallback <title> tag. Keep under 60 characters.
+   */
+  seoTitle?: string | null;
+  /**
+   * Shown in search engine results. Keep between 150–160 characters.
+   */
+  seoDescription?: string | null;
+  /**
+   * Shown when the site is shared on social media. Recommended: 1200×630px
+   */
+  ogImage?: (number | null) | Media;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1008,20 +1070,38 @@ export interface SiteSetting {
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
   siteName?: T;
+  description?: T;
   logo?: T;
+  favicon?: T;
   contact?:
     | T
     | {
         email?: T;
         phone?: T;
+        address?: T;
       };
-  seo?:
+  primaryColor?: T;
+  accentColor?: T;
+  fontFamily?: T;
+  headerNav?:
     | T
     | {
-        title?: T;
-        description?: T;
-        ogImage?: T;
+        label?: T;
+        url?: T;
+        isButton?: T;
+        id?: T;
       };
+  footerTagline?: T;
+  footerNav?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  seoTitle?: T;
+  seoDescription?: T;
+  ogImage?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

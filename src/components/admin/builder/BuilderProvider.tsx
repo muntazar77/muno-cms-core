@@ -117,10 +117,13 @@ export function BuilderProvider({ children, pageId, initialBlocks }: BuilderProv
     isSaving: false,
   })
 
-  const addBlock = useCallback((blockType: string, index?: number, defaultData?: Record<string, unknown>) => {
-    const block: BuilderBlock = { id: generateId(), blockType, ...defaultData }
-    dispatch({ type: 'ADD_BLOCK', block, index })
-  }, [])
+  const addBlock = useCallback(
+    (blockType: string, index?: number, defaultData?: Record<string, unknown>) => {
+      const block: BuilderBlock = { id: generateId(), blockType, ...defaultData }
+      dispatch({ type: 'ADD_BLOCK', block, index })
+    },
+    [],
+  )
 
   const updateBlock = useCallback((id: string, data: Record<string, unknown>) => {
     dispatch({ type: 'UPDATE_BLOCK', id, data })
