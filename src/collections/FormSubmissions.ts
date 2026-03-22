@@ -1,8 +1,10 @@
 import type { CollectionConfig } from 'payload'
+import { access } from '@/access'
+import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
+import { siteIdField } from '@/fields/siteId'
 
 export const FormSubmissions: CollectionConfig = {
   slug: 'form-submissions',
-  trash: true,
   admin: {
     useAsTitle: 'id',
     defaultColumns: ['form', 'createdAt'],
@@ -14,17 +16,12 @@ export const FormSubmissions: CollectionConfig = {
       },
     },
   },
+  hooks: softDeleteHooks,
   access: {
-    read: ({ req: { user } }) => Boolean(user),
-    create: () => true, // Public can submit forms
-    update: ({ req: { user } }) => {
-      const u = user as { role?: string } | null
-      return u?.role === 'admin'
-    },
-    delete: ({ req: { user } }) => {
-      const u = user as { role?: string } | null
-      return u?.role === 'admin'
-    },
+    read: access.siteScoped,
+    create: access.anyone,
+    update: access.adminOnly,
+    delete: access.adminOnly,
   },
   fields: [
     {
@@ -41,5 +38,7 @@ export const FormSubmissions: CollectionConfig = {
         description: 'Submitted form data',
       },
     },
+    siteIdField,
+    ...softDeleteFields,
   ],
 }

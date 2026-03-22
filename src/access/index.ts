@@ -1,0 +1,126 @@
+/**
+ * Centralized Access Control
+ *
+ * Two roles:
+ *   - admin  → full access to everything
+ *   - client → can only access data that belongs to their siteId
+ *
+ * Usage in collections:
+ *   import { access } from '@/access'
+ *   access: {
+ *     read: access.siteScoped,
+ *     create: access.authenticated,
+ *     update: access.siteScoped,
+ *     delete: access.adminOnly,
+ *   }
+ */
+
+import type { Access, FieldAccess, Where } from 'payload'
+
+// ─── Helpers ─────────────────────────────────────────────────────────
+
+interface UserWithRole {
+  id: string
+  role?: string
+  siteId?: string
+}
+
+function getUser(req: { user?: unknown }): UserWithRole | null {
+  return (req.user as UserWithRole) ?? null
+}
+
+function isAdmin(user: UserWithRole | null): boolean {
+  return user?.role === 'admin'
+}
+
+// ─── Collection-Level Access ─────────────────────────────────────────
+
+/** Anyone (public) */
+const anyone: Access = () => true
+
+/** Authenticated users only */
+const authenticated: Access = ({ req }) => Boolean(getUser(req))
+
+/** Admin only */
+const adminOnly: Access = ({ req }) => {
+  const user = getUser(req)
+  return isAdmin(user)
+}
+
+/**
+ * Admin → full access
+ * Client → only items matching their siteId
+ * Anonymous → no access
+ */
+const siteScoped: Access = ({ req }) => {
+  const user = getUser(req)
+  if (!user) return false
+  if (isAdmin(user)) return true
+  if (!user.siteId) return false
+  return { siteId: { equals: user.siteId } }
+}
+
+/**
+ * Public read OR site-scoped:
+ * Admin → all
+ * Client → own site only
+ * Anonymous → only published items
+ */
+const publicOrSiteScoped: Access = ({ req }) => {
+  const user = getUser(req)
+  if (!user) {
+    const where: Where = { status: { equals: 'published' } }
+    return where
+  }
+  if (isAdmin(user)) return true
+  if (!user.siteId) return false
+  const where: Where = { siteId: { equals: user.siteId } }
+  return where
+}
+
+/**
+ * Public read with site scope (no status check):
+ * Admin → all
+ * Client → own site only
+ * Anonymous → all (public)
+ */
+const publicReadSiteScoped: Access = ({ req }) => {
+  const user = getUser(req)
+  if (!user) return true
+  if (isAdmin(user)) return true
+  if (!user.siteId) return false
+  return { siteId: { equals: user.siteId } }
+}
+
+// ─── Field-Level Access ──────────────────────────────────────────────
+
+/** Only admins can update this field */
+const adminFieldUpdate: FieldAccess = ({ req }) => {
+  const user = getUser(req)
+  return isAdmin(user)
+}
+
+// ─── Globals Access ──────────────────────────────────────────────────
+
+/** Read global: anyone. Update global: admin only. */
+const globalReadPublic: Access = () => true
+const globalUpdateAdmin: Access = ({ req }) => {
+  const user = getUser(req)
+  return isAdmin(user)
+}
+
+// ─── Exports ─────────────────────────────────────────────────────────
+
+export const access = {
+  anyone,
+  authenticated,
+  adminOnly,
+  siteScoped,
+  publicOrSiteScoped,
+  publicReadSiteScoped,
+  adminFieldUpdate,
+  globalReadPublic,
+  globalUpdateAdmin,
+}
+
+export type { UserWithRole }

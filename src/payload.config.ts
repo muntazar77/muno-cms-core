@@ -40,6 +40,11 @@ export default buildConfig({
           Component: '/components/admin/builder/BuilderPage',
           exact: true,
         },
+        trash: {
+          path: '/trash',
+          Component: '/components/admin/trash/TrashView',
+          exact: true,
+        },
       },
     },
   },

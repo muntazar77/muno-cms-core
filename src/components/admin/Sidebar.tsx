@@ -14,6 +14,7 @@ import {
   ClipboardList,
   Inbox,
   Settings,
+  Trash2,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth, useConfig } from '@payloadcms/ui'
@@ -193,6 +194,13 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
           icon={Settings}
           label="Site Settings"
           active={pathname.startsWith('/admin/globals/site-settings')}
+          collapsed={collapsed}
+        />
+        <NavLink
+          href="/admin/trash"
+          icon={Trash2}
+          label="Trash"
+          active={pathname === '/admin/trash'}
           collapsed={collapsed}
         />
       </nav>

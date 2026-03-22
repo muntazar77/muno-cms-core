@@ -15,6 +15,7 @@ export async function getPage(slug: string): Promise<Page | null> {
     where: {
       and: [
         { status: { equals: 'published' } },
+        { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
         {
           or: [{ slug: { equals: normalizedSlug } }, { slug: { equals: `/${normalizedSlug}` } }],
         },
@@ -33,7 +34,12 @@ export async function getAllPageSlugs(): Promise<string[]> {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'pages',
-    where: { status: { equals: 'published' } },
+    where: {
+      and: [
+        { status: { equals: 'published' } },
+        { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
+      ],
+    },
     limit: 1000,
     depth: 0,
     select: { slug: true },

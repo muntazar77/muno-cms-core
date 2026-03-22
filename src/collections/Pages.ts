@@ -15,10 +15,12 @@ import {
   PricingTableBlock,
   FAQBlock,
 } from '../blocks'
+import { access } from '@/access'
+import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
+import { siteIdField } from '@/fields/siteId'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
-  trash: true,
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt', 'createdAt'],
@@ -31,7 +33,9 @@ export const Pages: CollectionConfig = {
     },
   },
   hooks: {
+    ...softDeleteHooks,
     beforeChange: [
+      ...softDeleteHooks.beforeChange,
       ({ data }) => {
         if (data?.slug) {
           data.slug = data.slug.replace(/^\/+/, '')
@@ -41,16 +45,10 @@ export const Pages: CollectionConfig = {
     ],
   },
   access: {
-    read: ({ req: { user } }) => {
-      if (user) return true
-      return { status: { equals: 'published' } }
-    },
-    create: ({ req: { user } }) => Boolean(user),
-    update: ({ req: { user } }) => Boolean(user),
-    delete: ({ req: { user } }) => {
-      const u = user as { role?: string } | null
-      return u?.role === 'admin'
-    },
+    read: access.publicOrSiteScoped,
+    create: access.siteScoped,
+    update: access.siteScoped,
+    delete: access.siteScoped,
   },
   fields: [
     {
@@ -296,5 +294,7 @@ export const Pages: CollectionConfig = {
         condition: () => false,
       },
     },
+    siteIdField,
+    ...softDeleteFields,
   ],
 }

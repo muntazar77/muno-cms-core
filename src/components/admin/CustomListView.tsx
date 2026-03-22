@@ -311,7 +311,14 @@ function ActionMenu({
     label: string
     variant: 'default' | 'danger'
     action: () => Promise<void>
-  }>({ open: false, title: '', description: '', label: 'Confirm', variant: 'default', action: async () => {} })
+  }>({
+    open: false,
+    title: '',
+    description: '',
+    label: 'Confirm',
+    variant: 'default',
+    action: async () => {},
+  })
 
   function formatError(action: string, error: unknown) {
     const message = error instanceof Error ? error.message : ''
@@ -319,12 +326,7 @@ function ActionMenu({
   }
 
   function buildCollectionTrashWherePath() {
-    const query = new URLSearchParams()
-    query.set('trash', 'true')
-    query.set('limit', '0')
-    query.set('where[and][0][id][equals]', id)
-    query.set('where[and][1][deletedAt][exists]', 'true')
-    return `${apiRoute}/${slug}?${query.toString()}`
+    return `${apiRoute}/${slug}/${id}`
   }
 
   async function runAction(request: RequestInfo | URL, init: RequestInit) {
@@ -354,7 +356,7 @@ function ActionMenu({
           await runAction(`${apiRoute}/${slug}/${id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ deletedAt: new Date().toISOString() }),
+            body: JSON.stringify({ isDeleted: true }),
           })
           toast.success(`${singularLabel} moved to trash.`)
         } catch (error) {
@@ -377,10 +379,10 @@ function ActionMenu({
       action: async () => {
         try {
           setIsWorking(true)
-          await runAction(buildCollectionTrashWherePath(), {
+          await runAction(`${apiRoute}/${slug}/${id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ deletedAt: null }),
+            body: JSON.stringify({ isDeleted: false }),
           })
           toast.success(`${singularLabel} restored.`)
         } catch (error) {
@@ -403,7 +405,7 @@ function ActionMenu({
       action: async () => {
         try {
           setIsWorking(true)
-          await runAction(buildCollectionTrashWherePath(), { method: 'DELETE' })
+          await runAction(`${apiRoute}/${slug}/${id}`, { method: 'DELETE' })
           toast.success(`${singularLabel} permanently deleted.`)
         } catch (error) {
           toast.error(formatError('Unable to permanently delete document', error))
@@ -528,20 +530,16 @@ export default function CustomListView() {
   const pathParts = (pathname ?? '').split('/').filter(Boolean)
   const collectionsIdx = pathParts.lastIndexOf('collections')
   const slug = collectionsIdx !== -1 ? (pathParts[collectionsIdx + 1] ?? '') : ''
-  const isTrashView = pathParts.includes('trash')
+  const isTrashView = false // Trash is now centralized at /admin/trash
 
   const collectionConfig = config?.collections?.find((c) => c.slug === slug)
   const listCfg = LIST_VIEW_CONFIGS[slug]
 
   const hasCreatePermission = Boolean(user)
-  const canDelete = (user as { role?: string } | null)?.role === 'admin'
+  const canDelete = Boolean(user) // Any authenticated user can soft-delete
   const apiRoute = (config?.routes?.api as string | undefined) ?? '/api'
   const newDocURL = slug ? `/admin/collections/${slug}/create` : undefined
-  const trashURL = slug
-    ? isTrashView
-      ? `/admin/collections/${slug}`
-      : `/admin/collections/${slug}/trash`
-    : undefined
+  const trashURL = '/admin/trash' // Global trash page
 
   const docs = (data?.docs ?? []) as Record<string, unknown>[]
   const totalDocs = data?.totalDocs ?? 0

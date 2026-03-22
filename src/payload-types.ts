@@ -135,10 +135,13 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
-  role: 'admin' | 'editor' | 'user';
+  role: 'admin' | 'client';
+  /**
+   * The site this user belongs to.
+   */
+  siteId?: string | null;
   updatedAt: string;
   createdAt: string;
-  deletedAt?: string | null;
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -164,9 +167,15 @@ export interface Media {
   id: number;
   alt: string;
   caption?: string | null;
+  /**
+   * Site identifier this item belongs to.
+   */
+  siteId?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
-  deletedAt?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -431,9 +440,15 @@ export interface Page {
           }
       )[]
     | null;
+  /**
+   * Site identifier this item belongs to.
+   */
+  siteId?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
-  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -462,9 +477,15 @@ export interface Form {
       }[]
     | null;
   confirmationMessage?: string | null;
+  /**
+   * Site identifier this item belongs to.
+   */
+  siteId?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
-  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -485,9 +506,15 @@ export interface FormSubmission {
     | number
     | boolean
     | null;
+  /**
+   * Site identifier this item belongs to.
+   */
+  siteId?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
-  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -513,9 +540,15 @@ export interface Service {
     [k: string]: unknown;
   } | null;
   featuredImage?: (number | null) | Media;
+  /**
+   * Site identifier this item belongs to.
+   */
+  siteId?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
-  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -613,9 +646,9 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
+  siteId?: T;
   updatedAt?: T;
   createdAt?: T;
-  deletedAt?: T;
   email?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
@@ -638,9 +671,12 @@ export interface UsersSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  siteId?: T;
+  isDeleted?: T;
+  deletedAt?: T;
+  deletedBy?: T;
   updatedAt?: T;
   createdAt?: T;
-  deletedAt?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;
@@ -887,9 +923,12 @@ export interface PagesSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  siteId?: T;
+  isDeleted?: T;
+  deletedAt?: T;
+  deletedBy?: T;
   updatedAt?: T;
   createdAt?: T;
-  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -914,9 +953,12 @@ export interface FormsSelect<T extends boolean = true> {
         id?: T;
       };
   confirmationMessage?: T;
+  siteId?: T;
+  isDeleted?: T;
+  deletedAt?: T;
+  deletedBy?: T;
   updatedAt?: T;
   createdAt?: T;
-  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -925,9 +967,12 @@ export interface FormsSelect<T extends boolean = true> {
 export interface FormSubmissionsSelect<T extends boolean = true> {
   form?: T;
   data?: T;
+  siteId?: T;
+  isDeleted?: T;
+  deletedAt?: T;
+  deletedBy?: T;
   updatedAt?: T;
   createdAt?: T;
-  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -938,9 +983,12 @@ export interface ServicesSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   featuredImage?: T;
+  siteId?: T;
+  isDeleted?: T;
+  deletedAt?: T;
+  deletedBy?: T;
   updatedAt?: T;
   createdAt?: T;
-  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

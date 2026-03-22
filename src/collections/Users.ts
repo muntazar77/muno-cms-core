@@ -1,11 +1,11 @@
 import type { CollectionConfig } from 'payload'
+import { access } from '@/access'
 
 export const Users: CollectionConfig = {
   slug: 'users',
-  trash: true,
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'role', 'createdAt', 'updatedAt'],
+    defaultColumns: ['email', 'role', 'siteId', 'createdAt', 'updatedAt'],
     components: {
       views: {
         list: {
@@ -15,23 +15,38 @@ export const Users: CollectionConfig = {
     },
   },
   auth: true,
+  access: {
+    read: access.anyone,
+    create: access.adminOnly,
+    update: access.authenticated,
+    delete: access.adminOnly,
+  },
   fields: [
     {
       name: 'role',
       type: 'select',
       options: [
         { label: 'Admin', value: 'admin' },
-        { label: 'Editor', value: 'editor' },
-        { label: 'User', value: 'user' },
+        { label: 'Client', value: 'client' },
       ],
-      defaultValue: 'user',
+      defaultValue: 'client',
       required: true,
       saveToJWT: true,
       access: {
-        update: ({ req: { user } }) => {
-          const u = user as { role?: string } | null
-          return u?.role === 'admin'
-        },
+        update: access.adminFieldUpdate,
+      },
+    },
+    {
+      name: 'siteId',
+      type: 'text',
+      index: true,
+      saveToJWT: true,
+      admin: {
+        position: 'sidebar',
+        description: 'The site this user belongs to.',
+      },
+      access: {
+        update: access.adminFieldUpdate,
       },
     },
   ],
