@@ -5,16 +5,13 @@ import './styles.css'
 
 // Font URL map — loaded from Google Fonts when selected
 const FONT_URLS: Record<string, string> = {
-  poppins:
-    'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap',
-  outfit:
-    'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap',
+  poppins: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap',
+  outfit: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap',
   'plus-jakarta-sans':
     'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
   'dm-sans':
     'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap',
-  geist:
-    'https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap',
+  geist: 'https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap',
 }
 
 // CSS font-family stack per option

@@ -48,7 +48,12 @@ interface SiteDoc {
   twitterImage?: number | { id?: number | string; filename?: string | null } | null
   headerNav?: Array<{ id?: string; label?: string | null; url?: string | null }> | null
   footerLinks?: Array<{ id?: string; label?: string | null; url?: string | null }> | null
-  socialLinks?: Array<{ id?: string; platform?: string | null; label?: string | null; url?: string | null }> | null
+  socialLinks?: Array<{
+    id?: string
+    platform?: string | null
+    label?: string | null
+    url?: string | null
+  }> | null
   ctaLabel?: string | null
   ctaUrl?: string | null
   showSiteTitle?: boolean | null
@@ -179,7 +184,11 @@ async function getAuthedUser() {
   }
 }
 
-async function findSite(payload: Awaited<ReturnType<typeof getPayload>>, user: UserWithSite, siteId: string) {
+async function findSite(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  user: UserWithSite,
+  siteId: string,
+) {
   const result = await payload.find({
     collection: 'sites',
     depth: 1,
@@ -217,7 +226,10 @@ async function countDocuments(
   return result.totalDocs
 }
 
-async function renderSitesIndex(payload: Awaited<ReturnType<typeof getPayload>>, user: UserWithSite) {
+async function renderSitesIndex(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  user: UserWithSite,
+) {
   const sitesResult = await payload.find({
     collection: 'sites',
     depth: 0,
@@ -249,7 +261,8 @@ async function renderSitesIndex(payload: Awaited<ReturnType<typeof getPayload>>,
               </div>
               <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">All Sites</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
-                Navigate sites as products, not as generic settings documents. Each card opens a scoped workspace for pages, media, forms, services, and site settings.
+                Navigate sites as products, not as generic settings documents. Each card opens a
+                scoped workspace for pages, media, forms, services, and site settings.
               </p>
             </div>
 
@@ -273,9 +286,12 @@ async function renderSitesIndex(payload: Awaited<ReturnType<typeof getPayload>>,
                   <CardHeader className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <CardTitle className="text-xl text-white">{site.siteName || siteKey}</CardTitle>
+                        <CardTitle className="text-xl text-white">
+                          {site.siteName || siteKey}
+                        </CardTitle>
                         <CardDescription className="mt-2 text-sm leading-6 text-slate-400">
-                          {site.siteDescription || 'Site-specific content, settings, and navigation workspace.'}
+                          {site.siteDescription ||
+                            'Site-specific content, settings, and navigation workspace.'}
                         </CardDescription>
                       </div>
                       <Badge className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-200">
@@ -285,17 +301,29 @@ async function renderSitesIndex(payload: Awaited<ReturnType<typeof getPayload>>,
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="rounded-3xl border border-white/10 bg-white/3 p-4">
-                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Domain</div>
-                      <div className="mt-2 text-sm font-medium text-white">{getSiteDomain(site)}</div>
+                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        Domain
+                      </div>
+                      <div className="mt-2 text-sm font-medium text-white">
+                        {getSiteDomain(site)}
+                      </div>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="rounded-[20px] border border-white/10 bg-white/3 p-4">
-                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Total Pages</div>
-                        <div className="mt-2 text-2xl font-semibold text-white">{pageCountMap.get(siteKey) ?? 0}</div>
+                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                          Total Pages
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-white">
+                          {pageCountMap.get(siteKey) ?? 0}
+                        </div>
                       </div>
                       <div className="rounded-[20px] border border-white/10 bg-white/3 p-4">
-                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Updated</div>
-                        <div className="mt-2 text-sm font-medium text-white">{formatDate(site.updatedAt)}</div>
+                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                          Updated
+                        </div>
+                        <div className="mt-2 text-sm font-medium text-white">
+                          {formatDate(site.updatedAt)}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center justify-between text-sm font-medium text-slate-200">
@@ -358,7 +386,9 @@ async function renderSiteOverview(
                 <Globe className="size-3.5" />
                 Site Workspace
               </div>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">{site.siteName || siteId}</h1>
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+                {site.siteName || siteId}
+              </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
                 {site.siteDescription || 'Site-specific content and navigation live here.'}
               </p>
@@ -366,9 +396,15 @@ async function renderSiteOverview(
             </div>
 
             <div className="flex flex-wrap gap-2 text-xs text-slate-300">
-              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">{getSiteDomain(site)}</span>
-              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">{site.defaultLanguage || 'en'}</span>
-              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">{site.timezone || 'UTC'}</span>
+              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">
+                {getSiteDomain(site)}
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">
+                {site.defaultLanguage || 'en'}
+              </span>
+              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">
+                {site.timezone || 'UTC'}
+              </span>
             </div>
           </div>
         </div>
@@ -381,7 +417,9 @@ async function renderSiteOverview(
                 <Card className="rounded-3xl border-white/10 bg-slate-950/70 transition hover:-translate-y-0.5 hover:border-amber-400/30">
                   <CardContent className="flex items-center justify-between p-6">
                     <div>
-                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{metric.label}</div>
+                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        {metric.label}
+                      </div>
                       <div className="mt-2 text-3xl font-semibold text-white">{metric.value}</div>
                     </div>
                     <div className="flex size-12 items-center justify-center rounded-2xl border border-white/10 bg-white/4 text-amber-200">
@@ -398,22 +436,26 @@ async function renderSiteOverview(
           <Card className="rounded-[28px] border-white/10 bg-slate-950/70">
             <CardHeader>
               <CardTitle className="text-lg text-white">Recent Pages</CardTitle>
-              <CardDescription className="text-sm text-slate-400">Latest page updates in this site context.</CardDescription>
+              <CardDescription className="text-sm text-slate-400">
+                Latest page updates in this site context.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              {((recentPages.docs as unknown) as Array<Record<string, unknown>>).length === 0 ? (
+              {(recentPages.docs as unknown as Array<Record<string, unknown>>).length === 0 ? (
                 <div className="rounded-[22px] border border-dashed border-white/10 px-5 py-8 text-sm text-slate-400">
                   No pages yet. Start with a home page for this site.
                 </div>
               ) : (
-                ((recentPages.docs as unknown) as Array<Record<string, unknown>>).map((page) => (
+                (recentPages.docs as unknown as Array<Record<string, unknown>>).map((page) => (
                   <Link
                     key={String(page.id)}
                     href={`/admin/collections/pages/${String(page.id)}`}
                     className="flex items-center justify-between rounded-[22px] border border-white/10 bg-white/3 px-5 py-4 transition hover:border-amber-400/30 hover:bg-white/5"
                   >
                     <div>
-                      <div className="text-sm font-medium text-white">{String(page.title ?? 'Untitled page')}</div>
+                      <div className="text-sm font-medium text-white">
+                        {String(page.title ?? 'Untitled page')}
+                      </div>
                       <div className="mt-1 text-xs text-slate-400">/{String(page.slug ?? '')}</div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -432,7 +474,9 @@ async function renderSiteOverview(
             <Card className="rounded-[28px] border-white/10 bg-slate-950/70">
               <CardHeader>
                 <CardTitle className="text-lg text-white">Site Settings</CardTitle>
-                <CardDescription className="text-sm text-slate-400">Branding, SEO, and navigation for this site.</CardDescription>
+                <CardDescription className="text-sm text-slate-400">
+                  Branding, SEO, and navigation for this site.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Link href={navHref(siteId, 'settings')}>
@@ -446,7 +490,9 @@ async function renderSiteOverview(
             <Card className="rounded-[28px] border-white/10 bg-slate-950/70">
               <CardHeader>
                 <CardTitle className="text-lg text-white">Navigation Summary</CardTitle>
-                <CardDescription className="text-sm text-slate-400">Quick snapshot of the site-specific navigation setup.</CardDescription>
+                <CardDescription className="text-sm text-slate-400">
+                  Quick snapshot of the site-specific navigation setup.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-slate-300">
                 <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/3 px-4 py-3">
@@ -495,7 +541,7 @@ async function renderSection(
     },
   })
 
-  const docs = (result.docs as unknown) as Array<Record<string, unknown>>
+  const docs = result.docs as unknown as Array<Record<string, unknown>>
   const SectionIcon = configForSection.icon
 
   return (
@@ -508,8 +554,12 @@ async function renderSection(
                 <SectionIcon className="size-3.5" />
                 {configForSection.label}
               </div>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">{site.siteName || siteId}</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">{configForSection.description}</p>
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+                {site.siteName || siteId}
+              </h1>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
+                {configForSection.description}
+              </p>
               <ContextTabs siteId={siteId} activeSection={sectionKey} />
             </div>
 
@@ -541,7 +591,12 @@ async function renderSection(
                           {String(doc.title ?? doc.alt ?? doc.filename ?? 'Untitled')}
                         </CardTitle>
                         <CardDescription className="mt-2 text-sm leading-6 text-slate-400">
-                          {String(doc.slug ?? doc.mimeType ?? doc.confirmationMessage ?? configForSection.label)}
+                          {String(
+                            doc.slug ??
+                              doc.mimeType ??
+                              doc.confirmationMessage ??
+                              configForSection.label,
+                          )}
                         </CardDescription>
                       </div>
                       {'status' in doc ? (
@@ -552,7 +607,9 @@ async function renderSection(
                     </div>
                   </CardHeader>
                   <CardContent className="flex items-center justify-between">
-                    <span className="text-sm text-slate-300">Updated {formatDate(String(doc.updatedAt ?? doc.createdAt ?? ''))}</span>
+                    <span className="text-sm text-slate-300">
+                      Updated {formatDate(String(doc.updatedAt ?? doc.createdAt ?? ''))}
+                    </span>
                     <ArrowRight className="size-4 text-slate-400" />
                   </CardContent>
                 </Card>
@@ -586,7 +643,7 @@ async function renderSettings(
     },
   })
 
-  const mediaOptions = ((media.docs as unknown) as Array<Record<string, unknown>>).map((item) => ({
+  const mediaOptions = (media.docs as unknown as Array<Record<string, unknown>>).map((item) => ({
     id: String(item.id),
     label: String(item.alt ?? item.filename ?? `Media #${String(item.id)}`),
   }))
@@ -675,9 +732,7 @@ export default async function SiteAdminView({ params }: { params: { segments?: s
 
   const site = await findSite(payload, user, siteId)
   if (!site) {
-    return (
-      <div className="px-6 py-8 text-(--cms-text)">Site not found or access denied.</div>
-    )
+    return <div className="px-6 py-8 text-(--cms-text)">Site not found or access denied.</div>
   }
 
   if (section === 'settings') {

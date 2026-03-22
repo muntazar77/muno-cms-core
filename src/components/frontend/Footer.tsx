@@ -23,7 +23,11 @@ export async function Footer({ variant = 'default' }: FooterProps) {
   const footerLinks: NavLink[] = ((site?.footerLinks ?? []) as NavLink[]).filter(
     (item) => item.label && item.url,
   )
-  const socialLinks = (site?.socialLinks ?? []) as Array<{ platform?: string | null; label?: string | null; url?: string | null }>
+  const socialLinks = (site?.socialLinks ?? []) as Array<{
+    platform?: string | null
+    label?: string | null
+    url?: string | null
+  }>
   const year = new Date().getFullYear()
   const v = variant || 'default'
 
@@ -56,9 +60,7 @@ export async function Footer({ variant = 'default' }: FooterProps) {
       <footer className="fe-bg-gradient-subtle border-t border-[var(--fe-border-subtle)] py-12">
         <div className="mx-auto max-w-7xl px-6 text-center lg:px-8">
           <span className="text-lg font-bold text-(--fe-text-primary)">{siteName}</span>
-          {tagline && (
-            <p className="mt-2 text-sm text-(--fe-text-secondary)">{tagline}</p>
-          )}
+          {tagline && <p className="mt-2 text-sm text-(--fe-text-secondary)">{tagline}</p>}
           <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
             {links.map((link) => (
               <Link
@@ -73,7 +75,11 @@ export async function Footer({ variant = 'default' }: FooterProps) {
           {socialLinks.length > 0 && (
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
               {socialLinks.map((link) => (
-                <Link key={`${link.platform}-${link.url}`} href={link.url || '#'} className="rounded-full border border-(--fe-border-subtle) px-3 py-1.5 text-xs text-(--fe-text-secondary) transition-colors hover:text-(--fe-primary)">
+                <Link
+                  key={`${link.platform}-${link.url}`}
+                  href={link.url || '#'}
+                  className="rounded-full border border-(--fe-border-subtle) px-3 py-1.5 text-xs text-(--fe-text-secondary) transition-colors hover:text-(--fe-primary)"
+                >
                   {link.label || link.platform || 'Social'}
                 </Link>
               ))}
@@ -102,7 +108,9 @@ export async function Footer({ variant = 'default' }: FooterProps) {
                 </p>
               )}
               {footerNote && (
-                <p className="mt-3 text-sm leading-relaxed text-[var(--fe-text-on-dark-muted)]">{footerNote}</p>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--fe-text-on-dark-muted)]">
+                  {footerNote}
+                </p>
               )}
               {email && (
                 <a
@@ -142,7 +150,11 @@ export async function Footer({ variant = 'default' }: FooterProps) {
               {socialLinks.length > 0 && (
                 <div className="mt-6 flex flex-wrap gap-2">
                   {socialLinks.map((link) => (
-                    <Link key={`${link.platform}-${link.url}`} href={link.url || '#'} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[var(--fe-text-on-dark-secondary)] transition-colors hover:text-white">
+                    <Link
+                      key={`${link.platform}-${link.url}`}
+                      href={link.url || '#'}
+                      className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[var(--fe-text-on-dark-secondary)] transition-colors hover:text-white"
+                    >
                       {link.label || link.platform || 'Social'}
                     </Link>
                   ))}
@@ -171,7 +183,9 @@ export async function Footer({ variant = 'default' }: FooterProps) {
               <p className="mt-1 text-sm text-[var(--fe-text-on-dark-secondary)]">{tagline}</p>
             )}
             {footerNote && (
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--fe-text-on-dark-muted)]">{footerNote}</p>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--fe-text-on-dark-muted)]">
+                {footerNote}
+              </p>
             )}
             {(email || phone) && (
               <div className="mt-3 flex flex-col gap-1">
@@ -209,7 +223,11 @@ export async function Footer({ variant = 'default' }: FooterProps) {
         {socialLinks.length > 0 && (
           <div className="mt-6 flex flex-wrap gap-2">
             {socialLinks.map((link) => (
-              <Link key={`${link.platform}-${link.url}`} href={link.url || '#'} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[var(--fe-text-on-dark-secondary)] transition-colors hover:text-[var(--fe-text-on-dark)]">
+              <Link
+                key={`${link.platform}-${link.url}`}
+                href={link.url || '#'}
+                className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[var(--fe-text-on-dark-secondary)] transition-colors hover:text-[var(--fe-text-on-dark)]"
+              >
                 {link.label || link.platform || 'Social'}
               </Link>
             ))}

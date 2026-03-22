@@ -170,7 +170,9 @@ function EmailCellInline({ value, editURL }: { value: string; editURL: string })
 }
 
 function RoleBadge({ value }: { value: string }) {
-  const style = ROLE_VARIANT_CLASSES[value] ?? 'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] border-[var(--cms-border-subtle)]'
+  const style =
+    ROLE_VARIANT_CLASSES[value] ??
+    'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] border-[var(--cms-border-subtle)]'
   const label = value ? value.charAt(0).toUpperCase() + value.slice(1) : '—'
   return (
     <Badge

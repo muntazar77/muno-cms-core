@@ -65,7 +65,10 @@ export async function Header({ variant = 'default' }: HeaderProps) {
               </Link>
             ))}
             {utilityPills.map((pill) => (
-              <span key={pill} className="rounded-full border border-white/20 px-3 py-1 text-[11px] font-medium text-white/75">
+              <span
+                key={pill}
+                className="rounded-full border border-white/20 px-3 py-1 text-[11px] font-medium text-white/75"
+              >
                 {pill}
               </span>
             ))}
@@ -82,13 +85,20 @@ export async function Header({ variant = 'default' }: HeaderProps) {
 
   if (v === 'centered') {
     return (
-      <header className={cn('border-b border-[var(--fe-border-subtle)] bg-[var(--fe-surface-primary)] py-4', headerClassName)}>
+      <header
+        className={cn(
+          'border-b border-[var(--fe-border-subtle)] bg-[var(--fe-surface-primary)] py-4',
+          headerClassName,
+        )}
+      >
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             {logo?.url && (
               <Image src={logo.url} alt={siteName} width={32} height={32} className="h-8 w-auto" />
             )}
-            {showSiteTitle && <span className="text-lg font-bold text-[var(--fe-text-primary)]">{siteName}</span>}
+            {showSiteTitle && (
+              <span className="text-lg font-bold text-[var(--fe-text-primary)]">{siteName}</span>
+            )}
           </Link>
           <nav className="flex items-center gap-6">
             {links.map((link) => (
@@ -119,7 +129,11 @@ export async function Header({ variant = 'default' }: HeaderProps) {
             {logo?.url && (
               <Image src={logo.url} alt={siteName} width={24} height={24} className="h-6 w-auto" />
             )}
-            {showSiteTitle && <span className="text-sm font-semibold text-[var(--fe-text-primary)]">{siteName}</span>}
+            {showSiteTitle && (
+              <span className="text-sm font-semibold text-[var(--fe-text-primary)]">
+                {siteName}
+              </span>
+            )}
           </Link>
           <nav className="flex items-center gap-4">
             {links.map((link) => (
@@ -144,13 +158,20 @@ export async function Header({ variant = 'default' }: HeaderProps) {
 
   // Default variant
   return (
-    <header className={cn('border-b border-[var(--fe-border-subtle)] bg-[var(--fe-surface-primary)] py-4', headerClassName)}>
+    <header
+      className={cn(
+        'border-b border-[var(--fe-border-subtle)] bg-[var(--fe-surface-primary)] py-4',
+        headerClassName,
+      )}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2.5">
           {logo?.url && (
             <Image src={logo.url} alt={siteName} width={32} height={32} className="h-8 w-auto" />
           )}
-          {showSiteTitle && <span className="text-lg font-bold text-[var(--fe-text-primary)]">{siteName}</span>}
+          {showSiteTitle && (
+            <span className="text-lg font-bold text-[var(--fe-text-primary)]">{siteName}</span>
+          )}
         </Link>
         <nav className="hidden items-center gap-8 sm:flex">
           {links.map((link) => (
@@ -163,7 +184,10 @@ export async function Header({ variant = 'default' }: HeaderProps) {
             </Link>
           ))}
           {utilityPills.map((pill) => (
-            <span key={pill} className="rounded-full border border-[var(--fe-border-subtle)] px-3 py-1 text-[11px] font-medium text-[var(--fe-text-tertiary)]">
+            <span
+              key={pill}
+              className="rounded-full border border-[var(--fe-border-subtle)] px-3 py-1 text-[11px] font-medium text-[var(--fe-text-tertiary)]"
+            >
               {pill}
             </span>
           ))}

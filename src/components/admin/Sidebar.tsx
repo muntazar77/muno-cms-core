@@ -115,7 +115,9 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
 
   // Filter out Payload internal collections (prefixed with "payload-")
   const collections = (config?.collections ?? []).filter(
-    (col) => !col.slug.startsWith('payload-') && !['pages', 'media', 'forms', 'services', 'sites'].includes(col.slug),
+    (col) =>
+      !col.slug.startsWith('payload-') &&
+      !['pages', 'media', 'forms', 'services', 'sites'].includes(col.slug),
   )
 
   return (
