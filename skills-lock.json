@@ -2,9 +2,9 @@
   "version": 1,
   "skills": {
     "payload": {
-      "source": "payloadcms/payload",
+      "source": "payloadcms/skills",
       "sourceType": "github",
-      "computedHash": "72d39c67fd7f25ed377e273276b7262e60e874399f38846a374c482e4cf18403"
+      "computedHash": "868c518cec5efe3862accee8ef3751b72fac06d7e12a27c263dc17320f27b20c"
     },
     "web-component-design": {
       "source": "wshobson/agents",

@@ -132,7 +132,8 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     color: '#fb923c',
     defaultData: {
       heading: 'Our services',
-      subheading: 'We offer a comprehensive range of solutions to help your business grow and thrive.',
+      subheading:
+        'We offer a comprehensive range of solutions to help your business grow and thrive.',
       style: 'cards',
       services: [
         {
@@ -388,7 +389,8 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     color: '#a78bfa',
     defaultData: {
       heading: 'Get in touch',
-      description: 'Have a question or want to work together? Fill out the form below and we will get back to you as soon as possible.',
+      description:
+        'Have a question or want to work together? Fill out the form below and we will get back to you as soon as possible.',
     },
   },
   {
