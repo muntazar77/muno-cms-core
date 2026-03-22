@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    sites: Site;
     media: Media;
     pages: Page;
     forms: Form;
@@ -81,6 +82,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    sites: SitesSelect<false> | SitesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -95,12 +97,8 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {
-    'site-settings': SiteSetting;
-  };
-  globalsSelect: {
-    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
-  };
+  globals: {};
+  globalsSelect: {};
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -158,6 +156,81 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sites".
+ */
+export interface Site {
+  id: number;
+  siteName: string;
+  /**
+   * Stable site key used for permissions and content scoping.
+   */
+  siteId: string;
+  siteDescription?: string | null;
+  /**
+   * Primary domain, for example acme.com or acme.localhost.
+   */
+  domain?: string | null;
+  /**
+   * Optional short subdomain used for matching preview hosts.
+   */
+  subdomain?: string | null;
+  status: 'active' | 'draft' | 'maintenance';
+  defaultLanguage?: string | null;
+  /**
+   * IANA timezone string such as Europe/Paris or America/New_York.
+   */
+  timezone?: string | null;
+  logo?: (number | null) | Media;
+  favicon?: (number | null) | Media;
+  primaryColor?: string | null;
+  secondaryColor?: string | null;
+  fontFamily?: ('inter' | 'geist' | 'poppins' | 'outfit' | 'plus-jakarta-sans' | 'dm-sans') | null;
+  headerNav?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  ctaLabel?: string | null;
+  ctaUrl?: string | null;
+  showSiteTitle?: boolean | null;
+  showLanguageSwitcher?: boolean | null;
+  showThemeToggle?: boolean | null;
+  stickyHeader?: boolean | null;
+  footerLinks?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?:
+    | {
+        platform: string;
+        label?: string | null;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  showNewsletterSignup?: boolean | null;
+  footerTagline?: string | null;
+  footerNote?: string | null;
+  copyrightText?: string | null;
+  defaultMetaTitle?: string | null;
+  defaultMetaDescription?: string | null;
+  ogImage?: (number | null) | Media;
+  twitterImage?: (number | null) | Media;
+  allowIndexing?: boolean | null;
+  publicEmail?: string | null;
+  phone?: string | null;
+  whatsapp?: string | null;
+  address?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -579,6 +652,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'sites';
+        value: number | Site;
+      } | null)
+    | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
@@ -663,6 +740,68 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sites_select".
+ */
+export interface SitesSelect<T extends boolean = true> {
+  siteName?: T;
+  siteId?: T;
+  siteDescription?: T;
+  domain?: T;
+  subdomain?: T;
+  status?: T;
+  defaultLanguage?: T;
+  timezone?: T;
+  logo?: T;
+  favicon?: T;
+  primaryColor?: T;
+  secondaryColor?: T;
+  fontFamily?: T;
+  headerNav?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  ctaLabel?: T;
+  ctaUrl?: T;
+  showSiteTitle?: T;
+  showLanguageSwitcher?: T;
+  showThemeToggle?: T;
+  stickyHeader?: T;
+  footerLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  showNewsletterSignup?: T;
+  footerTagline?: T;
+  footerNote?: T;
+  copyrightText?: T;
+  defaultMetaTitle?: T;
+  defaultMetaDescription?: T;
+  ogImage?: T;
+  twitterImage?: T;
+  allowIndexing?: T;
+  publicEmail?: T;
+  phone?: T;
+  whatsapp?: T;
+  address?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1029,130 +1168,6 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "site-settings".
- */
-export interface SiteSetting {
-  id: number;
-  /**
-   * Displayed in the browser tab and as fallback when no logo is set
-   */
-  siteName: string;
-  /**
-   * A short sentence describing what your site is about
-   */
-  description?: string | null;
-  /**
-   * Shown in the header. SVG or PNG with transparent background recommended.
-   */
-  logo?: (number | null) | Media;
-  /**
-   * 32×32 or 64×64 PNG/ICO file
-   */
-  favicon?: (number | null) | Media;
-  contact?: {
-    email?: string | null;
-    phone?: string | null;
-    address?: string | null;
-  };
-  /**
-   * Hex color used for buttons, links, and accents. Example: #6366f1
-   */
-  primaryColor?: string | null;
-  /**
-   * Secondary accent color. Example: #f59e0b
-   */
-  accentColor?: string | null;
-  /**
-   * Font loaded from Google Fonts and applied site-wide
-   */
-  fontFamily?: ('inter' | 'geist' | 'poppins' | 'outfit' | 'plus-jakarta-sans' | 'dm-sans') | null;
-  /**
-   * Links displayed in the top navigation bar
-   */
-  headerNav?:
-    | {
-        label: string;
-        /**
-         * Use /slug for internal pages or https://... for external
-         */
-        url: string;
-        isButton?: boolean | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Short text shown under the site name in the footer
-   */
-  footerTagline?: string | null;
-  /**
-   * Links displayed in the footer
-   */
-  footerNav?:
-    | {
-        label: string;
-        url: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Used as the fallback <title> tag. Keep under 60 characters.
-   */
-  seoTitle?: string | null;
-  /**
-   * Shown in search engine results. Keep between 150–160 characters.
-   */
-  seoDescription?: string | null;
-  /**
-   * Shown when the site is shared on social media. Recommended: 1200×630px
-   */
-  ogImage?: (number | null) | Media;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "site-settings_select".
- */
-export interface SiteSettingsSelect<T extends boolean = true> {
-  siteName?: T;
-  description?: T;
-  logo?: T;
-  favicon?: T;
-  contact?:
-    | T
-    | {
-        email?: T;
-        phone?: T;
-        address?: T;
-      };
-  primaryColor?: T;
-  accentColor?: T;
-  fontFamily?: T;
-  headerNav?:
-    | T
-    | {
-        label?: T;
-        url?: T;
-        isButton?: T;
-        id?: T;
-      };
-  footerTagline?: T;
-  footerNav?:
-    | T
-    | {
-        label?: T;
-        url?: T;
-        id?: T;
-      };
-  seoTitle?: T;
-  seoDescription?: T;
-  ogImage?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

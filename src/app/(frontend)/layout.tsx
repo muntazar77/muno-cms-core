@@ -1,7 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getCurrentSite } from '@/lib/sites'
 import './styles.css'
 
 // Font URL map — loaded from Google Fonts when selected
@@ -30,13 +29,13 @@ const FONT_STACKS: Record<string, string> = {
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const payload = await getPayload({ config })
-    const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
-    const name = settings.siteName || 'Muno CMS'
-    const desc = settings.seoDescription || settings.description || 'Built with Muno CMS'
+    const site = await getCurrentSite(0)
+    const name = site?.siteName || 'Muno CMS'
+    const desc = site?.defaultMetaDescription || site?.siteDescription || 'Built with Muno CMS'
     return {
-      title: { default: settings.seoTitle || name, template: `%s | ${name}` },
+      title: { default: site?.defaultMetaTitle || name, template: `%s | ${name}` },
       description: desc,
+      robots: site?.allowIndexing === false ? { index: false, follow: false } : undefined,
     }
   } catch {
     return {
@@ -48,13 +47,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
   let primaryColor = '#6366f1'
+  let secondaryColor = '#0f172a'
   let fontFamily = 'inter'
 
   try {
-    const payload = await getPayload({ config })
-    const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
-    if (settings.primaryColor) primaryColor = settings.primaryColor
-    if (settings.fontFamily) fontFamily = settings.fontFamily as string
+    const site = await getCurrentSite(0)
+    if (site?.primaryColor) primaryColor = site.primaryColor
+    if (site?.secondaryColor) secondaryColor = site.secondaryColor
+    if (site?.fontFamily) fontFamily = site.fontFamily as string
   } catch {
     // fallback to defaults
   }
@@ -66,6 +66,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
   const themeCSS = `
     :root {
       --fe-primary: ${primaryColor};
+      --fe-secondary: ${secondaryColor};
       --font-sans: ${fontStack};
     }
     body { font-family: ${fontStack}; }

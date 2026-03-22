@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { getPage, getAllPageSlugs } from '@/lib/getPage'
+import { getPage } from '@/lib/getPage'
 import { RenderBlocks } from '@/components/RenderBlocks'
 import { Header } from '@/components/frontend/Header'
 import { Footer } from '@/components/frontend/Footer'
@@ -13,8 +13,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const slugs = await getAllPageSlugs()
-  return slugs.filter((slug) => slug !== 'home').map((slug) => ({ slug }))
+  return []
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

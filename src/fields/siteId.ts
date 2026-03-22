@@ -16,6 +16,17 @@ export const siteIdField: Field = {
   hooks: {
     beforeValidate: [
       ({ value, req }) => {
+        const requestedSiteId =
+          typeof req?.query?.siteId === 'string'
+            ? req.query.siteId
+            : Array.isArray(req?.query?.siteId)
+              ? req.query.siteId[0]
+              : undefined
+
+        if (!value && requestedSiteId) {
+          return requestedSiteId
+        }
+
         // Auto-populate from the current user if not set
         if (!value && req.user) {
           const user = req.user as { siteId?: string }

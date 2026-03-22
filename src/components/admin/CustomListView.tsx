@@ -135,9 +135,8 @@ const STATUS_VARIANT_CLASSES: Record<string, string> = {
 
 const ROLE_VARIANT_CLASSES: Record<string, string> = {
   admin: 'bg-[var(--cms-info-soft)] text-[var(--cms-info-text)] border-[var(--cms-info-soft)]',
-  editor:
+  client:
     'bg-[var(--cms-warning-soft)] text-[var(--cms-warning-text)] border-[var(--cms-warning-soft)]',
-  user: 'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] border-[var(--cms-border-subtle)]',
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -171,7 +170,7 @@ function EmailCellInline({ value, editURL }: { value: string; editURL: string })
 }
 
 function RoleBadge({ value }: { value: string }) {
-  const style = ROLE_VARIANT_CLASSES[value] ?? ROLE_VARIANT_CLASSES.user
+  const style = ROLE_VARIANT_CLASSES[value] ?? 'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] border-[var(--cms-border-subtle)]'
   const label = value ? value.charAt(0).toUpperCase() + value.slice(1) : '—'
   return (
     <Badge

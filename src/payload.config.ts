@@ -11,7 +11,7 @@ import { Pages } from './collections/Pages'
 import { Forms } from './collections/Forms'
 import { FormSubmissions } from './collections/FormSubmissions'
 import { Services } from './collections/Services'
-import { SiteSettings } from './globals/SiteSettings'
+import { Sites } from './collections/Sites'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -45,10 +45,25 @@ export default buildConfig({
           Component: '/components/admin/trash/TrashView',
           exact: true,
         },
+        sites: {
+          path: '/sites',
+          Component: '/components/admin/sites/SiteAdminView',
+          exact: true,
+        },
+        siteContext: {
+          path: '/sites/:siteId',
+          Component: '/components/admin/sites/SiteAdminView',
+          exact: true,
+        },
+        siteSection: {
+          path: '/sites/:siteId/:section',
+          Component: '/components/admin/sites/SiteAdminView',
+          exact: true,
+        },
       },
     },
   },
-  collections: [Users, Media, Pages, Forms, FormSubmissions, Services],
+  collections: [Users, Sites, Media, Pages, Forms, FormSubmissions, Services],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -61,5 +76,4 @@ export default buildConfig({
   }),
   sharp,
   plugins: [],
-  globals: [SiteSettings],
 })

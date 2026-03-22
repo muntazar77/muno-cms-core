@@ -15,6 +15,9 @@ import {
   Inbox,
   Settings,
   Trash2,
+  Globe,
+  PanelTop,
+  Mail,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth, useConfig } from '@payloadcms/ui'
@@ -27,6 +30,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 // Map collection slugs → icons. Falls back to LayoutDashboard.
 const COLLECTION_ICONS: Record<string, LucideIcon> = {
   users: Users,
+  sites: Globe,
   media: ImageIcon,
   pages: FileText,
   services: Briefcase,
@@ -58,7 +62,7 @@ function NavLink({
         collapsed && 'justify-center px-2',
       )}
     >
-      <Icon className={cn('shrink-0', collapsed ? 'size-[18px]' : 'size-[16px]')} />
+      <Icon className={cn('shrink-0', collapsed ? 'size-4.5' : 'size-4')} />
       <AnimatePresence initial={false}>
         {!collapsed && (
           <motion.span
@@ -93,21 +97,38 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
   const { user, logOut } = useAuth()
   const { config } = useConfig()
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : 'AD'
+  const userRole = user && 'role' in user ? String(user.role ?? '') : ''
+  const userSiteId = user && 'siteId' in user ? String(user.siteId ?? '') : ''
+  const isAdmin = userRole === 'admin'
+  const siteRouteMatch = pathname?.match(/^\/admin\/sites\/([^/]+)/)
+  const activeSiteId = siteRouteMatch?.[1] ?? (!isAdmin ? userSiteId : '')
+  const siteContextLinks = activeSiteId
+    ? [
+        { href: `/admin/sites/${activeSiteId}`, label: 'Overview', icon: LayoutDashboard },
+        { href: `/admin/sites/${activeSiteId}/pages`, label: 'Pages', icon: FileText },
+        { href: `/admin/sites/${activeSiteId}/media`, label: 'Media', icon: ImageIcon },
+        { href: `/admin/sites/${activeSiteId}/forms`, label: 'Forms', icon: Mail },
+        { href: `/admin/sites/${activeSiteId}/services`, label: 'Services', icon: Briefcase },
+        { href: `/admin/sites/${activeSiteId}/settings`, label: 'Site Settings', icon: Settings },
+      ]
+    : []
 
   // Filter out Payload internal collections (prefixed with "payload-")
-  const collections = (config?.collections ?? []).filter((col) => !col.slug.startsWith('payload-'))
+  const collections = (config?.collections ?? []).filter(
+    (col) => !col.slug.startsWith('payload-') && !['pages', 'media', 'forms', 'services', 'sites'].includes(col.slug),
+  )
 
   return (
     <div className="flex h-full flex-col border-r border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-950">
       {/* Header */}
       <div
         className={cn(
-          'flex h-[52px] shrink-0 items-center border-b border-gray-100 dark:border-gray-800',
+          'flex h-13 shrink-0 items-center border-b border-gray-100 dark:border-gray-800',
           collapsed ? 'justify-center gap-0 px-2' : 'gap-2.5 px-3',
         )}
       >
         <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white">
-          <LayoutDashboard className="size-[15px]" />
+          <LayoutDashboard className="size-3.75" />
         </div>
         <AnimatePresence initial={false}>
           {!collapsed && (
@@ -135,9 +156,9 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {collapsed ? (
-                <PanelLeftOpen className="size-[15px]" />
+                <PanelLeftOpen className="size-3.75" />
               ) : (
-                <PanelLeftClose className="size-[15px]" />
+                <PanelLeftClose className="size-3.75" />
               )}
             </button>
           </TooltipTrigger>
@@ -163,6 +184,33 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
           active={pathname === '/admin'}
           collapsed={collapsed}
         />
+
+        {isAdmin && (
+          <NavLink
+            href="/admin/sites"
+            icon={Globe}
+            label="All Sites"
+            active={pathname === '/admin/sites'}
+            collapsed={collapsed}
+          />
+        )}
+
+        {siteContextLinks.length > 0 && !collapsed && (
+          <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+            {isAdmin ? 'Site Context' : 'My Site'}
+          </p>
+        )}
+
+        {siteContextLinks.map((link) => (
+          <NavLink
+            key={link.href}
+            href={link.href}
+            icon={link.icon}
+            label={link.label}
+            active={pathname === link.href || Boolean(pathname?.startsWith(link.href + '/'))}
+            collapsed={collapsed}
+          />
+        ))}
 
         {/* Collections — auto-generated from config */}
         {collections.map((col) => {
@@ -190,10 +238,10 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
           </p>
         )}
         <NavLink
-          href="/admin/globals/site-settings"
-          icon={Settings}
-          label="Site Settings"
-          active={pathname.startsWith('/admin/globals/site-settings')}
+          href="/admin/collections/users"
+          icon={Users}
+          label="Users"
+          active={pathname.startsWith('/admin/collections/users')}
           collapsed={collapsed}
         />
         <NavLink
@@ -241,7 +289,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                 title="Log out"
                 className="flex size-7 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:text-gray-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
-                <LogOut className="size-[14px]" />
+                <LogOut className="size-3.5" />
                 <span className="sr-only">Log out</span>
               </button>
             </motion.div>

@@ -1,6 +1,8 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import type { Where } from 'payload'
 import type { Page } from '@/payload-types'
+import { getCurrentSite } from '@/lib/sites'
 
 /**
  * Fetch a published page by slug from Payload CMS.
@@ -9,18 +11,21 @@ import type { Page } from '@/payload-types'
  */
 export async function getPage(slug: string): Promise<Page | null> {
   const payload = await getPayload({ config })
+  const currentSite = await getCurrentSite(0)
   const normalizedSlug = slug.replace(/^\/+/, '')
+  const where: Where = {
+    and: [
+      { status: { equals: 'published' } },
+      { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
+      {
+        or: [{ slug: { equals: normalizedSlug } }, { slug: { equals: `/${normalizedSlug}` } }],
+      },
+      ...(currentSite?.siteId ? [{ siteId: { equals: currentSite.siteId } }] : []),
+    ],
+  }
   const result = await payload.find({
     collection: 'pages',
-    where: {
-      and: [
-        { status: { equals: 'published' } },
-        { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
-        {
-          or: [{ slug: { equals: normalizedSlug } }, { slug: { equals: `/${normalizedSlug}` } }],
-        },
-      ],
-    },
+    where,
     limit: 1,
     depth: 2,
   })
@@ -32,12 +37,14 @@ export async function getPage(slug: string): Promise<Page | null> {
  */
 export async function getAllPageSlugs(): Promise<string[]> {
   const payload = await getPayload({ config })
+  const currentSite = await getCurrentSite(0)
   const result = await payload.find({
     collection: 'pages',
     where: {
       and: [
         { status: { equals: 'published' } },
         { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
+        ...(currentSite?.siteId ? [{ siteId: { equals: currentSite.siteId } }] : []),
       ],
     },
     limit: 1000,
