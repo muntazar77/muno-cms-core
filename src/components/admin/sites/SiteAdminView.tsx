@@ -262,9 +262,9 @@ async function renderSitesIndex(payload: ListViewServerProps['payload'], user: U
   const pageCountMap = new Map(pageCounts)
 
   return (
-    <div className="min-h-screen bg-(--cms-bg-elevated) px-6 py-8 text-(--cms-text)">
-      <div className="mx-auto max-w-7xl">
-        <div className="rounded-3xl border border-(--cms-card-border) bg-(--cms-card-bg) p-8 shadow-(--cms-card-shadow)">
+    <div className="min-h-screen bg-(--cms-bg-elevated) px-4 py-6 text-(--cms-text) sm:px-6 sm:py-8">
+      <div className="mx-auto w-full max-w-full">
+        <div className="rounded-2xl border border-(--cms-card-border) bg-(--cms-card-bg) p-6 shadow-(--cms-card-shadow) sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-(--cms-primary-soft) bg-(--cms-primary-soft) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--cms-primary-text)">
@@ -286,7 +286,7 @@ async function renderSitesIndex(payload: ListViewServerProps['payload'], user: U
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-8 grid gap-6 md:grid-cols-4 xl:grid-cols-4">
           {sites.map((site) => {
             const siteHref = navHref(String(site.id), 'pages')
             const status = site.status ?? 'draft'
@@ -389,11 +389,11 @@ async function renderSection(
   const isPagesSection = sectionKey === 'pages'
 
   return (
-    <div className="min-h-screen bg-(--cms-bg-elevated) px-6 py-8 text-(--cms-text)">
-      <div className="mx-auto max-w-7xl">
-        <div className="rounded-3xl border border-(--cms-card-border) bg-(--cms-card-bg) p-8 shadow-(--cms-card-shadow)">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
+    <div className="min-h-screen bg-(--cms-bg-elevated) px-4 py-6 text-(--cms-text) sm:px-6 sm:py-8">
+      <div className="mx-auto w-full max-w-full">
+      <div className="rounded-2xl border border-(--cms-card-border) bg-(--cms-card-bg) p-6 shadow-(--cms-card-shadow) sm:p-8">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-(--cms-primary-soft) bg-(--cms-primary-soft) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--cms-primary-text)">
                 <SectionIcon className="size-3.5" />
                 {configForSection.label}

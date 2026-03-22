@@ -285,33 +285,33 @@ export default function SiteSettingsEditor({ mediaOptions, site }: SiteSettingsE
   }
 
   return (
-    <div className="min-h-screen bg-[var(--cms-bg-elevated)] px-6 py-8 text-[var(--cms-text)]">
-      <div className="mx-auto max-w-7xl">
-        <div className="rounded-[28px] border border-[var(--cms-card-border)] bg-[var(--cms-card-bg)] p-6 shadow-[var(--cms-card-shadow)] md:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--cms-primary-soft)] bg-[var(--cms-primary-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--cms-primary-text)]">
-                <ShieldCheck className="size-3.5" />
+    <div className="min-h-screen bg-[var(--cms-bg-elevated)] px-4 py-12 text-[var(--cms-text)] sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto w-full">
+        <div className="rounded-[28px] border border-[var(--cms-card-border)] bg-[var(--cms-card-bg)] p-8 shadow-[var(--cms-card-shadow)] sm:p-10 md:p-12 lg:p-14">
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--cms-primary-soft)] bg-[var(--cms-primary-soft)] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[var(--cms-primary-text)]">
+                <ShieldCheck className="size-4" />
                 Site Context
               </div>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--cms-text)] md:text-4xl">
+              <h1 className="mt-7 text-4xl font-bold tracking-tight text-[var(--cms-text)] sm:text-5xl md:text-5xl">
                 {formState.siteName}
               </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--cms-text-secondary)] md:text-base">
+              <p className="mt-5 max-w-4xl text-base leading-8 text-[var(--cms-text-secondary)] sm:text-lg sm:leading-9">
                 Premium site settings for {formState.siteId}. Update branding, navigation, metadata,
                 and contact details without leaving the Payload admin shell.
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 md:items-end">
-              <div className="flex flex-wrap gap-2 text-xs text-[var(--cms-text-secondary)]">
-                <span className="rounded-full border border-[var(--cms-border)] bg-[var(--cms-bg-elevated)] px-3 py-1.5">
+            <div className="flex flex-1 flex-col gap-5 sm:gap-6 md:items-end">
+              <div className="flex flex-wrap gap-3 text-sm text-[var(--cms-text-secondary)]">
+                <span className="rounded-full border border-[var(--cms-border)] bg-[var(--cms-bg-elevated)] px-4 py-2.5 font-medium">
                   {formState.domain || `${formState.subdomain || 'draft'}.localhost`}
                 </span>
-                <span className="rounded-full border border-[var(--cms-border)] bg-[var(--cms-bg-elevated)] px-3 py-1.5">
+                <span className="rounded-full border border-[var(--cms-border)] bg-[var(--cms-bg-elevated)] px-4 py-2.5 font-medium">
                   {formState.timezone || 'UTC'}
                 </span>
-                <span className="rounded-full border border-[var(--cms-warning-soft)] bg-[var(--cms-warning-soft)] px-3 py-1.5 text-[var(--cms-warning-text)]">
+                <span className="rounded-full border border-[var(--cms-warning-soft)] bg-[var(--cms-warning-soft)] px-4 py-2.5 font-medium text-[var(--cms-warning-text)]">
                   {formState.status}
                 </span>
               </div>
@@ -319,12 +319,12 @@ export default function SiteSettingsEditor({ mediaOptions, site }: SiteSettingsE
                 type="button"
                 onClick={handleSave}
                 disabled={isSaving}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--cms-primary)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--cms-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex min-h-13 items-center justify-center gap-2 rounded-xl bg-[var(--cms-primary)] px-7 text-base font-semibold text-white transition hover:bg-[var(--cms-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-14 md:min-h-15"
               >
                 {isSaving ? (
-                  <ChevronRight className="size-4 animate-pulse" />
+                  <ChevronRight className="size-5 animate-pulse" />
                 ) : (
-                  <Check className="size-4" />
+                  <Check className="size-5" />
                 )}
                 {isSaving ? 'Saving...' : 'Save changes'}
               </button>
