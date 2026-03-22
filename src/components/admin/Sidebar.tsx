@@ -100,14 +100,14 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
   const userRole = user && 'role' in user ? String(user.role ?? '') : ''
   const isAdmin = userRole === 'admin'
   const siteRouteMatch = pathname?.match(/^\/admin\/collections\/sites\/([^/?#]+)/)
-  const activeSiteDocID = siteRouteMatch?.[1] ?? ''
+  const matchedSiteSegment = siteRouteMatch?.[1] ?? ''
+  const activeSiteDocID = ['create', 'versions', 'version', 'api', 'preview'].includes(
+    matchedSiteSegment,
+  )
+    ? ''
+    : matchedSiteSegment
   const siteContextLinks = activeSiteDocID
     ? [
-        {
-          href: `/admin/collections/sites/${activeSiteDocID}`,
-          label: 'Overview',
-          icon: LayoutDashboard,
-        },
         {
           href: `/admin/collections/sites/${activeSiteDocID}/pages`,
           label: 'Pages',
@@ -215,7 +215,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
             href="/admin/collections/sites"
             icon={Globe}
             label="All Sites"
-            active={pathname === '/admin/collections/sites'}
+            active={Boolean(pathname?.startsWith('/admin/collections/sites'))}
             collapsed={collapsed}
           />
         )}

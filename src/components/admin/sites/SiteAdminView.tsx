@@ -6,9 +6,7 @@ import {
   Briefcase,
   FileText,
   FolderKanban,
-  Globe,
   Image as ImageIcon,
-  LayoutDashboard,
   Mail,
   Settings2,
 } from 'lucide-react'
@@ -85,7 +83,7 @@ const sectionConfigs: Record<string, SectionConfig> = {
     label: 'Pages',
     description: 'Create and edit site-specific pages and landing experiences.',
     collection: 'pages',
-    createHref: (siteId) => `/admin/collections/pages/create?siteId=${siteId}`,
+    createHref: (siteId) => `/admin/collections/pages/create?siteId=${encodeURIComponent(siteId)}`,
     editHref: (docId) => `/admin/collections/pages/${docId}`,
     icon: FileText,
   },
@@ -93,7 +91,7 @@ const sectionConfigs: Record<string, SectionConfig> = {
     label: 'Media',
     description: 'Manage brand assets, uploads, and reusable visuals for this site.',
     collection: 'media',
-    createHref: (siteId) => `/admin/collections/media/create?siteId=${siteId}`,
+    createHref: (siteId) => `/admin/collections/media/create?siteId=${encodeURIComponent(siteId)}`,
     editHref: (docId) => `/admin/collections/media/${docId}`,
     icon: ImageIcon,
   },
@@ -101,7 +99,7 @@ const sectionConfigs: Record<string, SectionConfig> = {
     label: 'Forms',
     description: 'Maintain conversion and contact forms tied to this site.',
     collection: 'forms',
-    createHref: (siteId) => `/admin/collections/forms/create?siteId=${siteId}`,
+    createHref: (siteId) => `/admin/collections/forms/create?siteId=${encodeURIComponent(siteId)}`,
     editHref: (docId) => `/admin/collections/forms/${docId}`,
     icon: Mail,
   },
@@ -109,10 +107,22 @@ const sectionConfigs: Record<string, SectionConfig> = {
     label: 'Services',
     description: 'Organize service catalog entries and site-specific offerings.',
     collection: 'services',
-    createHref: (siteId) => `/admin/collections/services/create?siteId=${siteId}`,
+    createHref: (siteId) =>
+      `/admin/collections/services/create?siteId=${encodeURIComponent(siteId)}`,
     editHref: (docId) => `/admin/collections/services/${docId}`,
     icon: Briefcase,
   },
+}
+
+const siteStatusBadgeClasses: Record<string, string> = {
+  active: 'border-(--cms-success-soft) bg-(--cms-success-soft) text-(--cms-success-text)',
+  draft: 'border-(--cms-warning-soft) bg-(--cms-warning-soft) text-(--cms-warning-text)',
+  maintenance: 'border-(--cms-danger-soft) bg-(--cms-danger-soft) text-(--cms-danger-text)',
+}
+
+const pageStatusBadgeClasses: Record<string, string> = {
+  published: 'border-(--cms-success-soft) bg-(--cms-success-soft) text-(--cms-success-text)',
+  draft: 'border-(--cms-warning-soft) bg-(--cms-warning-soft) text-(--cms-warning-text)',
 }
 
 function isAdmin(user: UserWithSite | null | undefined): boolean {
@@ -134,25 +144,28 @@ function toRelationshipId(value: SiteDoc['logo']): string {
   return String(value)
 }
 
-function navHref(siteDocID: string, section?: string): string {
-  return section
-    ? `/admin/collections/sites/${siteDocID}/${section}`
-    : `/admin/collections/sites/${siteDocID}`
+function navHref(siteDocID: string, section: keyof typeof sectionConfigs | 'settings'): string {
+  return `/admin/collections/sites/${siteDocID}/${section}`
 }
 
-function resolveSection(routeSegments: string[] = [], docID: string): string | undefined {
+function resolveSection(
+  routeSegments: string[] = [],
+  docID: string,
+): keyof typeof sectionConfigs | 'settings' | undefined {
   const last = routeSegments[routeSegments.length - 1]
 
   if (!last) return undefined
   if (last === docID) return undefined
   if (last === 'collections' || last === 'sites') return undefined
 
-  return last
+  if (last === 'settings') return 'settings'
+  if (last in sectionConfigs) return last as keyof typeof sectionConfigs
+
+  return undefined
 }
 
 function ContextTabs({ siteDocID, activeSection }: { siteDocID: string; activeSection?: string }) {
   const tabs = [
-    { key: 'overview', label: 'Overview', href: navHref(siteDocID), icon: LayoutDashboard },
     { key: 'pages', label: 'Pages', href: navHref(siteDocID, 'pages'), icon: FileText },
     { key: 'media', label: 'Media', href: navHref(siteDocID, 'media'), icon: ImageIcon },
     { key: 'forms', label: 'Forms', href: navHref(siteDocID, 'forms'), icon: Mail },
@@ -163,16 +176,16 @@ function ContextTabs({ siteDocID, activeSection }: { siteDocID: string; activeSe
   return (
     <div className="mt-6 flex flex-wrap gap-2">
       {tabs.map(({ key, label, href, icon: Icon }) => {
-        const active = (activeSection ?? 'overview') === key
+        const active = (activeSection ?? 'pages') === key
         return (
           <Link
             key={key}
             href={href}
             className={cn(
-              'inline-flex min-h-11 items-center gap-2 rounded-2xl border px-4 text-sm font-medium transition',
+              'inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-medium transition',
               active
-                ? 'border-amber-400/40 bg-amber-400/10 text-amber-100'
-                : 'border-white/10 bg-white/4 text-slate-300 hover:bg-white/[0.07] hover:text-white',
+                ? 'border-(--cms-primary) bg-(--cms-primary-soft) text-(--cms-primary-text)'
+                : 'border-(--cms-border) bg-(--cms-bg) text-(--cms-text-secondary) hover:bg-(--cms-bg-muted) hover:text-(--cms-text)',
             )}
           >
             <Icon className="size-4" />
@@ -249,24 +262,24 @@ async function renderSitesIndex(payload: ListViewServerProps['payload'], user: U
   const pageCountMap = new Map(pageCounts)
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(245,158,11,0.1),transparent_24%),linear-gradient(180deg,#020617_0%,#0f172a_46%,#111827_100%)] px-6 py-8 text-white">
+    <div className="min-h-screen bg-(--cms-bg-elevated) px-6 py-8 text-(--cms-text)">
       <div className="mx-auto max-w-7xl">
-        <div className="rounded-4xl border border-white/10 bg-white/4 p-8 shadow-[0_24px_120px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+        <div className="rounded-3xl border border-(--cms-card-border) bg-(--cms-card-bg) p-8 shadow-(--cms-card-shadow)">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-200">
+              <div className="inline-flex items-center gap-2 rounded-full border border-(--cms-primary-soft) bg-(--cms-primary-soft) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--cms-primary-text)">
                 <FolderKanban className="size-3.5" />
                 Multi-Site Workspace
               </div>
               <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">All Sites</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-(--cms-text-secondary) md:text-base">
                 Navigate sites as products, not as generic settings documents. Each card opens a
                 scoped workspace for pages, media, forms, services, and site settings.
               </p>
             </div>
 
             <Link href="/admin/collections/sites/create">
-              <Button className="h-11 rounded-2xl bg-amber-400 px-5 text-sm font-semibold text-slate-950 hover:bg-amber-300">
+              <Button className="h-11 rounded-xl bg-(--cms-primary) px-5 text-sm font-semibold text-white hover:bg-(--cms-primary-hover)">
                 Create site
               </Button>
             </Link>
@@ -275,54 +288,62 @@ async function renderSitesIndex(payload: ListViewServerProps['payload'], user: U
 
         <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {sites.map((site) => {
-            const siteHref = navHref(String(site.id))
+            const siteHref = navHref(String(site.id), 'pages')
             const status = site.status ?? 'draft'
 
             return (
               <Link key={String(site.id)} href={siteHref} className="group cursor-pointer">
-                <Card className="h-full rounded-[28px] border-white/10 bg-slate-950/70 shadow-[0_24px_90px_rgba(2,6,23,0.24)] transition duration-200 group-hover:-translate-y-1 group-hover:border-amber-400/35 group-hover:shadow-[0_32px_100px_rgba(245,158,11,0.12)]">
+                <Card className="h-full rounded-3xl border-(--cms-card-border) bg-(--cms-card-bg) shadow-(--cms-card-shadow) transition duration-200 group-hover:-translate-y-0.5 group-hover:border-(--cms-primary)">
                   <CardHeader className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <CardTitle className="text-xl text-white">
+                        <CardTitle className="text-xl text-(--cms-text)">
                           {site.siteName || String(site.siteId ?? site.id)}
                         </CardTitle>
-                        <CardDescription className="mt-2 text-sm leading-6 text-slate-400">
+                        <CardDescription className="mt-2 text-sm leading-6 text-(--cms-text-secondary)">
                           {site.siteDescription ||
                             'Site-specific content, settings, and navigation workspace.'}
                         </CardDescription>
                       </div>
-                      <Badge className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-200">
+                      <Badge
+                        className={cn(
+                          'rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]',
+                          siteStatusBadgeClasses[status] ??
+                            'border-(--cms-border) bg-(--cms-bg-muted) text-(--cms-text-secondary)',
+                        )}
+                      >
                         {status}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="rounded-3xl border border-white/10 bg-white/3 p-4">
-                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    <div className="rounded-2xl border border-(--cms-border) bg-(--cms-bg-elevated) p-4">
+                      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-(--cms-text-muted)">
                         Domain
                       </div>
-                      <div className="mt-2 text-sm font-medium text-white">{getSiteDomain(site)}</div>
+                      <div className="mt-2 text-sm font-medium text-(--cms-text)">
+                        {getSiteDomain(site)}
+                      </div>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-[20px] border border-white/10 bg-white/3 p-4">
-                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      <div className="rounded-[18px] border border-(--cms-border) bg-(--cms-bg-elevated) p-4">
+                        <div className="text-xs font-semibold uppercase tracking-[0.16em] text-(--cms-text-muted)">
                           Total Pages
                         </div>
-                        <div className="mt-2 text-2xl font-semibold text-white">
+                        <div className="mt-2 text-2xl font-semibold text-(--cms-text)">
                           {pageCountMap.get(String(site.id)) ?? 0}
                         </div>
                       </div>
-                      <div className="rounded-[20px] border border-white/10 bg-white/3 p-4">
-                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      <div className="rounded-[18px] border border-(--cms-border) bg-(--cms-bg-elevated) p-4">
+                        <div className="text-xs font-semibold uppercase tracking-[0.16em] text-(--cms-text-muted)">
                           Updated
                         </div>
-                        <div className="mt-2 text-sm font-medium text-white">
+                        <div className="mt-2 text-sm font-medium text-(--cms-text)">
                           {formatDate(site.updatedAt)}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between text-sm font-medium text-slate-200">
+                    <div className="flex items-center justify-between text-sm font-medium text-(--cms-text-secondary) transition group-hover:text-(--cms-primary)">
                       <span>Open site workspace</span>
                       <ArrowRight className="size-4 transition group-hover:translate-x-1" />
                     </div>
@@ -331,187 +352,6 @@ async function renderSitesIndex(payload: ListViewServerProps['payload'], user: U
               </Link>
             )
           })}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-async function renderSiteOverview(
-  payload: DocumentViewServerProps['payload'],
-  user: UserWithSite,
-  site: SiteDoc,
-) {
-  const siteKey = String(site.siteId ?? '')
-  const siteDocID = String(site.id)
-
-  const [pagesCount, mediaCount, formsCount, servicesCount, recentPages] = await Promise.all([
-    countDocuments(payload, user, 'pages', siteKey),
-    countDocuments(payload, user, 'media', siteKey),
-    countDocuments(payload, user, 'forms', siteKey),
-    countDocuments(payload, user, 'services', siteKey),
-    payload.find({
-      collection: 'pages',
-      depth: 0,
-      limit: 5,
-      sort: '-updatedAt',
-      user,
-      overrideAccess: false,
-      where: {
-        and: [
-          { siteId: { equals: siteKey } },
-          { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
-        ],
-      },
-    }),
-  ])
-
-  const metrics = [
-    { label: 'Pages', value: pagesCount, icon: FileText, href: navHref(siteDocID, 'pages') },
-    { label: 'Media', value: mediaCount, icon: ImageIcon, href: navHref(siteDocID, 'media') },
-    { label: 'Forms', value: formsCount, icon: Mail, href: navHref(siteDocID, 'forms') },
-    {
-      label: 'Services',
-      value: servicesCount,
-      icon: Briefcase,
-      href: navHref(siteDocID, 'services'),
-    },
-  ]
-
-  return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(245,158,11,0.1),transparent_22%),linear-gradient(180deg,#020617_0%,#0f172a_46%,#111827_100%)] px-6 py-8 text-white">
-      <div className="mx-auto max-w-7xl">
-        <div className="rounded-4xl border border-white/10 bg-white/4 p-8 shadow-[0_24px_120px_rgba(15,23,42,0.45)] backdrop-blur-xl">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-200">
-                <Globe className="size-3.5" />
-                Site Workspace
-              </div>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-                {site.siteName || site.siteId || siteDocID}
-              </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
-                {site.siteDescription || 'Site-specific content and navigation live here.'}
-              </p>
-              <ContextTabs siteDocID={siteDocID} />
-            </div>
-
-            <div className="flex flex-wrap gap-2 text-xs text-slate-300">
-              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">
-                {getSiteDomain(site)}
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">
-                {site.defaultLanguage || 'en'}
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5">
-                {site.timezone || 'UTC'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {metrics.map((metric) => {
-            const Icon = metric.icon
-            return (
-              <Link key={metric.label} href={metric.href}>
-                <Card className="rounded-3xl border-white/10 bg-slate-950/70 transition hover:-translate-y-0.5 hover:border-amber-400/30">
-                  <CardContent className="flex items-center justify-between p-6">
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                        {metric.label}
-                      </div>
-                      <div className="mt-2 text-3xl font-semibold text-white">{metric.value}</div>
-                    </div>
-                    <div className="flex size-12 items-center justify-center rounded-2xl border border-white/10 bg-white/4 text-amber-200">
-                      <Icon className="size-5" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            )
-          })}
-        </div>
-
-        <div className="mt-8 grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-          <Card className="rounded-[28px] border-white/10 bg-slate-950/70">
-            <CardHeader>
-              <CardTitle className="text-lg text-white">Recent Pages</CardTitle>
-              <CardDescription className="text-sm text-slate-400">
-                Latest page updates in this site context.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {(recentPages.docs as unknown as Array<Record<string, unknown>>).length === 0 ? (
-                <div className="rounded-[22px] border border-dashed border-white/10 px-5 py-8 text-sm text-slate-400">
-                  No pages yet. Start with a home page for this site.
-                </div>
-              ) : (
-                (recentPages.docs as unknown as Array<Record<string, unknown>>).map((page) => (
-                  <Link
-                    key={String(page.id)}
-                    href={`/admin/collections/pages/${String(page.id)}`}
-                    className="flex items-center justify-between rounded-[22px] border border-white/10 bg-white/3 px-5 py-4 transition hover:border-amber-400/30 hover:bg-white/5"
-                  >
-                    <div>
-                      <div className="text-sm font-medium text-white">
-                        {String(page.title ?? 'Untitled page')}
-                      </div>
-                      <div className="mt-1 text-xs text-slate-400">/{String(page.slug ?? '')}</div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge className="rounded-full border border-white/10 bg-white/4 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-200">
-                        {String(page.status ?? 'draft')}
-                      </Badge>
-                      <ArrowRight className="size-4 text-slate-400" />
-                    </div>
-                  </Link>
-                ))
-              )}
-            </CardContent>
-          </Card>
-
-          <div className="space-y-6">
-            <Card className="rounded-[28px] border-white/10 bg-slate-950/70">
-              <CardHeader>
-                <CardTitle className="text-lg text-white">Site Settings</CardTitle>
-                <CardDescription className="text-sm text-slate-400">
-                  Branding, SEO, and navigation for this site.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href={navHref(siteDocID, 'settings')}>
-                  <Button className="h-11 w-full rounded-2xl bg-amber-400 text-sm font-semibold text-slate-950 hover:bg-amber-300">
-                    Open Settings Workspace
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-[28px] border-white/10 bg-slate-950/70">
-              <CardHeader>
-                <CardTitle className="text-lg text-white">Navigation Summary</CardTitle>
-                <CardDescription className="text-sm text-slate-400">
-                  Quick snapshot of the site-specific navigation setup.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm text-slate-300">
-                <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/3 px-4 py-3">
-                  <span>Header links</span>
-                  <span>{site.headerNav?.length ?? 0}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/3 px-4 py-3">
-                  <span>Footer links</span>
-                  <span>{site.footerLinks?.length ?? 0}</span>
-                </div>
-                <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/3 px-4 py-3">
-                  <span>Social links</span>
-                  <span>{site.socialLinks?.length ?? 0}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
     </div>
@@ -546,21 +386,22 @@ async function renderSection(
 
   const docs = result.docs as unknown as Array<Record<string, unknown>>
   const SectionIcon = configForSection.icon
+  const isPagesSection = sectionKey === 'pages'
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(245,158,11,0.1),transparent_22%),linear-gradient(180deg,#020617_0%,#0f172a_46%,#111827_100%)] px-6 py-8 text-white">
+    <div className="min-h-screen bg-(--cms-bg-elevated) px-6 py-8 text-(--cms-text)">
       <div className="mx-auto max-w-7xl">
-        <div className="rounded-4xl border border-white/10 bg-white/4 p-8 shadow-[0_24px_120px_rgba(15,23,42,0.45)] backdrop-blur-xl">
+        <div className="rounded-3xl border border-(--cms-card-border) bg-(--cms-card-bg) p-8 shadow-(--cms-card-shadow)">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-200">
+              <div className="inline-flex items-center gap-2 rounded-full border border-(--cms-primary-soft) bg-(--cms-primary-soft) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--cms-primary-text)">
                 <SectionIcon className="size-3.5" />
                 {configForSection.label}
               </div>
               <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
                 {site.siteName || site.siteId || siteDocID}
               </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-(--cms-text-secondary) md:text-base">
                 {configForSection.description}
               </p>
               <ContextTabs siteDocID={siteDocID} activeSection={sectionKey} />
@@ -568,7 +409,7 @@ async function renderSection(
 
             <div className="flex gap-3">
               <Link href={configForSection.createHref(siteKey)}>
-                <Button className="h-11 rounded-2xl bg-amber-400 px-5 text-sm font-semibold text-slate-950 hover:bg-amber-300">
+                <Button className="h-11 rounded-xl bg-(--cms-primary) px-5 text-sm font-semibold text-white hover:bg-(--cms-primary-hover)">
                   New {configForSection.label.slice(0, -1)}
                 </Button>
               </Link>
@@ -576,44 +417,55 @@ async function renderSection(
           </div>
         </div>
 
-        <div className="mt-8 grid gap-4 lg:grid-cols-2">
+        <div className={cn('mt-8 grid gap-4', isPagesSection ? 'grid-cols-1' : 'lg:grid-cols-2')}>
           {docs.length === 0 ? (
-            <Card className="col-span-full rounded-[28px] border-white/10 bg-slate-950/70">
-              <CardContent className="px-6 py-12 text-center text-sm text-slate-400">
+            <Card className="col-span-full rounded-3xl border-(--cms-card-border) bg-(--cms-card-bg)">
+              <CardContent className="px-6 py-12 text-center text-sm text-(--cms-text-secondary)">
                 No {configForSection.label.toLowerCase()} exist for this site yet.
               </CardContent>
             </Card>
           ) : (
             docs.map((doc) => (
               <Link key={String(doc.id)} href={configForSection.editHref(String(doc.id))}>
-                <Card className="h-full rounded-[28px] border-white/10 bg-slate-950/70 transition hover:-translate-y-0.5 hover:border-amber-400/30">
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <CardTitle className="text-lg text-white">
+                <Card className="h-full rounded-[20px] border-(--cms-card-border) bg-(--cms-card-bg) transition hover:-translate-y-0.5 hover:border-(--cms-primary)">
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="truncate text-base text-(--cms-text)">
                           {String(doc.title ?? doc.alt ?? doc.filename ?? 'Untitled')}
                         </CardTitle>
-                        <CardDescription className="mt-2 text-sm leading-6 text-slate-400">
-                          {String(
-                            doc.slug ??
-                              doc.mimeType ??
-                              doc.confirmationMessage ??
-                              configForSection.label,
-                          )}
+                        <CardDescription className="mt-1 truncate text-sm text-(--cms-text-secondary)">
+                          {isPagesSection
+                            ? `/${String(doc.slug ?? '')}`
+                            : String(
+                                doc.slug ??
+                                  doc.mimeType ??
+                                  doc.confirmationMessage ??
+                                  configForSection.label,
+                              )}
                         </CardDescription>
                       </div>
-                      {'status' in doc ? (
-                        <Badge className="rounded-full border border-white/10 bg-white/4 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-200">
-                          {String(doc.status)}
-                        </Badge>
-                      ) : null}
+
+                      <div className="flex items-center gap-3">
+                        {'status' in doc ? (
+                          <Badge
+                            className={cn(
+                              'rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]',
+                              pageStatusBadgeClasses[String(doc.status)] ??
+                                'border-(--cms-border) bg-(--cms-bg-muted) text-(--cms-text-secondary)',
+                            )}
+                          >
+                            {String(doc.status)}
+                          </Badge>
+                        ) : null}
+
+                        <span className="hidden text-xs text-(--cms-text-muted) md:inline">
+                          Updated {formatDate(String(doc.updatedAt ?? doc.createdAt ?? ''))}
+                        </span>
+
+                        <ArrowRight className="size-4 text-(--cms-text-muted)" />
+                      </div>
                     </div>
-                  </CardHeader>
-                  <CardContent className="flex items-center justify-between">
-                    <span className="text-sm text-slate-300">
-                      Updated {formatDate(String(doc.updatedAt ?? doc.createdAt ?? ''))}
-                    </span>
-                    <ArrowRight className="size-4 text-slate-400" />
                   </CardContent>
                 </Card>
               </Link>
@@ -720,14 +572,10 @@ export async function SitesListView(props: ListViewServerProps) {
 
     const assignedSite = await findSiteBySiteKey(props.payload, user, user.siteId)
     if (!assignedSite) {
-      return (
-        <div className="px-6 py-8 text-(--cms-text)">
-          Site not found or access denied.
-        </div>
-      )
+      return <div className="px-6 py-8 text-(--cms-text)">Site not found or access denied.</div>
     }
 
-    redirect(navHref(String(assignedSite.id)))
+    redirect(navHref(String(assignedSite.id), 'pages'))
   }
 
   return renderSitesIndex(props.payload, user)
@@ -752,7 +600,7 @@ export async function SiteWorkspaceView(props: DocumentViewServerProps) {
     return renderSection(props.payload, user, site, section)
   }
 
-  return renderSiteOverview(props.payload, user, site)
+  redirect(navHref(String(site.id), 'pages'))
 }
 
 export default SitesListView

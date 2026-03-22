@@ -66,9 +66,6 @@ export const Sites: CollectionConfig = {
           Component: '/components/admin/sites/SiteAdminView#SitesListView',
         },
         edit: {
-          default: {
-            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
-          },
           pages: {
             path: '/pages',
             Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
