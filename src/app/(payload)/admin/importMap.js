@@ -1,4 +1,6 @@
 import { default as default_f774049b54ab956687d382f3523750c2 } from '../../../components/admin/CustomListView'
+import { SiteWorkspaceView as SiteWorkspaceView_427025bc1f0a35dcf6d1bf28d2c760f6 } from '../../../components/admin/sites/SiteAdminView'
+import { SitesListView as SitesListView_427025bc1f0a35dcf6d1bf28d2c760f6 } from '../../../components/admin/sites/SiteAdminView'
 import { default as default_a8a74904ecd0b0f8e8fe9b0ba6f24ba1 } from '../../../components/admin/builder/BuilderLink'
 import { default as default_badb8c32a1f8c52252b0a6d90f696fd9 } from '../../../components/admin/page-settings/LastUpdatedInfoField'
 import { default as default_9963259c0d85902b12bf209b3439a4ce } from '../../../components/admin/page-settings/SearchEnginePreviewField'
@@ -33,11 +35,12 @@ import { default as default_87174a96e964349564e02fc37eed4968 } from '../../../co
 import { default as default_90d94a8a05a7cf2177ecc4e95646ec1f } from '../../../components/admin/dashboard/DashboardView'
 import { default as default_277896e5f7e20ebc50f56bcf621a4de8 } from '../../../components/admin/builder/BuilderPage'
 import { default as default_fe6a43c01e6f9aa86f5e68937bb3a882 } from '../../../components/admin/trash/TrashView'
-import { default as default_427025bc1f0a35dcf6d1bf28d2c760f6 } from '../../../components/admin/sites/SiteAdminView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
   "/components/admin/CustomListView#default": default_f774049b54ab956687d382f3523750c2,
+  "/components/admin/sites/SiteAdminView#SiteWorkspaceView": SiteWorkspaceView_427025bc1f0a35dcf6d1bf28d2c760f6,
+  "/components/admin/sites/SiteAdminView#SitesListView": SitesListView_427025bc1f0a35dcf6d1bf28d2c760f6,
   "/components/admin/builder/BuilderLink#default": default_a8a74904ecd0b0f8e8fe9b0ba6f24ba1,
   "/components/admin/page-settings/LastUpdatedInfoField#default": default_badb8c32a1f8c52252b0a6d90f696fd9,
   "/components/admin/page-settings/SearchEnginePreviewField#default": default_9963259c0d85902b12bf209b3439a4ce,
@@ -72,6 +75,5 @@ export const importMap = {
   "/components/admin/dashboard/DashboardView#default": default_90d94a8a05a7cf2177ecc4e95646ec1f,
   "/components/admin/builder/BuilderPage#default": default_277896e5f7e20ebc50f56bcf621a4de8,
   "/components/admin/trash/TrashView#default": default_fe6a43c01e6f9aa86f5e68937bb3a882,
-  "/components/admin/sites/SiteAdminView#default": default_427025bc1f0a35dcf6d1bf28d2c760f6,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

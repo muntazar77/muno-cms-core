@@ -98,18 +98,41 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
   const { config } = useConfig()
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : 'AD'
   const userRole = user && 'role' in user ? String(user.role ?? '') : ''
-  const userSiteId = user && 'siteId' in user ? String(user.siteId ?? '') : ''
   const isAdmin = userRole === 'admin'
-  const siteRouteMatch = pathname?.match(/^\/admin\/sites\/([^/]+)/)
-  const activeSiteId = siteRouteMatch?.[1] ?? (!isAdmin ? userSiteId : '')
-  const siteContextLinks = activeSiteId
+  const siteRouteMatch = pathname?.match(/^\/admin\/collections\/sites\/([^/?#]+)/)
+  const activeSiteDocID = siteRouteMatch?.[1] ?? ''
+  const siteContextLinks = activeSiteDocID
     ? [
-        { href: `/admin/sites/${activeSiteId}`, label: 'Overview', icon: LayoutDashboard },
-        { href: `/admin/sites/${activeSiteId}/pages`, label: 'Pages', icon: FileText },
-        { href: `/admin/sites/${activeSiteId}/media`, label: 'Media', icon: ImageIcon },
-        { href: `/admin/sites/${activeSiteId}/forms`, label: 'Forms', icon: Mail },
-        { href: `/admin/sites/${activeSiteId}/services`, label: 'Services', icon: Briefcase },
-        { href: `/admin/sites/${activeSiteId}/settings`, label: 'Site Settings', icon: Settings },
+        {
+          href: `/admin/collections/sites/${activeSiteDocID}`,
+          label: 'Overview',
+          icon: LayoutDashboard,
+        },
+        {
+          href: `/admin/collections/sites/${activeSiteDocID}/pages`,
+          label: 'Pages',
+          icon: FileText,
+        },
+        {
+          href: `/admin/collections/sites/${activeSiteDocID}/media`,
+          label: 'Media',
+          icon: ImageIcon,
+        },
+        {
+          href: `/admin/collections/sites/${activeSiteDocID}/forms`,
+          label: 'Forms',
+          icon: Mail,
+        },
+        {
+          href: `/admin/collections/sites/${activeSiteDocID}/services`,
+          label: 'Services',
+          icon: Briefcase,
+        },
+        {
+          href: `/admin/collections/sites/${activeSiteDocID}/settings`,
+          label: 'Site Settings',
+          icon: Settings,
+        },
       ]
     : []
 
@@ -189,10 +212,20 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
 
         {isAdmin && (
           <NavLink
-            href="/admin/sites"
+            href="/admin/collections/sites"
             icon={Globe}
             label="All Sites"
-            active={pathname === '/admin/sites'}
+            active={pathname === '/admin/collections/sites'}
+            collapsed={collapsed}
+          />
+        )}
+
+        {!isAdmin && (
+          <NavLink
+            href="/admin/collections/sites"
+            icon={Globe}
+            label="My Site"
+            active={Boolean(pathname?.startsWith('/admin/collections/sites'))}
             collapsed={collapsed}
           />
         )}

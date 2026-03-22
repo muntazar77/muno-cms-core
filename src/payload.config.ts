@@ -45,21 +45,6 @@ export default buildConfig({
           Component: '/components/admin/trash/TrashView',
           exact: true,
         },
-        sites: {
-          path: '/sites',
-          Component: '/components/admin/sites/SiteAdminView',
-          exact: true,
-        },
-        siteContext: {
-          path: '/sites/:siteId',
-          Component: '/components/admin/sites/SiteAdminView',
-          exact: true,
-        },
-        siteSection: {
-          path: '/sites/:siteId/:section',
-          Component: '/components/admin/sites/SiteAdminView',
-          exact: true,
-        },
       },
     },
   },

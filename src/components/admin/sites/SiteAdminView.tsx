@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { getPayload } from 'payload'
+import type { DocumentViewServerProps, ListViewServerProps } from 'payload'
 import {
   ArrowRight,
   Briefcase,
@@ -13,7 +12,6 @@ import {
   Mail,
   Settings2,
 } from 'lucide-react'
-import config from '@payload-config'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -117,7 +115,7 @@ const sectionConfigs: Record<string, SectionConfig> = {
   },
 }
 
-function isAdmin(user: UserWithSite | null): boolean {
+function isAdmin(user: UserWithSite | null | undefined): boolean {
   return user?.role === 'admin'
 }
 
@@ -136,18 +134,30 @@ function toRelationshipId(value: SiteDoc['logo']): string {
   return String(value)
 }
 
-function navHref(siteId: string, section?: string): string {
-  return section ? `/admin/sites/${siteId}/${section}` : `/admin/sites/${siteId}`
+function navHref(siteDocID: string, section?: string): string {
+  return section
+    ? `/admin/collections/sites/${siteDocID}/${section}`
+    : `/admin/collections/sites/${siteDocID}`
 }
 
-function ContextTabs({ siteId, activeSection }: { siteId: string; activeSection?: string }) {
+function resolveSection(routeSegments: string[] = [], docID: string): string | undefined {
+  const last = routeSegments[routeSegments.length - 1]
+
+  if (!last) return undefined
+  if (last === docID) return undefined
+  if (last === 'collections' || last === 'sites') return undefined
+
+  return last
+}
+
+function ContextTabs({ siteDocID, activeSection }: { siteDocID: string; activeSection?: string }) {
   const tabs = [
-    { key: 'overview', label: 'Overview', href: navHref(siteId), icon: LayoutDashboard },
-    { key: 'pages', label: 'Pages', href: navHref(siteId, 'pages'), icon: FileText },
-    { key: 'media', label: 'Media', href: navHref(siteId, 'media'), icon: ImageIcon },
-    { key: 'forms', label: 'Forms', href: navHref(siteId, 'forms'), icon: Mail },
-    { key: 'services', label: 'Services', href: navHref(siteId, 'services'), icon: Briefcase },
-    { key: 'settings', label: 'Settings', href: navHref(siteId, 'settings'), icon: Settings2 },
+    { key: 'overview', label: 'Overview', href: navHref(siteDocID), icon: LayoutDashboard },
+    { key: 'pages', label: 'Pages', href: navHref(siteDocID, 'pages'), icon: FileText },
+    { key: 'media', label: 'Media', href: navHref(siteDocID, 'media'), icon: ImageIcon },
+    { key: 'forms', label: 'Forms', href: navHref(siteDocID, 'forms'), icon: Mail },
+    { key: 'services', label: 'Services', href: navHref(siteDocID, 'services'), icon: Briefcase },
+    { key: 'settings', label: 'Settings', href: navHref(siteDocID, 'settings'), icon: Settings2 },
   ]
 
   return (
@@ -174,24 +184,14 @@ function ContextTabs({ siteId, activeSection }: { siteId: string; activeSection?
   )
 }
 
-async function getAuthedUser() {
-  const payload = await getPayload({ config })
-  const { user } = await payload.auth({ headers: await headers() })
-
-  return {
-    payload,
-    user: (user as UserWithSite | null) ?? null,
-  }
-}
-
-async function findSite(
-  payload: Awaited<ReturnType<typeof getPayload>>,
+async function findSiteBySiteKey(
+  payload: ListViewServerProps['payload'],
   user: UserWithSite,
   siteId: string,
 ) {
   const result = await payload.find({
     collection: 'sites',
-    depth: 1,
+    depth: 0,
     limit: 1,
     user,
     overrideAccess: false,
@@ -204,11 +204,13 @@ async function findSite(
 }
 
 async function countDocuments(
-  payload: Awaited<ReturnType<typeof getPayload>>,
+  payload: ListViewServerProps['payload'],
   user: UserWithSite,
   collection: SectionConfig['collection'],
   siteId: string,
 ) {
+  if (!siteId) return 0
+
   const result = await payload.find({
     collection,
     depth: 0,
@@ -226,10 +228,7 @@ async function countDocuments(
   return result.totalDocs
 }
 
-async function renderSitesIndex(
-  payload: Awaited<ReturnType<typeof getPayload>>,
-  user: UserWithSite,
-) {
+async function renderSitesIndex(payload: ListViewServerProps['payload'], user: UserWithSite) {
   const sitesResult = await payload.find({
     collection: 'sites',
     depth: 0,
@@ -243,7 +242,7 @@ async function renderSitesIndex(
   const pageCounts = await Promise.all(
     sites.map(async (site) => {
       const count = await countDocuments(payload, user, 'pages', String(site.siteId ?? ''))
-      return [String(site.siteId ?? ''), count] as const
+      return [String(site.id), count] as const
     }),
   )
 
@@ -276,8 +275,7 @@ async function renderSitesIndex(
 
         <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {sites.map((site) => {
-            const siteKey = String(site.siteId ?? '')
-            const siteHref = navHref(siteKey)
+            const siteHref = navHref(String(site.id))
             const status = site.status ?? 'draft'
 
             return (
@@ -287,7 +285,7 @@ async function renderSitesIndex(
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <CardTitle className="text-xl text-white">
-                          {site.siteName || siteKey}
+                          {site.siteName || String(site.siteId ?? site.id)}
                         </CardTitle>
                         <CardDescription className="mt-2 text-sm leading-6 text-slate-400">
                           {site.siteDescription ||
@@ -304,9 +302,7 @@ async function renderSitesIndex(
                       <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                         Domain
                       </div>
-                      <div className="mt-2 text-sm font-medium text-white">
-                        {getSiteDomain(site)}
-                      </div>
+                      <div className="mt-2 text-sm font-medium text-white">{getSiteDomain(site)}</div>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="rounded-[20px] border border-white/10 bg-white/3 p-4">
@@ -314,7 +310,7 @@ async function renderSitesIndex(
                           Total Pages
                         </div>
                         <div className="mt-2 text-2xl font-semibold text-white">
-                          {pageCountMap.get(siteKey) ?? 0}
+                          {pageCountMap.get(String(site.id)) ?? 0}
                         </div>
                       </div>
                       <div className="rounded-[20px] border border-white/10 bg-white/3 p-4">
@@ -342,17 +338,18 @@ async function renderSitesIndex(
 }
 
 async function renderSiteOverview(
-  payload: Awaited<ReturnType<typeof getPayload>>,
+  payload: DocumentViewServerProps['payload'],
   user: UserWithSite,
   site: SiteDoc,
 ) {
-  const siteId = String(site.siteId ?? '')
+  const siteKey = String(site.siteId ?? '')
+  const siteDocID = String(site.id)
 
   const [pagesCount, mediaCount, formsCount, servicesCount, recentPages] = await Promise.all([
-    countDocuments(payload, user, 'pages', siteId),
-    countDocuments(payload, user, 'media', siteId),
-    countDocuments(payload, user, 'forms', siteId),
-    countDocuments(payload, user, 'services', siteId),
+    countDocuments(payload, user, 'pages', siteKey),
+    countDocuments(payload, user, 'media', siteKey),
+    countDocuments(payload, user, 'forms', siteKey),
+    countDocuments(payload, user, 'services', siteKey),
     payload.find({
       collection: 'pages',
       depth: 0,
@@ -362,7 +359,7 @@ async function renderSiteOverview(
       overrideAccess: false,
       where: {
         and: [
-          { siteId: { equals: siteId } },
+          { siteId: { equals: siteKey } },
           { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
         ],
       },
@@ -370,10 +367,15 @@ async function renderSiteOverview(
   ])
 
   const metrics = [
-    { label: 'Pages', value: pagesCount, icon: FileText, href: navHref(siteId, 'pages') },
-    { label: 'Media', value: mediaCount, icon: ImageIcon, href: navHref(siteId, 'media') },
-    { label: 'Forms', value: formsCount, icon: Mail, href: navHref(siteId, 'forms') },
-    { label: 'Services', value: servicesCount, icon: Briefcase, href: navHref(siteId, 'services') },
+    { label: 'Pages', value: pagesCount, icon: FileText, href: navHref(siteDocID, 'pages') },
+    { label: 'Media', value: mediaCount, icon: ImageIcon, href: navHref(siteDocID, 'media') },
+    { label: 'Forms', value: formsCount, icon: Mail, href: navHref(siteDocID, 'forms') },
+    {
+      label: 'Services',
+      value: servicesCount,
+      icon: Briefcase,
+      href: navHref(siteDocID, 'services'),
+    },
   ]
 
   return (
@@ -387,12 +389,12 @@ async function renderSiteOverview(
                 Site Workspace
               </div>
               <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-                {site.siteName || siteId}
+                {site.siteName || site.siteId || siteDocID}
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
                 {site.siteDescription || 'Site-specific content and navigation live here.'}
               </p>
-              <ContextTabs siteId={siteId} />
+              <ContextTabs siteDocID={siteDocID} />
             </div>
 
             <div className="flex flex-wrap gap-2 text-xs text-slate-300">
@@ -479,7 +481,7 @@ async function renderSiteOverview(
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href={navHref(siteId, 'settings')}>
+                <Link href={navHref(siteDocID, 'settings')}>
                   <Button className="h-11 w-full rounded-2xl bg-amber-400 text-sm font-semibold text-slate-950 hover:bg-amber-300">
                     Open Settings Workspace
                   </Button>
@@ -517,7 +519,7 @@ async function renderSiteOverview(
 }
 
 async function renderSection(
-  payload: Awaited<ReturnType<typeof getPayload>>,
+  payload: DocumentViewServerProps['payload'],
   user: UserWithSite,
   site: SiteDoc,
   sectionKey: string,
@@ -525,7 +527,8 @@ async function renderSection(
   const configForSection = sectionConfigs[sectionKey]
   if (!configForSection) return null
 
-  const siteId = String(site.siteId ?? '')
+  const siteKey = String(site.siteId ?? '')
+  const siteDocID = String(site.id)
   const result = await payload.find({
     collection: configForSection.collection,
     depth: 1,
@@ -535,7 +538,7 @@ async function renderSection(
     overrideAccess: false,
     where: {
       and: [
-        { siteId: { equals: siteId } },
+        { siteId: { equals: siteKey } },
         { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
       ],
     },
@@ -555,16 +558,16 @@ async function renderSection(
                 {configForSection.label}
               </div>
               <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-                {site.siteName || siteId}
+                {site.siteName || site.siteId || siteDocID}
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
                 {configForSection.description}
               </p>
-              <ContextTabs siteId={siteId} activeSection={sectionKey} />
+              <ContextTabs siteDocID={siteDocID} activeSection={sectionKey} />
             </div>
 
             <div className="flex gap-3">
-              <Link href={configForSection.createHref(siteId)}>
+              <Link href={configForSection.createHref(siteKey)}>
                 <Button className="h-11 rounded-2xl bg-amber-400 px-5 text-sm font-semibold text-slate-950 hover:bg-amber-300">
                   New {configForSection.label.slice(0, -1)}
                 </Button>
@@ -623,11 +626,11 @@ async function renderSection(
 }
 
 async function renderSettings(
-  payload: Awaited<ReturnType<typeof getPayload>>,
+  payload: DocumentViewServerProps['payload'],
   user: UserWithSite,
   site: SiteDoc,
 ) {
-  const siteId = String(site.siteId ?? '')
+  const siteKey = String(site.siteId ?? '')
   const media = await payload.find({
     collection: 'media',
     depth: 0,
@@ -637,7 +640,7 @@ async function renderSettings(
     overrideAccess: false,
     where: {
       and: [
-        { siteId: { equals: siteId } },
+        { siteId: { equals: siteKey } },
         { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
       ],
     },
@@ -653,7 +656,7 @@ async function renderSettings(
       mediaOptions={mediaOptions}
       site={{
         id: String(site.id),
-        siteId,
+        siteId: siteKey,
         siteName: site.siteName ?? '',
         siteDescription: site.siteDescription ?? '',
         domain: site.domain ?? '',
@@ -706,42 +709,50 @@ async function renderSettings(
   )
 }
 
-export default async function SiteAdminView({ params }: { params: { segments?: string[] } }) {
-  const { payload, user } = await getAuthedUser()
+export async function SitesListView(props: ListViewServerProps) {
+  const user = (props.user as UserWithSite | null | undefined) ?? null
   if (!user) redirect('/admin/login')
 
-  const segments = params?.segments ?? []
-  const siteId = segments[1]
-  const section = segments[2]
-
-  if (segments.length <= 1) {
-    if (!isAdmin(user)) {
-      if (!user.siteId) {
-        return (
-          <div className="px-6 py-8 text-(--cms-text)">No site is assigned to this account.</div>
-        )
-      }
-
-      redirect(navHref(user.siteId))
+  if (!isAdmin(user)) {
+    if (!user.siteId) {
+      return <div className="px-6 py-8 text-(--cms-text)">No site is assigned to this account.</div>
     }
 
-    return renderSitesIndex(payload, user)
+    const assignedSite = await findSiteBySiteKey(props.payload, user, user.siteId)
+    if (!assignedSite) {
+      return (
+        <div className="px-6 py-8 text-(--cms-text)">
+          Site not found or access denied.
+        </div>
+      )
+    }
+
+    redirect(navHref(String(assignedSite.id)))
   }
 
-  if (!siteId) redirect('/admin/sites')
+  return renderSitesIndex(props.payload, user)
+}
 
-  const site = await findSite(payload, user, siteId)
+export async function SiteWorkspaceView(props: DocumentViewServerProps) {
+  const user = (props.user as UserWithSite | null | undefined) ?? null
+  if (!user) redirect('/admin/login')
+
+  const site = (props.doc as SiteDoc | undefined) ?? null
   if (!site) {
     return <div className="px-6 py-8 text-(--cms-text)">Site not found or access denied.</div>
   }
 
+  const section = resolveSection(props.routeSegments, String(site.id))
+
   if (section === 'settings') {
-    return renderSettings(payload, user, site)
+    return renderSettings(props.payload, user, site)
   }
 
   if (section && section in sectionConfigs) {
-    return renderSection(payload, user, site, section)
+    return renderSection(props.payload, user, site, section)
   }
 
-  return renderSiteOverview(payload, user, site)
+  return renderSiteOverview(props.payload, user, site)
 }
+
+export default SitesListView

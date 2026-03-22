@@ -58,9 +58,40 @@ const socialLinkFields: Field[] = [
 export const Sites: CollectionConfig = {
   slug: 'sites',
   admin: {
-    hidden: true,
     useAsTitle: 'siteName',
     defaultColumns: ['siteName', 'siteId', 'domain', 'status', 'updatedAt'],
+    components: {
+      views: {
+        list: {
+          Component: '/components/admin/sites/SiteAdminView#SitesListView',
+        },
+        edit: {
+          default: {
+            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+          },
+          pages: {
+            path: '/pages',
+            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+          },
+          media: {
+            path: '/media',
+            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+          },
+          forms: {
+            path: '/forms',
+            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+          },
+          services: {
+            path: '/services',
+            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+          },
+          settings: {
+            path: '/settings',
+            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+          },
+        },
+      },
+    },
   },
   access: {
     read: access.siteScoped,
