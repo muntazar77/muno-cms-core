@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { getSiteDomain } from '@/lib/sites'
+import CreateSiteDialog from './CreateSiteDialog'
 import SiteSettingsEditor from './SiteSettingsEditor'
 
 interface UserWithSite {
@@ -278,11 +279,7 @@ async function renderSitesIndex(payload: ListViewServerProps['payload'], user: U
               </p>
             </div>
 
-            <Link href="/admin/collections/sites/create">
-              <Button className="h-11 rounded-xl bg-(--cms-primary) px-5 text-sm font-semibold text-white hover:bg-(--cms-primary-hover)">
-                Create site
-              </Button>
-            </Link>
+            <CreateSiteDialog />
           </div>
         </div>
 
@@ -391,9 +388,9 @@ async function renderSection(
   return (
     <div className="min-h-screen bg-(--cms-bg-elevated) px-4 py-6 text-(--cms-text) sm:px-6 sm:py-8">
       <div className="mx-auto w-full max-w-full">
-      <div className="rounded-2xl border border-(--cms-card-border) bg-(--cms-card-bg) p-6 shadow-(--cms-card-shadow) sm:p-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+        <div className="rounded-2xl border border-(--cms-card-border) bg-(--cms-card-bg) p-6 shadow-(--cms-card-shadow) sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-(--cms-primary-soft) bg-(--cms-primary-soft) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-(--cms-primary-text)">
                 <SectionIcon className="size-3.5" />
                 {configForSection.label}

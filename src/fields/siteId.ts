@@ -11,7 +11,16 @@ export const siteIdField: Field = {
   index: true,
   admin: {
     position: 'sidebar',
-    description: 'Site identifier this item belongs to.',
+    description: 'Site context is assigned automatically in normal workflows.',
+    condition: (data, _siblingData, { user }) => {
+      const role =
+        user && typeof user === 'object' && 'role' in user ? String(user.role ?? '') : ''
+
+      if (role !== 'admin') return false
+
+      // Expose only for admin edge-case edits, not during first create step.
+      return Boolean(data && typeof data === 'object' && 'id' in data && data.id)
+    },
   },
   hooks: {
     beforeValidate: [

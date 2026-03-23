@@ -241,7 +241,7 @@ export interface Media {
   alt: string;
   caption?: string | null;
   /**
-   * Site identifier this item belongs to.
+   * Site context is assigned automatically in normal workflows.
    */
   siteId?: string | null;
   isDeleted?: boolean | null;
@@ -514,7 +514,7 @@ export interface Page {
       )[]
     | null;
   /**
-   * Site identifier this item belongs to.
+   * Site context is assigned automatically in normal workflows.
    */
   siteId?: string | null;
   isDeleted?: boolean | null;
@@ -551,7 +551,7 @@ export interface Form {
     | null;
   confirmationMessage?: string | null;
   /**
-   * Site identifier this item belongs to.
+   * Site context is assigned automatically in normal workflows.
    */
   siteId?: string | null;
   isDeleted?: boolean | null;
@@ -580,7 +580,7 @@ export interface FormSubmission {
     | boolean
     | null;
   /**
-   * Site identifier this item belongs to.
+   * Site context is assigned automatically in normal workflows.
    */
   siteId?: string | null;
   isDeleted?: boolean | null;
@@ -614,7 +614,7 @@ export interface Service {
   } | null;
   featuredImage?: (number | null) | Media;
   /**
-   * Site identifier this item belongs to.
+   * Site context is assigned automatically in normal workflows.
    */
   siteId?: string | null;
   isDeleted?: boolean | null;

@@ -19,6 +19,11 @@ import { access } from '@/access'
 import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
 import { siteIdField } from '@/fields/siteId'
 
+const isSavedDocument = (data: unknown): boolean => {
+  if (!data || typeof data !== 'object') return false
+  return Boolean((data as { id?: number | string }).id)
+}
+
 export const Pages: CollectionConfig = {
   slug: 'pages',
   admin: {
@@ -64,8 +69,18 @@ export const Pages: CollectionConfig = {
               name: 'builderLink',
               type: 'ui',
               admin: {
+                condition: (data) => isSavedDocument(data),
                 components: {
                   Field: '/components/admin/builder/BuilderLink',
+                },
+              },
+            },
+            {
+              name: 'pageContextHelper',
+              type: 'ui',
+              admin: {
+                components: {
+                  Field: '/components/admin/page-settings/PageContextHelperField',
                 },
               },
             },
@@ -124,11 +139,17 @@ export const Pages: CollectionConfig = {
               name: 'parentPage',
               type: 'relationship',
               relationTo: 'pages',
+              admin: {
+                condition: (data) => isSavedDocument(data),
+              },
             },
           ],
         },
         {
           label: 'Site Identity',
+          admin: {
+            condition: (data) => isSavedDocument(data),
+          },
           fields: [
             {
               name: 'pageName',
@@ -155,6 +176,9 @@ export const Pages: CollectionConfig = {
         },
         {
           label: 'Branding',
+          admin: {
+            condition: (data) => isSavedDocument(data),
+          },
           fields: [
             {
               name: 'branding',
@@ -190,6 +214,9 @@ export const Pages: CollectionConfig = {
         },
         {
           label: 'SEO & Meta',
+          admin: {
+            condition: (data) => isSavedDocument(data),
+          },
           fields: [
             {
               name: 'meta',
@@ -243,6 +270,9 @@ export const Pages: CollectionConfig = {
         },
         {
           label: 'Publishing',
+          admin: {
+            condition: (data) => isSavedDocument(data),
+          },
           fields: [
             {
               name: 'statusPublishing',
