@@ -66,6 +66,24 @@ export const Pages: CollectionConfig = {
           label: 'General',
           fields: [
             {
+              name: 'siteContextResolver',
+              type: 'ui',
+              admin: {
+                components: {
+                  Field: '/components/admin/shared/SiteContextResolverField',
+                },
+              },
+            },
+            {
+              name: 'adminEntityHeader',
+              type: 'ui',
+              admin: {
+                components: {
+                  Field: '/components/admin/shared/AdminEntityHeaderField',
+                },
+              },
+            },
+            {
               name: 'builderLink',
               type: 'ui',
               admin: {

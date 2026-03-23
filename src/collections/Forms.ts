@@ -25,6 +25,24 @@ export const Forms: CollectionConfig = {
   },
   fields: [
     {
+      name: 'siteContextResolver',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/admin/shared/SiteContextResolverField',
+        },
+      },
+    },
+    {
+      name: 'adminEntityHeader',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/admin/shared/AdminEntityHeaderField',
+        },
+      },
+    },
+    {
       name: 'title',
       type: 'text',
       required: true,

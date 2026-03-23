@@ -15,6 +15,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import BackToWorkspaceLink from '@/components/admin/shared/BackToWorkspaceLink'
+import SitePreviewActions from '@/components/admin/shared/SitePreviewActions'
 
 interface LinkItem {
   label: string
@@ -68,6 +70,9 @@ interface SiteSettingsShape {
 }
 
 interface SiteSettingsEditorProps {
+  backHref: string
+  previewURL: string
+  liveURL: string
   mediaOptions: MediaOption[]
   site: SiteSettingsShape
 }
@@ -217,7 +222,13 @@ function ArrayEditor({
   )
 }
 
-export default function SiteSettingsEditor({ mediaOptions, site }: SiteSettingsEditorProps) {
+export default function SiteSettingsEditor({
+  backHref,
+  previewURL,
+  liveURL,
+  mediaOptions,
+  site,
+}: SiteSettingsEditorProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('general')
   const [formState, setFormState] = useState<SiteSettingsShape>(site)
   const [isSaving, setIsSaving] = useState(false)
@@ -304,6 +315,10 @@ export default function SiteSettingsEditor({ mediaOptions, site }: SiteSettingsE
             </div>
 
             <div className="flex flex-1 flex-col gap-5 sm:gap-6 md:items-end">
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <BackToWorkspaceLink href={backHref} label="Back to Workspace" />
+                <SitePreviewActions previewURL={previewURL} liveURL={liveURL} />
+              </div>
               <div className="flex flex-wrap gap-3 text-sm text-[var(--cms-text-secondary)]">
                 <span className="rounded-full border border-[var(--cms-border)] bg-[var(--cms-bg-elevated)] px-4 py-2.5 font-medium">
                   {formState.domain || `${formState.subdomain || 'draft'}.localhost`}

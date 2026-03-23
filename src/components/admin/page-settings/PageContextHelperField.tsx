@@ -2,13 +2,10 @@
 
 import Link from 'next/link'
 import type { UIFieldClientComponent } from 'payload'
-import { useAuth, useDocumentInfo, useFormFields } from '@payloadcms/ui'
+import { useDocumentInfo, useFormFields } from '@payloadcms/ui'
+import { useSearchParams } from 'next/navigation'
 import { ArrowUpRight, ExternalLink, FileText, Layers3, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-type UserShape = {
-  siteId?: string
-}
 
 function toSlug(value: string): string {
   return value
@@ -21,12 +18,13 @@ function toSlug(value: string): string {
 
 const PageContextHelperField: UIFieldClientComponent = () => {
   const { id } = useDocumentInfo()
-  const { user } = useAuth<UserShape>()
+  const searchParams = useSearchParams()
 
   const title = useFormFields(([fields]) => String(fields.title?.value ?? ''))
   const slug = useFormFields(([fields]) => String(fields.slug?.value ?? ''))
   const status = useFormFields(([fields]) => String(fields.status?.value ?? 'draft'))
-  const siteId = useFormFields(([fields]) => String(fields.siteId?.value ?? user?.siteId ?? ''))
+  const siteIdFieldValue = useFormFields(([fields]) => String(fields.siteId?.value ?? ''))
+  const siteId = siteIdFieldValue || searchParams?.get('siteId')?.trim() || ''
 
   const effectiveSlug = slug || toSlug(title)
   const previewHref = effectiveSlug ? `/${effectiveSlug}` : '/'

@@ -15,6 +15,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { getSiteDomain } from '@/lib/sites'
+import BackToWorkspaceLink from '@/components/admin/shared/BackToWorkspaceLink'
+import SitePreviewActions from '@/components/admin/shared/SitePreviewActions'
 import CreateSiteDialog from './CreateSiteDialog'
 import SiteSettingsEditor from './SiteSettingsEditor'
 
@@ -147,6 +149,18 @@ function toRelationshipId(value: SiteDoc['logo']): string {
 
 function navHref(siteDocID: string, section: keyof typeof sectionConfigs | 'settings'): string {
   return `/admin/collections/sites/${siteDocID}/${section}`
+}
+
+function toAbsoluteSiteURL(site: Pick<SiteDoc, 'domain' | 'subdomain'>): string {
+  const host = getSiteDomain(site)
+  if (!host || host === 'Unassigned domain') return '#'
+
+  if (host.startsWith('http://') || host.startsWith('https://')) {
+    return host
+  }
+
+  const protocol = host.includes('localhost') ? 'http' : 'https'
+  return `${protocol}://${host}`
 }
 
 function resolveSection(
@@ -384,6 +398,8 @@ async function renderSection(
   const docs = result.docs as unknown as Array<Record<string, unknown>>
   const SectionIcon = configForSection.icon
   const isPagesSection = sectionKey === 'pages'
+  const previewURL = `/preview?siteId=${encodeURIComponent(siteKey)}`
+  const liveURL = toAbsoluteSiteURL(site)
 
   return (
     <div className="min-h-screen bg-(--cms-bg-elevated) px-4 py-6 text-(--cms-text) sm:px-6 sm:py-8">
@@ -404,7 +420,9 @@ async function renderSection(
               <ContextTabs siteDocID={siteDocID} activeSection={sectionKey} />
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <BackToWorkspaceLink href="/admin/collections/sites" label="All Sites" />
+              <SitePreviewActions previewURL={previewURL} liveURL={liveURL} />
               <Link href={configForSection.createHref(siteKey)}>
                 <Button className="h-11 rounded-xl bg-(--cms-primary) px-5 text-sm font-semibold text-white hover:bg-(--cms-primary-hover)">
                   New {configForSection.label.slice(0, -1)}
@@ -480,6 +498,8 @@ async function renderSettings(
   site: SiteDoc,
 ) {
   const siteKey = String(site.siteId ?? '')
+  const previewURL = `/preview?siteId=${encodeURIComponent(siteKey)}`
+  const liveURL = toAbsoluteSiteURL(site)
   const media = await payload.find({
     collection: 'media',
     depth: 0,
@@ -502,6 +522,9 @@ async function renderSettings(
 
   return (
     <SiteSettingsEditor
+      backHref={navHref(String(site.id), 'pages')}
+      previewURL={previewURL}
+      liveURL={liveURL}
       mediaOptions={mediaOptions}
       site={{
         id: String(site.id),

@@ -1,6 +1,8 @@
 import { default as default_f774049b54ab956687d382f3523750c2 } from '../../../components/admin/CustomListView'
 import { SiteWorkspaceView as SiteWorkspaceView_427025bc1f0a35dcf6d1bf28d2c760f6 } from '../../../components/admin/sites/SiteAdminView'
 import { SitesListView as SitesListView_427025bc1f0a35dcf6d1bf28d2c760f6 } from '../../../components/admin/sites/SiteAdminView'
+import { default as default_0077c242e44b98b24c15e267dd7f95d1 } from '../../../components/admin/shared/SiteContextResolverField'
+import { default as default_646a2555daaa80bb902ce4ca4079347a } from '../../../components/admin/shared/AdminEntityHeaderField'
 import { default as default_a8a74904ecd0b0f8e8fe9b0ba6f24ba1 } from '../../../components/admin/builder/BuilderLink'
 import { default as default_c1e5f491afb28f080810e3c75e7f1f7c } from '../../../components/admin/page-settings/PageContextHelperField'
 import { default as default_badb8c32a1f8c52252b0a6d90f696fd9 } from '../../../components/admin/page-settings/LastUpdatedInfoField'
@@ -42,6 +44,8 @@ export const importMap = {
   "/components/admin/CustomListView#default": default_f774049b54ab956687d382f3523750c2,
   "/components/admin/sites/SiteAdminView#SiteWorkspaceView": SiteWorkspaceView_427025bc1f0a35dcf6d1bf28d2c760f6,
   "/components/admin/sites/SiteAdminView#SitesListView": SitesListView_427025bc1f0a35dcf6d1bf28d2c760f6,
+  "/components/admin/shared/SiteContextResolverField#default": default_0077c242e44b98b24c15e267dd7f95d1,
+  "/components/admin/shared/AdminEntityHeaderField#default": default_646a2555daaa80bb902ce4ca4079347a,
   "/components/admin/builder/BuilderLink#default": default_a8a74904ecd0b0f8e8fe9b0ba6f24ba1,
   "/components/admin/page-settings/PageContextHelperField#default": default_c1e5f491afb28f080810e3c75e7f1f7c,
   "/components/admin/page-settings/LastUpdatedInfoField#default": default_badb8c32a1f8c52252b0a6d90f696fd9,

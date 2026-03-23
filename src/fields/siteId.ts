@@ -5,6 +5,30 @@
 
 import type { Field } from 'payload'
 
+function getSiteIdFromReferer(req: unknown): string | undefined {
+  try {
+    const headers =
+      req && typeof req === 'object' && 'headers' in req
+        ? (req as { headers?: Headers | Record<string, string> }).headers
+        : undefined
+
+    if (!headers) return undefined
+
+    const referer =
+      typeof (headers as Headers).get === 'function'
+        ? (headers as Headers).get('referer')
+        : (headers as Record<string, string>).referer
+
+    if (!referer) return undefined
+
+    const url = new URL(referer)
+    const candidate = url.searchParams.get('siteId')?.trim()
+    return candidate || undefined
+  } catch {
+    return undefined
+  }
+}
+
 export const siteIdField: Field = {
   name: 'siteId',
   type: 'text',
@@ -31,15 +55,23 @@ export const siteIdField: Field = {
             : Array.isArray(req?.query?.siteId)
               ? req.query.siteId[0]
               : undefined
+        const refererSiteId = getSiteIdFromReferer(req)
 
         if (!value && requestedSiteId) {
           return requestedSiteId
         }
 
-        // Auto-populate from the current user if not set
+        if (!value && refererSiteId) {
+          return refererSiteId
+        }
+
+        // For client users, keep assigned site as fallback.
+        // Avoid forcing admin fallback (e.g. default-site) when explicit context is missing.
         if (!value && req.user) {
-          const user = req.user as { siteId?: string }
-          return user.siteId ?? value
+          const user = req.user as { role?: string; siteId?: string }
+          if (user.role !== 'admin') {
+            return user.siteId ?? value
+          }
         }
         return value
       },

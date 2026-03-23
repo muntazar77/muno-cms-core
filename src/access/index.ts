@@ -33,6 +33,12 @@ function isAdmin(user: UserWithRole | null): boolean {
   return user?.role === 'admin'
 }
 
+function notDeletedConstraint(): Where {
+  return {
+    or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }],
+  }
+}
+
 // ─── Collection-Level Access ─────────────────────────────────────────
 
 /** Anyone (public) */
@@ -55,9 +61,11 @@ const adminOnly: Access = ({ req }) => {
 const siteScoped: Access = ({ req }) => {
   const user = getUser(req)
   if (!user) return false
-  if (isAdmin(user)) return true
+  if (isAdmin(user)) return notDeletedConstraint()
   if (!user.siteId) return false
-  return { siteId: { equals: user.siteId } }
+  return {
+    and: [{ siteId: { equals: user.siteId } }, notDeletedConstraint()],
+  }
 }
 
 /**
@@ -69,12 +77,16 @@ const siteScoped: Access = ({ req }) => {
 const publicOrSiteScoped: Access = ({ req }) => {
   const user = getUser(req)
   if (!user) {
-    const where: Where = { status: { equals: 'published' } }
+    const where: Where = {
+      and: [{ status: { equals: 'published' } }, notDeletedConstraint()],
+    }
     return where
   }
-  if (isAdmin(user)) return true
+  if (isAdmin(user)) return notDeletedConstraint()
   if (!user.siteId) return false
-  const where: Where = { siteId: { equals: user.siteId } }
+  const where: Where = {
+    and: [{ siteId: { equals: user.siteId } }, notDeletedConstraint()],
+  }
   return where
 }
 
@@ -86,10 +98,12 @@ const publicOrSiteScoped: Access = ({ req }) => {
  */
 const publicReadSiteScoped: Access = ({ req }) => {
   const user = getUser(req)
-  if (!user) return true
-  if (isAdmin(user)) return true
+  if (!user) return notDeletedConstraint()
+  if (isAdmin(user)) return notDeletedConstraint()
   if (!user.siteId) return false
-  return { siteId: { equals: user.siteId } }
+  return {
+    and: [{ siteId: { equals: user.siteId } }, notDeletedConstraint()],
+  }
 }
 
 // ─── Field-Level Access ──────────────────────────────────────────────
