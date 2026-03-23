@@ -1,5 +1,6 @@
 import type { CollectionConfig, Field } from 'payload'
 import { access } from '@/access'
+import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
 
 const fontFamilyOptions = [
   { label: 'Inter', value: 'inter' },
@@ -91,12 +92,13 @@ export const Sites: CollectionConfig = {
     },
   },
   access: {
-    read: access.siteScoped,
+    read: access.adminOnly,
     create: access.adminOnly,
-    update: access.siteScoped,
+    update: access.adminOnly,
     delete: access.adminOnly,
   },
   hooks: {
+    ...softDeleteHooks,
     beforeValidate: [
       ({ data }) => {
         if (!data) return data
@@ -433,5 +435,6 @@ export const Sites: CollectionConfig = {
         },
       ],
     },
+    ...softDeleteFields,
   ],
 }

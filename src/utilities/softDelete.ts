@@ -113,6 +113,7 @@ export const SOFT_DELETE_COLLECTIONS = [
   'forms',
   'form-submissions',
   'services',
+  'sites',
 ] as const
 
 export type SoftDeleteCollection = (typeof SOFT_DELETE_COLLECTIONS)[number]

@@ -229,6 +229,9 @@ export interface Site {
   phone?: string | null;
   whatsapp?: string | null;
   address?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -800,6 +803,9 @@ export interface SitesSelect<T extends boolean = true> {
   phone?: T;
   whatsapp?: T;
   address?: T;
+  isDeleted?: T;
+  deletedAt?: T;
+  deletedBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
