@@ -129,7 +129,7 @@ const pageStatusBadgeClasses: Record<string, string> = {
 }
 
 function isAdmin(user: UserWithSite | null | undefined): boolean {
-  return user?.role === 'admin'
+  return user?.role === 'super-admin'
 }
 
 function formatDate(value?: string | null): string {

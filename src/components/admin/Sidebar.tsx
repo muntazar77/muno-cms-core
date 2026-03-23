@@ -11,12 +11,9 @@ import {
   PanelLeftOpen,
   FileText,
   Briefcase,
-  ClipboardList,
-  Inbox,
   Settings,
   Trash2,
   Globe,
-  PanelTop,
   Mail,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -26,17 +23,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-
-// Map collection slugs → icons. Falls back to LayoutDashboard.
-const COLLECTION_ICONS: Record<string, LucideIcon> = {
-  users: Users,
-  sites: Globe,
-  media: ImageIcon,
-  pages: FileText,
-  services: Briefcase,
-  forms: ClipboardList,
-  'form-submissions': Inbox,
-}
 
 function NavLink({
   href,
@@ -98,7 +84,31 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
   const { config } = useConfig()
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : 'AD'
   const userRole = user && 'role' in user ? String(user.role ?? '') : ''
-  const isAdmin = userRole === 'admin'
+  const userSiteId =
+    user && 'siteId' in user ? String((user as { siteId?: string }).siteId ?? '') : ''
+  const isSuperAdmin = userRole === 'super-admin'
+
+  // ── Resolve client's site doc ID ──────────────────────────────────
+  const [clientSiteDocId, setClientSiteDocId] = useState<string>('')
+
+  useEffect(() => {
+    if (isSuperAdmin || !userSiteId) return
+    const apiRoute = (config?.routes?.api as string | undefined) ?? '/api'
+    fetch(
+      `${apiRoute}/sites?where[siteId][equals]=${encodeURIComponent(userSiteId)}&limit=1&depth=0`,
+      {
+        credentials: 'include',
+      },
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const doc = data?.docs?.[0]
+        if (doc?.id) setClientSiteDocId(String(doc.id))
+      })
+      .catch(() => {})
+  }, [isSuperAdmin, userSiteId, config?.routes?.api])
+
+  // ── Super-admin: detect active site from URL ──────────────────────
   const siteRouteMatch = pathname?.match(/^\/admin\/collections\/sites\/([^/?#]+)/)
   const matchedSiteSegment = siteRouteMatch?.[1] ?? ''
   const activeSiteDocID = ['create', 'versions', 'version', 'api', 'preview'].includes(
@@ -106,42 +116,38 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
   )
     ? ''
     : matchedSiteSegment
-  const siteContextLinks = activeSiteDocID
+
+  // ── Build site context links (for both roles) ─────────────────────
+  const siteDocId = isSuperAdmin ? activeSiteDocID : clientSiteDocId
+  const siteContextLinks = siteDocId
     ? [
         {
-          href: `/admin/collections/sites/${activeSiteDocID}/pages`,
+          href: `/admin/collections/sites/${siteDocId}/pages`,
           label: 'Pages',
           icon: FileText,
         },
         {
-          href: `/admin/collections/sites/${activeSiteDocID}/media`,
+          href: `/admin/collections/sites/${siteDocId}/media`,
           label: 'Media',
           icon: ImageIcon,
         },
         {
-          href: `/admin/collections/sites/${activeSiteDocID}/forms`,
+          href: `/admin/collections/sites/${siteDocId}/forms`,
           label: 'Forms',
           icon: Mail,
         },
         {
-          href: `/admin/collections/sites/${activeSiteDocID}/services`,
+          href: `/admin/collections/sites/${siteDocId}/services`,
           label: 'Services',
           icon: Briefcase,
         },
         {
-          href: `/admin/collections/sites/${activeSiteDocID}/settings`,
+          href: `/admin/collections/sites/${siteDocId}/settings`,
           label: 'Site Settings',
           icon: Settings,
         },
       ]
     : []
-
-  // Filter out Payload internal collections (prefixed with "payload-")
-  const collections = (config?.collections ?? []).filter(
-    (col) =>
-      !col.slug.startsWith('payload-') &&
-      !['pages', 'media', 'forms', 'services', 'sites'].includes(col.slug),
-  )
 
   return (
     <div className="flex h-full flex-col border-r border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-950">
@@ -201,91 +207,117 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
           </p>
         )}
 
-        {/* Dashboard */}
-        <NavLink
-          href="/admin"
-          icon={LayoutDashboard}
-          label="Dashboard"
-          active={pathname === '/admin'}
-          collapsed={collapsed}
-        />
-
-        {isAdmin && (
-          <NavLink
-            href="/admin/collections/sites"
-            icon={Globe}
-            label="All Sites"
-            active={Boolean(pathname?.startsWith('/admin/collections/sites'))}
-            collapsed={collapsed}
-          />
-        )}
-
-        {!isAdmin && (
-          <NavLink
-            href="/admin/collections/sites"
-            icon={Globe}
-            label="My Site"
-            active={Boolean(pathname?.startsWith('/admin/collections/sites'))}
-            collapsed={collapsed}
-          />
-        )}
-
-        {siteContextLinks.length > 0 && !collapsed && (
-          <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
-            {isAdmin ? 'Site Context' : 'My Site'}
-          </p>
-        )}
-
-        {siteContextLinks.map((link) => (
-          <NavLink
-            key={link.href}
-            href={link.href}
-            icon={link.icon}
-            label={link.label}
-            active={pathname === link.href || Boolean(pathname?.startsWith(link.href + '/'))}
-            collapsed={collapsed}
-          />
-        ))}
-
-        {/* Collections — auto-generated from config */}
-        {collections.map((col) => {
-          const href = `/admin/collections/${col.slug}`
-          const label = String(col.labels?.plural ?? col.slug)
-          const Icon = COLLECTION_ICONS[col.slug] ?? LayoutDashboard
-          const active = pathname === href || pathname.startsWith(href + '/')
-
-          return (
+        {/* ── Super-admin navigation ──────────────────────────────── */}
+        {isSuperAdmin && (
+          <>
             <NavLink
-              key={col.slug}
-              href={href}
-              icon={Icon}
-              label={label}
-              active={active}
+              href="/admin"
+              icon={LayoutDashboard}
+              label="Dashboard"
+              active={pathname === '/admin'}
               collapsed={collapsed}
             />
-          )
-        })}
+            <NavLink
+              href="/admin/collections/sites"
+              icon={Globe}
+              label="All Sites"
+              active={Boolean(pathname?.startsWith('/admin/collections/sites'))}
+              collapsed={collapsed}
+            />
 
-        {/* Globals */}
-        {!collapsed && (
-          <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
-            Settings
-          </p>
+            {siteContextLinks.length > 0 && !collapsed && (
+              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+                Site Context
+              </p>
+            )}
+            {siteContextLinks.map((link) => (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                icon={link.icon}
+                label={link.label}
+                active={pathname === link.href || Boolean(pathname?.startsWith(link.href + '/'))}
+                collapsed={collapsed}
+              />
+            ))}
+
+            {!collapsed && (
+              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+                Admin
+              </p>
+            )}
+            <NavLink
+              href="/admin/collections/users"
+              icon={Users}
+              label="Users"
+              active={Boolean(pathname?.startsWith('/admin/collections/users'))}
+              collapsed={collapsed}
+            />
+            <NavLink
+              href="/admin/trash"
+              icon={Trash2}
+              label="Trash"
+              active={pathname === '/admin/trash'}
+              collapsed={collapsed}
+            />
+          </>
         )}
-        <NavLink
-          href="/admin/collections/users"
-          icon={Users}
-          label="Users"
-          active={pathname.startsWith('/admin/collections/users')}
-          collapsed={collapsed}
-        />
-        <NavLink
-          href="/admin/trash"
-          icon={Trash2}
-          label="Trash"
-          active={pathname === '/admin/trash'}
-          collapsed={collapsed}
-        />
+
+        {/* ── Client navigation ───────────────────────────────────── */}
+        {!isSuperAdmin && (
+          <>
+            {siteDocId ? (
+              <>
+                <NavLink
+                  href={`/admin/collections/sites/${siteDocId}`}
+                  icon={LayoutDashboard}
+                  label="Overview"
+                  active={pathname === `/admin/collections/sites/${siteDocId}`}
+                  collapsed={collapsed}
+                />
+
+                {!collapsed && (
+                  <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+                    My Site
+                  </p>
+                )}
+                {siteContextLinks.map((link) => (
+                  <NavLink
+                    key={link.href}
+                    href={link.href}
+                    icon={link.icon}
+                    label={link.label}
+                    active={
+                      pathname === link.href || Boolean(pathname?.startsWith(link.href + '/'))
+                    }
+                    collapsed={collapsed}
+                  />
+                ))}
+              </>
+            ) : (
+              <NavLink
+                href="/admin"
+                icon={LayoutDashboard}
+                label="Dashboard"
+                active={pathname === '/admin'}
+                collapsed={collapsed}
+              />
+            )}
+
+            {!collapsed && (
+              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+                Settings
+              </p>
+            )}
+            <NavLink
+              href="/admin/trash"
+              icon={Trash2}
+              label="Trash"
+              active={pathname === '/admin/trash'}
+              collapsed={collapsed}
+            />
+          </>
+        )}
       </nav>
 
       {/* Footer: user */}

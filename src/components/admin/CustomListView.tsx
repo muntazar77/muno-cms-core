@@ -134,7 +134,8 @@ const STATUS_VARIANT_CLASSES: Record<string, string> = {
 }
 
 const ROLE_VARIANT_CLASSES: Record<string, string> = {
-  admin: 'bg-[var(--cms-info-soft)] text-[var(--cms-info-text)] border-[var(--cms-info-soft)]',
+  'super-admin':
+    'bg-[var(--cms-info-soft)] text-[var(--cms-info-text)] border-[var(--cms-info-soft)]',
   client:
     'bg-[var(--cms-warning-soft)] text-[var(--cms-warning-text)] border-[var(--cms-warning-soft)]',
 }
@@ -609,15 +610,6 @@ export default function CustomListView() {
               {`${totalDocs.toLocaleString()} ${totalDocs === 1 ? singularLabel.toLowerCase() : pluralLabel.toLowerCase()}`}
             </p>
           </div>
-
-          {!isTrashView && hasCreatePermission && newDocURL && (
-            <Link href={newDocURL}>
-              <Button className="rounded-xl bg-[var(--cms-primary)] px-4 text-white shadow-sm transition-colors hover:bg-[var(--cms-primary-hover)]">
-                <Plus className="mr-1.5 h-4 w-4" />
-                New {singularLabel}
-              </Button>
-            </Link>
-          )}
         </div>
 
         {docs.length === 0 ? (

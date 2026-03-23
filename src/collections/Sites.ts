@@ -92,9 +92,9 @@ export const Sites: CollectionConfig = {
     },
   },
   access: {
-    read: access.adminOnly,
+    read: access.siteOwnerOrAdmin,
     create: access.adminOnly,
-    update: access.adminOnly,
+    update: access.siteOwnerOrAdmin,
     delete: access.adminOnly,
   },
   hooks: {
@@ -204,6 +204,14 @@ export const Sites: CollectionConfig = {
               defaultValue: 'UTC',
               admin: {
                 description: 'IANA timezone string such as Europe/Paris or America/New_York.',
+              },
+            },
+            {
+              name: 'owner',
+              type: 'relationship',
+              relationTo: 'users',
+              admin: {
+                description: 'The primary client user who manages this site.',
               },
             },
           ],

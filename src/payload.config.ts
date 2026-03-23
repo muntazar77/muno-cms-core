@@ -30,6 +30,7 @@ export default buildConfig({
       ],
       Nav: '/components/admin/Sidebar#default',
       providers: ['/components/admin/GlobalProvider#default'],
+      afterLogin: ['/components/admin/AfterLoginRedirect#default'],
 
       views: {
         dashboard: {

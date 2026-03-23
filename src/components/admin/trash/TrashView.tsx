@@ -124,7 +124,7 @@ function timeAgo(value: string | null): string {
 
 export default function TrashView() {
   const { user } = useAuth()
-  const isAdmin = (user as { role?: string } | null)?.role === 'admin'
+  const isAdmin = (user as { role?: string } | null)?.role === 'super-admin'
 
   const [items, setItems] = useState<TrashItem[]>([])
   const [totalDocs, setTotalDocs] = useState(0)

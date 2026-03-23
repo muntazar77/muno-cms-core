@@ -37,10 +37,9 @@ export const siteIdField: Field = {
     position: 'sidebar',
     description: 'Site context is assigned automatically in normal workflows.',
     condition: (data, _siblingData, { user }) => {
-      const role =
-        user && typeof user === 'object' && 'role' in user ? String(user.role ?? '') : ''
+      const role = user && typeof user === 'object' && 'role' in user ? String(user.role ?? '') : ''
 
-      if (role !== 'admin') return false
+      if (role !== 'super-admin') return false
 
       // Expose only for admin edge-case edits, not during first create step.
       return Boolean(data && typeof data === 'object' && 'id' in data && data.id)
@@ -69,7 +68,7 @@ export const siteIdField: Field = {
         // Avoid forcing admin fallback (e.g. default-site) when explicit context is missing.
         if (!value && req.user) {
           const user = req.user as { role?: string; siteId?: string }
-          if (user.role !== 'admin') {
+          if (user.role !== 'super-admin') {
             return user.siteId ?? value
           }
         }

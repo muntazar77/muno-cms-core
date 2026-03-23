@@ -30,7 +30,7 @@ function getUser(req: { user?: unknown }): UserWithRole | null {
 }
 
 function isAdmin(user: UserWithRole | null): boolean {
-  return user?.role === 'admin'
+  return user?.role === 'super-admin'
 }
 
 function notDeletedConstraint(): Where {
@@ -114,6 +114,23 @@ const adminFieldUpdate: FieldAccess = ({ req }) => {
   return isAdmin(user)
 }
 
+// ─── Sites Access ────────────────────────────────────────────────────
+
+/**
+ * Super-admin → all non-deleted sites
+ * Client → only sites matching their siteId
+ * Anonymous → no access
+ */
+const siteOwnerOrAdmin: Access = ({ req }) => {
+  const user = getUser(req)
+  if (!user) return false
+  if (isAdmin(user)) return notDeletedConstraint()
+  if (!user.siteId) return false
+  return {
+    and: [{ siteId: { equals: user.siteId } }, notDeletedConstraint()],
+  }
+}
+
 // ─── Globals Access ──────────────────────────────────────────────────
 
 /** Read global: anyone. Update global: admin only. */
@@ -130,6 +147,7 @@ export const access = {
   authenticated,
   adminOnly,
   siteScoped,
+  siteOwnerOrAdmin,
   publicOrSiteScoped,
   publicReadSiteScoped,
   adminFieldUpdate,

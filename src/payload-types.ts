@@ -133,7 +133,7 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
-  role: 'admin' | 'client';
+  role: 'super-admin' | 'client';
   /**
    * The site this user belongs to.
    */
@@ -183,6 +183,10 @@ export interface Site {
    * IANA timezone string such as Europe/Paris or America/New_York.
    */
   timezone?: string | null;
+  /**
+   * The primary client user who manages this site.
+   */
+  owner?: (number | null) | User;
   logo?: (number | null) | Media;
   favicon?: (number | null) | Media;
   primaryColor?: string | null;
@@ -757,6 +761,7 @@ export interface SitesSelect<T extends boolean = true> {
   status?: T;
   defaultLanguage?: T;
   timezone?: T;
+  owner?: T;
   logo?: T;
   favicon?: T;
   primaryColor?: T;
