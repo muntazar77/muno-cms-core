@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth, useConfig } from '@payloadcms/ui'
 import { useRouter } from 'next/navigation'
 
-/**
- * After login, redirect client users to their site workspace.
- * Super-admins go to the default dashboard.
- */
+
 export default function AfterLoginRedirect() {
   const { user } = useAuth()
   const { config } = useConfig()
