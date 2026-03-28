@@ -10,12 +10,7 @@
  *   hooks: softDeleteHooks
  */
 
-import type {
-  CollectionBeforeChangeHook,
-  CollectionBeforeDeleteHook,
-  Field,
-  Where,
-} from 'payload'
+import type { CollectionBeforeChangeHook, CollectionBeforeDeleteHook, Field, Where } from 'payload'
 
 // ─── Fields ──────────────────────────────────────────────────────────
 
@@ -147,6 +142,7 @@ export function excludeDeleted(accessResult: boolean | Where): boolean | Where {
  * Used by the global Trash view to query across collections.
  */
 export const SOFT_DELETE_COLLECTIONS = [
+  'users',
   'pages',
   'media',
   'forms',

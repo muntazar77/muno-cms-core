@@ -53,6 +53,13 @@ const adminOnly: Access = ({ req }) => {
   return isAdmin(user)
 }
 
+/** Admin only, excluding soft-deleted docs */
+const adminOnlyNotDeleted: Access = ({ req }) => {
+  const user = getUser(req)
+  if (!isAdmin(user)) return false
+  return notDeletedConstraint()
+}
+
 /**
  * Admin → full access (excluding deleted)
  * Client → only items matching their siteId (excluding deleted)
@@ -173,6 +180,7 @@ export const access = {
   anyone,
   authenticated,
   adminOnly,
+  adminOnlyNotDeleted,
   siteScoped,
   siteOwnerOrAdmin,
   publicOrSiteScoped,

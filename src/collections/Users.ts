@@ -5,6 +5,7 @@ import type {
 } from 'payload'
 import { access } from '@/access'
 import { APIError } from 'payload'
+import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
 
 /**
  * Prevent self-demotion: a super-admin cannot remove their own super-admin role.
@@ -78,13 +79,13 @@ export const Users: CollectionConfig = {
   auth: true,
   hooks: {
     beforeChange: [preventSelfDemotion],
-    beforeDelete: [preventSuperAdminDelete],
+    beforeDelete: [preventSuperAdminDelete, ...softDeleteHooks.beforeDelete],
   },
   access: {
-    read: access.anyone,
+    read: access.adminOnlyNotDeleted,
     create: access.adminOnly,
     update: access.authenticated,
-    delete: access.adminOnly,
+    delete: access.softDeleteOnly,
   },
   fields: [
     {
@@ -114,5 +115,6 @@ export const Users: CollectionConfig = {
         update: access.adminFieldUpdate,
       },
     },
+    ...softDeleteFields,
   ],
 }

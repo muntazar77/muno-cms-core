@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
   Image as ImageIcon,
@@ -81,7 +81,14 @@ function NavLink({
 
 function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const pathname = usePathname()
+  const router = useRouter()
   const { user, logOut } = useAuth()
+  async function handleLogOut() {
+    await logOut()
+    router.replace('/admin/login')
+    router.refresh()
+  }
+
   const { config } = useConfig()
   const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : 'AD'
   const userRole = user && 'role' in user ? String(user.role ?? '') : ''
@@ -283,10 +290,10 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
               collapsed={collapsed}
             />
             <NavLink
-              href="/admin/trash"
+              href="/admin/collections/trash"
               icon={Trash2}
               label="Trash"
-              active={pathname === '/admin/trash'}
+              active={pathname === '/admin/collections/trash'}
               collapsed={collapsed}
             />
           </>
@@ -339,10 +346,10 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                   </p>
                 )}
                 <NavLink
-                  href="/admin/trash"
+                  href="/admin/collections/trash"
                   icon={Trash2}
                   label="Site Trash"
-                  active={pathname === '/admin/trash'}
+                  active={pathname === '/admin/collections/trash'}
                   collapsed={collapsed}
                 />
               </>
@@ -391,7 +398,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                 {user?.email ?? '—'}
               </p>
               <button
-                onClick={() => void logOut()}
+                onClick={() => void handleLogOut()}
                 title="Log out"
                 className="flex size-7 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:text-gray-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >

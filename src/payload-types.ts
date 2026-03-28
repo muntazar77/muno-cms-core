@@ -138,6 +138,9 @@ export interface User {
    * The site this user belongs to.
    */
   siteId?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -739,6 +742,9 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
   siteId?: T;
+  isDeleted?: T;
+  deletedAt?: T;
+  deletedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

@@ -20,6 +20,7 @@ import {
   ClipboardList,
   Inbox,
   Briefcase,
+  Users,
   Filter,
   X,
   CheckSquare,
@@ -67,6 +68,7 @@ interface TrashResponse {
 // ─── Constants ───────────────────────────────────────────────────────
 
 const COLLECTION_ICONS: Record<string, LucideIcon> = {
+  users: Users,
   pages: FileText,
   media: ImageIcon,
   forms: ClipboardList,
@@ -75,6 +77,7 @@ const COLLECTION_ICONS: Record<string, LucideIcon> = {
 }
 
 const COLLECTION_COLORS: Record<string, string> = {
+  users: 'bg-cyan-50 text-cyan-700 border-cyan-100',
   pages: 'bg-blue-50 text-blue-600 border-blue-100',
   media: 'bg-purple-50 text-purple-600 border-purple-100',
   forms: 'bg-amber-50 text-amber-600 border-amber-100',
@@ -82,7 +85,7 @@ const COLLECTION_COLORS: Record<string, string> = {
   services: 'bg-rose-50 text-rose-600 border-rose-100',
 }
 
-const COLLECTION_FILTERS = [
+const BASE_COLLECTION_FILTERS = [
   { slug: '', label: 'All' },
   { slug: 'pages', label: 'Pages' },
   { slug: 'media', label: 'Media' },
@@ -128,6 +131,9 @@ export default function TrashView() {
   const isAdmin = userRole === 'super-admin'
   const canRestore = Boolean(user) // Both roles can restore
   const canPermanentDelete = isAdmin // Only super-admin can permanently delete
+  const collectionFilters = isAdmin
+    ? [...BASE_COLLECTION_FILTERS, { slug: 'users', label: 'Users' }]
+    : BASE_COLLECTION_FILTERS
 
   const [items, setItems] = useState<TrashItem[]>([])
   const [totalDocs, setTotalDocs] = useState(0)
@@ -407,7 +413,7 @@ export default function TrashView() {
       {/* Collection Filters */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Filter className="h-4 w-4 text-[var(--cms-text-muted)]" />
-        {COLLECTION_FILTERS.map((f) => (
+        {collectionFilters.map((f) => (
           <button
             key={f.slug}
             onClick={() => setCollectionFilter(f.slug)}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Globe, Loader2, Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
@@ -24,8 +24,52 @@ export default function CreateSiteDialog() {
   const [domain, setDomain] = useState('')
   const [subdomain, setSubdomain] = useState('')
   const [defaultLanguage, setDefaultLanguage] = useState('en')
+  const [owner, setOwner] = useState('')
+  const [ownerOptions, setOwnerOptions] = useState<Array<{ id: string; email: string }>>([])
+  const [ownersLoading, setOwnersLoading] = useState(false)
 
   const suggestedSlug = useMemo(() => slugify(siteName), [siteName])
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadOwners() {
+      setOwnersLoading(true)
+      try {
+        const response = await fetch(
+          '/api/users?where[role][equals]=client&limit=200&depth=0&sort=email',
+          {
+            credentials: 'include',
+          },
+        )
+        if (!response.ok) throw new Error('Failed to load owners')
+
+        const payload = (await response.json()) as {
+          docs?: Array<{ id?: string | number; email?: string }>
+        }
+
+        if (cancelled) return
+
+        const options = (payload.docs ?? [])
+          .filter((doc) => doc.id && doc.email)
+          .map((doc) => ({ id: String(doc.id), email: String(doc.email) }))
+
+        setOwnerOptions(options)
+      } catch {
+        if (!cancelled) {
+          setOwnerOptions([])
+          toast.error('Unable to load client owners list.')
+        }
+      } finally {
+        if (!cancelled) setOwnersLoading(false)
+      }
+    }
+
+    void loadOwners()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -42,6 +86,11 @@ export default function CreateSiteDialog() {
 
     if (!normalizedSiteSlug) {
       toast.error('Slug is required.')
+      return
+    }
+
+    if (!owner) {
+      toast.error('Owner is required.')
       return
     }
 
@@ -65,6 +114,7 @@ export default function CreateSiteDialog() {
           domain: normalizedDomain || undefined,
           subdomain: normalizedSubdomain || undefined,
           defaultLanguage: defaultLanguage.trim() || 'en',
+          owner,
           status: 'active',
         }),
       })
@@ -73,7 +123,10 @@ export default function CreateSiteDialog() {
         throw new Error(`Create failed with status ${response.status}`)
       }
 
-      const payload = (await response.json()) as { doc?: { id?: number | string }; id?: number | string }
+      const payload = (await response.json()) as {
+        doc?: { id?: number | string }
+        id?: number | string
+      }
       const createdID = payload?.doc?.id ?? payload?.id
 
       toast.success('Site created successfully.')
@@ -195,6 +248,27 @@ export default function CreateSiteDialog() {
               />
             </label>
 
+            <label>
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-(--cms-text-muted)">
+                Owner
+              </span>
+              <select
+                value={owner}
+                onChange={(event) => setOwner(event.target.value)}
+                className="mt-2 h-11 w-full rounded-xl border border-(--cms-input-border) bg-(--cms-input-bg) px-3 text-sm text-(--cms-text) outline-none transition focus:border-(--cms-primary) focus:ring-4 focus:ring-(--cms-input-focus-ring)"
+                disabled={ownersLoading}
+              >
+                <option value="">
+                  {ownersLoading ? 'Loading client users...' : 'Select account owner'}
+                </option>
+                {ownerOptions.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.email}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             <div className="rounded-xl border border-(--cms-primary-soft) bg-(--cms-primary-soft) p-3 text-xs text-(--cms-primary-text)">
               <div className="flex items-center gap-2">
                 <Globe className="size-3.5" />
@@ -203,8 +277,6 @@ export default function CreateSiteDialog() {
             </div>
 
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <LinkButton href="/admin/collections/sites/create" label="Open Full Create Form" />
-
               <div className="flex gap-2">
                 <Dialog.Close asChild>
                   <Button type="button" variant="outline" className="h-11 rounded-xl">
@@ -225,16 +297,5 @@ export default function CreateSiteDialog() {
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
-  )
-}
-
-function LinkButton({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      className="inline-flex h-11 items-center rounded-xl px-3 text-sm font-medium text-(--cms-text-secondary) no-underline transition hover:bg-(--cms-bg-elevated) hover:text-(--cms-text)"
-    >
-      {label}
-    </a>
   )
 }

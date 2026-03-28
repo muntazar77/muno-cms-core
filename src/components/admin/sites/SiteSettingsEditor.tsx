@@ -1,6 +1,7 @@
 'use client'
 
 import { startTransition, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Check,
   ChevronRight,
@@ -30,6 +31,11 @@ interface MediaOption {
   label: string
 }
 
+interface OwnerOption {
+  id: string
+  email: string
+}
+
 interface SiteSettingsShape {
   id: string
   siteId: string
@@ -40,6 +46,7 @@ interface SiteSettingsShape {
   status: string
   defaultLanguage: string
   timezone: string
+  owner: string
   logo: string
   favicon: string
   primaryColor: string
@@ -74,6 +81,8 @@ interface SiteSettingsEditorProps {
   previewURL: string
   liveURL: string
   mediaOptions: MediaOption[]
+  ownerOptions: OwnerOption[]
+  canEditOwner: boolean
   site: SiteSettingsShape
 }
 
@@ -227,11 +236,15 @@ export default function SiteSettingsEditor({
   previewURL,
   liveURL,
   mediaOptions,
+  ownerOptions,
+  canEditOwner,
   site,
 }: SiteSettingsEditorProps) {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<TabKey>('general')
   const [formState, setFormState] = useState<SiteSettingsShape>(site)
   const [isSaving, setIsSaving] = useState(false)
+  const [isDeletingSite, setIsDeletingSite] = useState(false)
 
   function setField<K extends keyof SiteSettingsShape>(key: K, value: SiteSettingsShape[K]) {
     setFormState((current) => ({ ...current, [key]: value }))
@@ -267,6 +280,7 @@ export default function SiteSettingsEditor({
           headerNav: sanitizeLinks(formState.headerNav),
           footerLinks: sanitizeLinks(formState.footerLinks),
           socialLinks: sanitizeLinks(formState.socialLinks),
+          owner: formState.owner || null,
           logo: formState.logo || null,
           favicon: formState.favicon || null,
           ogImage: formState.ogImage || null,
@@ -291,6 +305,42 @@ export default function SiteSettingsEditor({
         toast.error(error instanceof Error ? error.message : 'Unable to save site settings.')
       } finally {
         setIsSaving(false)
+      }
+    })
+  }
+
+  function handleMoveSiteToTrash() {
+    if (!canEditOwner) return
+
+    const confirmed = window.confirm(
+      `Move site "${formState.siteName || formState.siteId}" to trash? You can restore it from Trash later.`,
+    )
+    if (!confirmed) return
+
+    setIsDeletingSite(true)
+
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/sites/${formState.id}`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ isDeleted: true }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`Delete failed with status ${response.status}`)
+        }
+
+        toast.success('Site moved to trash.')
+        router.replace('/admin/collections/sites')
+        router.refresh()
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Unable to move site to trash.')
+      } finally {
+        setIsDeletingSite(false)
       }
     })
   }
@@ -343,6 +393,17 @@ export default function SiteSettingsEditor({
                 )}
                 {isSaving ? 'Saving...' : 'Save changes'}
               </button>
+              {canEditOwner && (
+                <button
+                  type="button"
+                  onClick={handleMoveSiteToTrash}
+                  disabled={isDeletingSite}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--cms-danger-soft)] bg-[var(--cms-danger-soft)] px-5 text-sm font-semibold text-[var(--cms-danger-text)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Trash2 className="size-4" />
+                  {isDeletingSite ? 'Moving to Trash...' : 'Move Site to Trash'}
+                </button>
+              )}
             </div>
           </div>
 
@@ -438,6 +499,23 @@ export default function SiteSettingsEditor({
                     className={fieldInputClassName()}
                   />
                 </label>
+                {canEditOwner && (
+                  <label>
+                    <span className={fieldLabelClassName()}>Owner</span>
+                    <select
+                      value={formState.owner}
+                      onChange={(event) => setField('owner', event.target.value)}
+                      className={fieldInputClassName()}
+                    >
+                      <option value="">No owner assigned</option>
+                      {ownerOptions.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.email}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
               </div>
               <label className="mt-5 block">
                 <span className={fieldLabelClassName()}>Site Description</span>

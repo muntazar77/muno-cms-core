@@ -52,6 +52,7 @@ function getTitle(doc: Record<string, unknown>, collectionSlug: string): string 
 }
 
 const COLLECTION_LABELS: Record<string, string> = {
+  users: 'User',
   pages: 'Page',
   media: 'Media',
   forms: 'Form',
@@ -100,9 +101,9 @@ export async function GET(request: Request) {
       ? SOFT_DELETE_COLLECTIONS.filter((c) => c === filterCollection)
       : [...SOFT_DELETE_COLLECTIONS]
 
-    // Clients should not see sites in their trash (they don't manage sites)
+    // Clients should not see global entities in trash (they don't manage these)
     if (!isSuperAdmin) {
-      collections = collections.filter((c) => c !== 'sites') as typeof collections
+      collections = collections.filter((c) => c !== 'sites' && c !== 'users') as typeof collections
     }
 
     const allItems: TrashItem[] = []
@@ -120,6 +121,8 @@ export async function GET(request: Request) {
         if (search) {
           if (slug === 'media') {
             ;(where.and as Where[]).push({ alt: { contains: search } })
+          } else if (slug === 'users') {
+            ;(where.and as Where[]).push({ email: { contains: search } })
           } else if (slug !== 'form-submissions') {
             ;(where.and as Where[]).push({ title: { contains: search } })
           }

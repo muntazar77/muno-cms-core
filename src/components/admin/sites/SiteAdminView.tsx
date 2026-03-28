@@ -70,6 +70,7 @@ interface SiteDoc {
   phone?: string | null
   whatsapp?: string | null
   address?: string | null
+  owner?: number | { id?: number | string; email?: string | null } | null
 }
 
 interface SectionConfig {
@@ -142,6 +143,12 @@ function formatDate(value?: string | null): string {
 }
 
 function toRelationshipId(value: SiteDoc['logo']): string {
+  if (!value) return ''
+  if (typeof value === 'object') return String(value.id ?? '')
+  return String(value)
+}
+
+function toOwnerRelationshipId(value: SiteDoc['owner']): string {
   if (!value) return ''
   if (typeof value === 'object') return String(value.id ?? '')
   return String(value)
@@ -398,7 +405,7 @@ async function renderSection(
   const docs = result.docs as unknown as Array<Record<string, unknown>>
   const SectionIcon = configForSection.icon
   const isPagesSection = sectionKey === 'pages'
-  const previewURL = `/preview?siteId=${encodeURIComponent(siteKey)}`
+  const previewURL = `/preview/${encodeURIComponent(siteKey)}`
   const liveURL = toAbsoluteSiteURL(site)
 
   return (
@@ -423,6 +430,13 @@ async function renderSection(
             <div className="flex flex-wrap items-center gap-3">
               <BackToWorkspaceLink href="/admin/collections/sites" label="All Sites" />
               <SitePreviewActions previewURL={previewURL} liveURL={liveURL} />
+              <Link
+                href={`/admin/collections/${configForSection.collection}?where[siteId][equals]=${encodeURIComponent(siteKey)}`}
+              >
+                <Button variant="outline" className="h-11 rounded-xl px-4 text-sm font-semibold">
+                  Manage & Delete
+                </Button>
+              </Link>
               <Link href={configForSection.createHref(siteKey)}>
                 <Button className="h-11 rounded-xl bg-(--cms-primary) px-5 text-sm font-semibold text-white hover:bg-(--cms-primary-hover)">
                   New {configForSection.label.slice(0, -1)}
@@ -498,8 +512,9 @@ async function renderSettings(
   site: SiteDoc,
 ) {
   const siteKey = String(site.siteId ?? '')
-  const previewURL = `/preview?siteId=${encodeURIComponent(siteKey)}`
+  const previewURL = `/preview/${encodeURIComponent(siteKey)}`
   const liveURL = toAbsoluteSiteURL(site)
+  const canEditOwner = isAdmin(user)
   const media = await payload.find({
     collection: 'media',
     depth: 0,
@@ -520,12 +535,36 @@ async function renderSettings(
     label: String(item.alt ?? item.filename ?? `Media #${String(item.id)}`),
   }))
 
+  const ownerOptions = canEditOwner
+    ? (
+        await payload.find({
+          collection: 'users',
+          depth: 0,
+          limit: 200,
+          sort: 'email',
+          user,
+          overrideAccess: false,
+          where: {
+            and: [
+              { role: { equals: 'client' } },
+              { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
+            ],
+          },
+        })
+      ).docs.map((doc) => ({
+        id: String(doc.id),
+        email: String((doc as { email?: string }).email ?? `User #${String(doc.id)}`),
+      }))
+    : []
+
   return (
     <SiteSettingsEditor
       backHref={navHref(String(site.id), 'pages')}
       previewURL={previewURL}
       liveURL={liveURL}
       mediaOptions={mediaOptions}
+      ownerOptions={ownerOptions}
+      canEditOwner={canEditOwner}
       site={{
         id: String(site.id),
         siteId: siteKey,
@@ -536,6 +575,7 @@ async function renderSettings(
         status: site.status ?? 'active',
         defaultLanguage: site.defaultLanguage ?? 'en',
         timezone: site.timezone ?? 'UTC',
+        owner: toOwnerRelationshipId(site.owner),
         logo: toRelationshipId(site.logo),
         favicon: toRelationshipId(site.favicon),
         primaryColor: site.primaryColor ?? '#2563eb',

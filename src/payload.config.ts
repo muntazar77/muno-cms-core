@@ -42,7 +42,7 @@ export default buildConfig({
           exact: true,
         },
         trash: {
-          path: '/trash',
+          path: '/collections/trash',
           Component: '/components/admin/trash/TrashView',
           exact: true,
         },
