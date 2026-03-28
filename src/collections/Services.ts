@@ -38,7 +38,10 @@ export const Services: CollectionConfig = {
           depth: 0,
         })
         if (existing.totalDocs > 0) {
-          throw new APIError(`A service with slug "${data.slug}" already exists for this site.`, 400)
+          throw new APIError(
+            `A service with slug "${data.slug}" already exists for this site.`,
+            400,
+          )
         }
         return data
       },

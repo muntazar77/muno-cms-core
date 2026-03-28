@@ -113,9 +113,7 @@ export async function GET(request: Request) {
           and: [
             { isDeleted: { equals: true } },
             // Client: only see their own site's trash
-            ...(!isSuperAdmin && user.siteId
-              ? [{ siteId: { equals: user.siteId } }]
-              : []),
+            ...(!isSuperAdmin && user.siteId ? [{ siteId: { equals: user.siteId } }] : []),
           ],
         }
 
@@ -211,7 +209,10 @@ export async function POST(request: Request) {
 
     if (action === 'delete') {
       if (user.role !== 'super-admin') {
-        return NextResponse.json({ error: 'Only super-admins can permanently delete' }, { status: 403 })
+        return NextResponse.json(
+          { error: 'Only super-admins can permanently delete' },
+          { status: 403 },
+        )
       }
       const { collection, id } = body as { collection: string; id: string }
       if (!validCollections.has(collection)) {
@@ -239,7 +240,10 @@ export async function POST(request: Request) {
 
     if (action === 'bulk-delete') {
       if (user.role !== 'super-admin') {
-        return NextResponse.json({ error: 'Only super-admins can permanently delete' }, { status: 403 })
+        return NextResponse.json(
+          { error: 'Only super-admins can permanently delete' },
+          { status: 403 },
+        )
       }
       const { items } = body as { items: Array<{ collection: string; id: string }> }
       for (const item of items) {

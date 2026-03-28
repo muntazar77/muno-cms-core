@@ -214,7 +214,8 @@ export const Sites: CollectionConfig = {
                 role: { equals: 'client' },
               },
               admin: {
-                description: 'The client user who manages this site. Only client-role users are shown.',
+                description:
+                  'The client user who manages this site. Only client-role users are shown.',
               },
             },
           ],

@@ -144,7 +144,8 @@ export const Pages: CollectionConfig = {
               required: true,
               index: true,
               admin: {
-                description: 'URL path without leading slash, e.g. "about" not "/about". Unique per site.',
+                description:
+                  'URL path without leading slash, e.g. "about" not "/about". Unique per site.',
               },
             },
             {
