@@ -114,7 +114,7 @@ export default function CreateSiteDialog() {
           domain: normalizedDomain || undefined,
           subdomain: normalizedSubdomain || undefined,
           defaultLanguage: defaultLanguage.trim() || 'en',
-          owner,
+          owner: Number(owner),
           status: 'active',
         }),
       })

@@ -290,10 +290,10 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
               collapsed={collapsed}
             />
             <NavLink
-              href="/admin/collections/trash"
+              href="/admin/trash"
               icon={Trash2}
               label="Trash"
-              active={pathname === '/admin/collections/trash'}
+              active={pathname === '/admin/trash'}
               collapsed={collapsed}
             />
           </>
@@ -346,10 +346,10 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                   </p>
                 )}
                 <NavLink
-                  href="/admin/collections/trash"
+                  href="/admin/trash"
                   icon={Trash2}
                   label="Site Trash"
-                  active={pathname === '/admin/collections/trash'}
+                  active={pathname === '/admin/trash'}
                   collapsed={collapsed}
                 />
               </>

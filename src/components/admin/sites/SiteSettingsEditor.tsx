@@ -280,7 +280,7 @@ export default function SiteSettingsEditor({
           headerNav: sanitizeLinks(formState.headerNav),
           footerLinks: sanitizeLinks(formState.footerLinks),
           socialLinks: sanitizeLinks(formState.socialLinks),
-          owner: formState.owner || null,
+          owner: formState.owner ? Number(formState.owner) : null,
           logo: formState.logo || null,
           favicon: formState.favicon || null,
           ogImage: formState.ogImage || null,

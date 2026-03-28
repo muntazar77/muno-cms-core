@@ -63,6 +63,32 @@ const preventSuperAdminDelete: CollectionBeforeDeleteHook = async ({ req, id }) 
   }
 }
 
+/**
+ * Prevent deletion of users who are assigned as owners of one or more sites.
+ * The user must be unassigned from all sites before they can be deleted.
+ */
+const preventDeleteIfHasSites: CollectionBeforeDeleteHook = async ({ req, id }) => {
+  const sites = await req.payload.find({
+    collection: 'sites',
+    depth: 0,
+    limit: 1,
+    where: {
+      and: [
+        { owner: { equals: id } },
+        { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
+      ],
+    },
+    req,
+  })
+
+  if (sites.totalDocs > 0) {
+    throw new APIError(
+      'This user is assigned as the owner of one or more sites. Remove them as owner before deleting.',
+      400,
+    )
+  }
+}
+
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
@@ -79,7 +105,7 @@ export const Users: CollectionConfig = {
   auth: true,
   hooks: {
     beforeChange: [preventSelfDemotion],
-    beforeDelete: [preventSuperAdminDelete, ...softDeleteHooks.beforeDelete],
+    beforeDelete: [preventSuperAdminDelete, preventDeleteIfHasSites, ...softDeleteHooks.beforeDelete],
   },
   access: {
     read: access.adminOnlyNotDeleted,
