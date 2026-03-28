@@ -124,7 +124,10 @@ function timeAgo(value: string | null): string {
 
 export default function TrashView() {
   const { user } = useAuth()
-  const isAdmin = (user as { role?: string } | null)?.role === 'super-admin'
+  const userRole = (user as { role?: string } | null)?.role ?? ''
+  const isAdmin = userRole === 'super-admin'
+  const canRestore = Boolean(user) // Both roles can restore
+  const canPermanentDelete = isAdmin // Only super-admin can permanently delete
 
   const [items, setItems] = useState<TrashItem[]>([])
   const [totalDocs, setTotalDocs] = useState(0)
@@ -323,7 +326,8 @@ export default function TrashView() {
               Trash
             </h1>
             <p className="mt-0.5 text-[13px] text-[var(--cms-text-muted)]">
-              {totalDocs} deleted {totalDocs === 1 ? 'item' : 'items'} across all collections
+              {totalDocs} deleted {totalDocs === 1 ? 'item' : 'items'}
+              {isAdmin ? ' across all collections' : ' for your site'}
             </p>
           </div>
         </div>
@@ -351,7 +355,7 @@ export default function TrashView() {
         </div>
 
         {/* Bulk Actions */}
-        {hasSelection && isAdmin && (
+        {hasSelection && canRestore && (
           <div className="flex items-center gap-2">
             <span className="text-[13px] font-medium text-[var(--cms-text-secondary)]">
               {selectedIds.size} selected
@@ -375,25 +379,27 @@ export default function TrashView() {
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
               Restore
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 text-[13px]"
-              disabled={actionLoading}
-              onClick={() =>
-                setConfirm({
-                  open: true,
-                  title: 'Permanently Delete Selected',
-                  description: `Delete ${selectedIds.size} items permanently? This cannot be undone.`,
-                  label: 'Delete Permanently',
-                  variant: 'danger',
-                  action: bulkDelete,
-                })
-              }
-            >
-              <ShieldAlert className="mr-1.5 h-3.5 w-3.5" />
-              Delete
-            </Button>
+            {canPermanentDelete && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 text-[13px]"
+                disabled={actionLoading}
+                onClick={() =>
+                  setConfirm({
+                    open: true,
+                    title: 'Permanently Delete Selected',
+                    description: `Delete ${selectedIds.size} items permanently? This cannot be undone.`,
+                    label: 'Delete Permanently',
+                    variant: 'danger',
+                    action: bulkDelete,
+                  })
+                }
+              >
+                <ShieldAlert className="mr-1.5 h-3.5 w-3.5" />
+                Delete
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -442,7 +448,7 @@ export default function TrashView() {
         ) : (
           <>
             {/* Select All Header */}
-            {isAdmin && (
+            {canRestore && (
               <div className="flex items-center gap-3 border-b border-[var(--cms-border-subtle)] px-6 py-3">
                 <button
                   onClick={toggleSelectAll}
@@ -476,7 +482,7 @@ export default function TrashView() {
                     )}
                   >
                     {/* Checkbox */}
-                    {isAdmin && (
+                    {canRestore && (
                       <button
                         onClick={() => toggleSelect(item)}
                         className="shrink-0 text-[var(--cms-text-muted)] transition-colors hover:text-[var(--cms-text)]"
@@ -533,7 +539,7 @@ export default function TrashView() {
                     </div>
 
                     {/* Actions */}
-                    {isAdmin && (
+                    {canRestore && (
                       <div className="flex shrink-0 items-center gap-1.5">
                         <Button
                           variant="ghost"
@@ -554,25 +560,27 @@ export default function TrashView() {
                           <RotateCcw className="mr-1 h-3.5 w-3.5" />
                           Restore
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 rounded-lg px-3 text-[12px] font-medium text-red-500 hover:bg-red-50 hover:text-red-700"
-                          disabled={actionLoading}
-                          onClick={() =>
-                            setConfirm({
-                              open: true,
-                              title: 'Delete Permanently',
-                              description: `Permanently delete "${item.title}"? This cannot be undone.`,
-                              label: 'Delete Permanently',
-                              variant: 'danger',
-                              action: () => permanentDeleteItem(item),
-                            })
-                          }
-                        >
-                          <ShieldAlert className="mr-1 h-3.5 w-3.5" />
-                          Delete
-                        </Button>
+                        {canPermanentDelete && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 rounded-lg px-3 text-[12px] font-medium text-red-500 hover:bg-red-50 hover:text-red-700"
+                            disabled={actionLoading}
+                            onClick={() =>
+                              setConfirm({
+                                open: true,
+                                title: 'Delete Permanently',
+                                description: `Permanently delete "${item.title}"? This cannot be undone.`,
+                                label: 'Delete Permanently',
+                                variant: 'danger',
+                                action: () => permanentDeleteItem(item),
+                              })
+                            }
+                          >
+                            <ShieldAlert className="mr-1 h-3.5 w-3.5" />
+                            Delete
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>

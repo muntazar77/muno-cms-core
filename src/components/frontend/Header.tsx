@@ -13,10 +13,11 @@ interface NavLink {
 
 interface HeaderProps {
   variant?: HeaderVariant
+  site?: Awaited<ReturnType<typeof getCurrentSite>>
 }
 
-export async function Header({ variant = 'default' }: HeaderProps) {
-  const site = await getCurrentSite(1)
+export async function Header({ variant = 'default', site: siteProp }: HeaderProps) {
+  const site = siteProp ?? (await getCurrentSite(1))
 
   const siteName = site?.siteName || 'Muno CMS'
   const logo = typeof site?.logo === 'object' && site?.logo !== null ? (site.logo as Media) : null

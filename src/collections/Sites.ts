@@ -95,7 +95,7 @@ export const Sites: CollectionConfig = {
     read: access.siteOwnerOrAdmin,
     create: access.adminOnly,
     update: access.siteOwnerOrAdmin,
-    delete: access.adminOnly,
+    delete: access.softDeleteOnly,
   },
   hooks: {
     ...softDeleteHooks,
@@ -210,8 +210,11 @@ export const Sites: CollectionConfig = {
               name: 'owner',
               type: 'relationship',
               relationTo: 'users',
+              filterOptions: {
+                role: { equals: 'client' },
+              },
               admin: {
-                description: 'The primary client user who manages this site.',
+                description: 'The client user who manages this site. Only client-role users are shown.',
               },
             },
           ],

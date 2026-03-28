@@ -5,6 +5,15 @@ export const ServicesCardsBlock: Block = {
   labels: { singular: 'Services Cards', plural: 'Services Cards Blocks' },
   fields: [
     {
+      name: 'mode',
+      type: 'select',
+      defaultValue: 'manual',
+      options: [
+        { label: 'Manual — define services inline', value: 'manual' },
+        { label: 'Dynamic — pull from Services collection', value: 'dynamic' },
+      ],
+    },
+    {
       name: 'style',
       type: 'select',
       defaultValue: 'cards',
@@ -22,9 +31,23 @@ export const ServicesCardsBlock: Block = {
       type: 'textarea',
     },
     {
+      name: 'limit',
+      type: 'number',
+      defaultValue: 12,
+      min: 1,
+      max: 50,
+      admin: {
+        description: 'Max services to display in dynamic mode.',
+        condition: (_, siblingData) => siblingData?.mode === 'dynamic',
+      },
+    },
+    {
       name: 'services',
       type: 'array',
       minRows: 1,
+      admin: {
+        condition: (_, siblingData) => siblingData?.mode !== 'dynamic',
+      },
       fields: [
         {
           name: 'title',

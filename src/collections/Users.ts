@@ -1,4 +1,8 @@
-import type { CollectionConfig, CollectionBeforeChangeHook } from 'payload'
+import type {
+  CollectionConfig,
+  CollectionBeforeChangeHook,
+  CollectionBeforeDeleteHook,
+} from 'payload'
 import { access } from '@/access'
 import { APIError } from 'payload'
 
@@ -39,6 +43,25 @@ const preventSelfDemotion: CollectionBeforeChangeHook = async ({
   return data
 }
 
+/**
+ * Prevent deletion of super-admin users.
+ * Client users can be deleted normally.
+ */
+const preventSuperAdminDelete: CollectionBeforeDeleteHook = async ({ req, id }) => {
+  const user = await req.payload.findByID({
+    collection: 'users',
+    id,
+    depth: 0,
+    req,
+  })
+  if (!user) return
+
+  const role = (user as unknown as Record<string, unknown>).role
+  if (role === 'super-admin') {
+    throw new APIError('Super-admin users cannot be deleted.', 403)
+  }
+}
+
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
@@ -55,6 +78,7 @@ export const Users: CollectionConfig = {
   auth: true,
   hooks: {
     beforeChange: [preventSelfDemotion],
+    beforeDelete: [preventSuperAdminDelete],
   },
   access: {
     read: access.anyone,

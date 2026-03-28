@@ -15,6 +15,7 @@ import {
   Trash2,
   Globe,
   Mail,
+  ExternalLink,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth, useConfig } from '@payloadcms/ui'
@@ -88,8 +89,9 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
     user && 'siteId' in user ? String((user as { siteId?: string }).siteId ?? '') : ''
   const isSuperAdmin = userRole === 'super-admin'
 
-  // ── Resolve client's site doc ID ──────────────────────────────────
+  // ── Resolve client's site doc ID and siteId slug ───────────────────
   const [clientSiteDocId, setClientSiteDocId] = useState<string>('')
+  const [clientSiteSlug, setClientSiteSlug] = useState<string>('')
 
   useEffect(() => {
     if (isSuperAdmin || !userSiteId) return
@@ -104,11 +106,12 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
       .then((data) => {
         const doc = data?.docs?.[0]
         if (doc?.id) setClientSiteDocId(String(doc.id))
+        if (doc?.siteId) setClientSiteSlug(String(doc.siteId))
       })
       .catch(() => {})
   }, [isSuperAdmin, userSiteId, config?.routes?.api])
 
-  // ── Super-admin: detect active site from URL ──────────────────────
+  // ── Super-admin: detect active site from URL and resolve its siteId ─
   const siteRouteMatch = pathname?.match(/^\/admin\/collections\/sites\/([^/?#]+)/)
   const matchedSiteSegment = siteRouteMatch?.[1] ?? ''
   const activeSiteDocID = ['create', 'versions', 'version', 'api', 'preview'].includes(
@@ -117,8 +120,25 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
     ? ''
     : matchedSiteSegment
 
+  const [activeSiteSlug, setActiveSiteSlug] = useState<string>('')
+
+  useEffect(() => {
+    if (!isSuperAdmin || !activeSiteDocID) {
+      setActiveSiteSlug('')
+      return
+    }
+    const apiRoute = (config?.routes?.api as string | undefined) ?? '/api'
+    fetch(`${apiRoute}/sites/${activeSiteDocID}?depth=0`, { credentials: 'include' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.siteId) setActiveSiteSlug(String(data.siteId))
+      })
+      .catch(() => setActiveSiteSlug(''))
+  }, [isSuperAdmin, activeSiteDocID, config?.routes?.api])
+
   // ── Build site context links (for both roles) ─────────────────────
   const siteDocId = isSuperAdmin ? activeSiteDocID : clientSiteDocId
+  const previewSiteSlug = isSuperAdmin ? activeSiteSlug : clientSiteSlug
   const siteContextLinks = siteDocId
     ? [
         {
@@ -240,6 +260,15 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                 collapsed={collapsed}
               />
             ))}
+            {previewSiteSlug && (
+              <NavLink
+                href={`/preview/${previewSiteSlug}`}
+                icon={ExternalLink}
+                label="Preview Site"
+                active={false}
+                collapsed={collapsed}
+              />
+            )}
 
             {!collapsed && (
               <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
@@ -293,6 +322,29 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                     collapsed={collapsed}
                   />
                 ))}
+
+                {previewSiteSlug && (
+                  <NavLink
+                    href={`/preview/${previewSiteSlug}`}
+                    icon={ExternalLink}
+                    label="Preview Site"
+                    active={false}
+                    collapsed={collapsed}
+                  />
+                )}
+
+                {!collapsed && (
+                  <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+                    Settings
+                  </p>
+                )}
+                <NavLink
+                  href="/admin/trash"
+                  icon={Trash2}
+                  label="Site Trash"
+                  active={pathname === '/admin/trash'}
+                  collapsed={collapsed}
+                />
               </>
             ) : (
               <NavLink
@@ -303,19 +355,6 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                 collapsed={collapsed}
               />
             )}
-
-            {!collapsed && (
-              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
-                Settings
-              </p>
-            )}
-            <NavLink
-              href="/admin/trash"
-              icon={Trash2}
-              label="Trash"
-              active={pathname === '/admin/trash'}
-              collapsed={collapsed}
-            />
           </>
         )}
       </nav>

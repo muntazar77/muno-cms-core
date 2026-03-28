@@ -1,22 +1,36 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
+interface ServiceItem {
+  id?: string | null
+  title: string
+  description?: string | null
+  icon?: string | null
+  link?: string | null
+}
+
 interface ServicesCardsBlockProps {
   heading?: string | null
   subheading?: string | null
   style?: string | null
-  services?:
-    | {
-        id?: string | null
-        title: string
-        description?: string | null
-        icon?: string | null
-        link?: string | null
-      }[]
-    | null
+  mode?: string | null
+  limit?: number | null
+  siteId?: string | null
+  services?: ServiceItem[] | null
+  /** Pre-fetched services for dynamic mode (resolved by RenderBlocks) */
+  resolvedServices?: ServiceItem[] | null
 }
 
-export function ServicesCardsBlock({ heading, subheading, services, style }: ServicesCardsBlockProps) {
+export function ServicesCardsBlock({
+  heading,
+  subheading,
+  services: manualServices,
+  resolvedServices,
+  style,
+  mode,
+}: ServicesCardsBlockProps) {
+  const services: ServiceItem[] =
+    mode === 'dynamic' ? (resolvedServices ?? []) : (manualServices ?? [])
   if (!services?.length) return null
 
   // --- List variant ---

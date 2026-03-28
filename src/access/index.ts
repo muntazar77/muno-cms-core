@@ -2,8 +2,8 @@
  * Centralized Access Control
  *
  * Two roles:
- *   - admin  → full access to everything
- *   - client → can only access data that belongs to their siteId
+ *   - super-admin → full access to everything
+ *   - client      → can only access data that belongs to their siteId
  *
  * Usage in collections:
  *   import { access } from '@/access'
@@ -11,7 +11,7 @@
  *     read: access.siteScoped,
  *     create: access.authenticated,
  *     update: access.siteScoped,
- *     delete: access.adminOnly,
+ *     delete: access.softDeleteOnly,
  *   }
  */
 
@@ -54,8 +54,8 @@ const adminOnly: Access = ({ req }) => {
 }
 
 /**
- * Admin → full access
- * Client → only items matching their siteId
+ * Admin → full access (excluding deleted)
+ * Client → only items matching their siteId (excluding deleted)
  * Anonymous → no access
  */
 const siteScoped: Access = ({ req }) => {
@@ -70,9 +70,9 @@ const siteScoped: Access = ({ req }) => {
 
 /**
  * Public read OR site-scoped:
- * Admin → all
- * Client → own site only
- * Anonymous → only published items
+ * Admin → all (excluding deleted)
+ * Client → own site only (excluding deleted)
+ * Anonymous → only published items (excluding deleted)
  */
 const publicOrSiteScoped: Access = ({ req }) => {
   const user = getUser(req)
@@ -92,9 +92,9 @@ const publicOrSiteScoped: Access = ({ req }) => {
 
 /**
  * Public read with site scope (no status check):
- * Admin → all
- * Client → own site only
- * Anonymous → all (public)
+ * Admin → all (excluding deleted)
+ * Client → own site only (excluding deleted)
+ * Anonymous → all (public, excluding deleted)
  */
 const publicReadSiteScoped: Access = ({ req }) => {
   const user = getUser(req)
@@ -104,6 +104,33 @@ const publicReadSiteScoped: Access = ({ req }) => {
   return {
     and: [{ siteId: { equals: user.siteId } }, notDeletedConstraint()],
   }
+}
+
+/**
+ * Permanent delete access for soft-deletable collections.
+ * Only super-admins can permanently delete, and only items already in trash.
+ */
+const softDeleteOnly: Access = ({ req }) => {
+  const user = getUser(req)
+  if (!user) return false
+  if (isAdmin(user)) return { isDeleted: { equals: true } } as Where
+  return false
+}
+
+/**
+ * Permanent delete for site-scoped content.
+ * Super-admin → can permanently delete items in trash
+ * Client → can permanently delete their own trashed items
+ */
+const softDeleteSiteScoped: Access = ({ req }) => {
+  const user = getUser(req)
+  if (!user) return false
+  if (isAdmin(user)) return { isDeleted: { equals: true } } as Where
+  if (!user.siteId) return false
+  const where: Where = {
+    and: [{ siteId: { equals: user.siteId } }, { isDeleted: { equals: true } }],
+  }
+  return where
 }
 
 // ─── Field-Level Access ──────────────────────────────────────────────
@@ -150,6 +177,8 @@ export const access = {
   siteOwnerOrAdmin,
   publicOrSiteScoped,
   publicReadSiteScoped,
+  softDeleteOnly,
+  softDeleteSiteScoped,
   adminFieldUpdate,
   globalReadPublic,
   globalUpdateAdmin,

@@ -21,7 +21,7 @@ export const FormSubmissions: CollectionConfig = {
     read: access.siteScoped,
     create: access.anyone,
     update: access.adminOnly,
-    delete: access.adminOnly,
+    delete: access.softDeleteOnly,
   },
   fields: [
     {

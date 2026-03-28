@@ -1,8 +1,12 @@
 /**
  * Trash API Route
  *
- * GET  /api/trash       — Fetch all soft-deleted items across all collections
+ * GET  /api/trash       — Fetch soft-deleted items (role-scoped)
  * POST /api/trash       — Restore or permanently delete items
+ *
+ * Role scoping:
+ *   super-admin → sees all trash across all collections/sites
+ *   client      → sees only trash belonging to their siteId
  *
  * Query params (GET):
  *   ?collection=pages   — Filter by collection slug
@@ -19,6 +23,7 @@ import config from '@payload-config'
 import type { Where } from 'payload'
 import { SOFT_DELETE_COLLECTIONS } from '@/utilities/softDelete'
 import { NextResponse } from 'next/server'
+import { headers } from 'next/headers'
 
 interface TrashItem {
   id: string
@@ -30,6 +35,13 @@ interface TrashItem {
   deletedByEmail?: string
   siteId: string | null
   createdAt: string
+}
+
+interface AuthenticatedUser {
+  id: string | number
+  role?: string
+  siteId?: string
+  email?: string
 }
 
 function getTitle(doc: Record<string, unknown>, collectionSlug: string): string {
@@ -45,10 +57,36 @@ const COLLECTION_LABELS: Record<string, string> = {
   forms: 'Form',
   'form-submissions': 'Submission',
   services: 'Service',
+  sites: 'Site',
+}
+
+/** Authenticate the request and return the user, or null */
+async function getAuthUser(): Promise<AuthenticatedUser | null> {
+  const payload = await getPayload({ config })
+  const headerStore = await headers()
+
+  // Try to extract the JWT from the cookie
+  const cookieHeader = headerStore.get('cookie') ?? ''
+  const tokenMatch = cookieHeader.match(/payload-token=([^;]+)/)
+  const token = tokenMatch?.[1]
+  if (!token) return null
+
+  try {
+    const result = await payload.auth({ headers: new Headers({ Authorization: `JWT ${token}` }) })
+    return (result.user as AuthenticatedUser) ?? null
+  } catch {
+    return null
+  }
 }
 
 export async function GET(request: Request) {
   try {
+    const user = await getAuthUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const isSuperAdmin = user.role === 'super-admin'
     const payload = await getPayload({ config })
     const { searchParams } = new URL(request.url)
 
@@ -57,25 +95,35 @@ export async function GET(request: Request) {
     const page = Math.max(1, Number(searchParams.get('page') || '1'))
     const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') || '50')))
 
-    const collections = filterCollection
+    // Determine which collections to query
+    let collections = filterCollection
       ? SOFT_DELETE_COLLECTIONS.filter((c) => c === filterCollection)
       : [...SOFT_DELETE_COLLECTIONS]
+
+    // Clients should not see sites in their trash (they don't manage sites)
+    if (!isSuperAdmin) {
+      collections = collections.filter((c) => c !== 'sites') as typeof collections
+    }
 
     const allItems: TrashItem[] = []
 
     for (const slug of collections) {
       try {
         const where: Where = {
-          isDeleted: { equals: true },
+          and: [
+            { isDeleted: { equals: true } },
+            // Client: only see their own site's trash
+            ...(!isSuperAdmin && user.siteId
+              ? [{ siteId: { equals: user.siteId } }]
+              : []),
+          ],
         }
 
         if (search) {
           if (slug === 'media') {
-            where['alt'] = { contains: search }
-          } else if (slug === 'form-submissions') {
-            // form-submissions don't have a title field — skip text search
-          } else {
-            where['title'] = { contains: search }
+            ;(where.and as Where[]).push({ alt: { contains: search } })
+          } else if (slug !== 'form-submissions') {
+            ;(where.and as Where[]).push({ title: { contains: search } })
           }
         }
 
@@ -136,13 +184,23 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const user = await getAuthUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const payload = await getPayload({ config })
     const body = await request.json()
-
     const { action } = body as { action: string }
+
+    // Validate collection slug is in our allow list
+    const validCollections = new Set<string>(SOFT_DELETE_COLLECTIONS)
 
     if (action === 'restore') {
       const { collection, id } = body as { collection: string; id: string }
+      if (!validCollections.has(collection)) {
+        return NextResponse.json({ error: 'Invalid collection' }, { status: 400 })
+      }
       await payload.update({
         collection: collection as 'pages',
         id,
@@ -152,7 +210,13 @@ export async function POST(request: Request) {
     }
 
     if (action === 'delete') {
+      if (user.role !== 'super-admin') {
+        return NextResponse.json({ error: 'Only super-admins can permanently delete' }, { status: 403 })
+      }
       const { collection, id } = body as { collection: string; id: string }
+      if (!validCollections.has(collection)) {
+        return NextResponse.json({ error: 'Invalid collection' }, { status: 400 })
+      }
       await payload.delete({
         collection: collection as 'pages',
         id,
@@ -163,6 +227,7 @@ export async function POST(request: Request) {
     if (action === 'bulk-restore') {
       const { items } = body as { items: Array<{ collection: string; id: string }> }
       for (const item of items) {
+        if (!validCollections.has(item.collection)) continue
         await payload.update({
           collection: item.collection as 'pages',
           id: item.id,
@@ -173,8 +238,12 @@ export async function POST(request: Request) {
     }
 
     if (action === 'bulk-delete') {
+      if (user.role !== 'super-admin') {
+        return NextResponse.json({ error: 'Only super-admins can permanently delete' }, { status: 403 })
+      }
       const { items } = body as { items: Array<{ collection: string; id: string }> }
       for (const item of items) {
+        if (!validCollections.has(item.collection)) continue
         await payload.delete({
           collection: item.collection as 'pages',
           id: item.id,

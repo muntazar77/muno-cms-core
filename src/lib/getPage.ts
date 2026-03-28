@@ -9,9 +9,9 @@ import { getCurrentSite } from '@/lib/sites'
  * Caching is handled at route level via `export const revalidate = 60`.
  * Avoids caching null results so newly-published pages appear immediately.
  */
-export async function getPage(slug: string): Promise<Page | null> {
+export async function getPage(slug: string, overrideSiteId?: string): Promise<Page | null> {
   const payload = await getPayload({ config })
-  const currentSite = await getCurrentSite(0)
+  const siteId = overrideSiteId ?? (await getCurrentSite(0))?.siteId
   const normalizedSlug = slug.replace(/^\/+/, '')
   const where: Where = {
     and: [
@@ -20,7 +20,7 @@ export async function getPage(slug: string): Promise<Page | null> {
       {
         or: [{ slug: { equals: normalizedSlug } }, { slug: { equals: `/${normalizedSlug}` } }],
       },
-      ...(currentSite?.siteId ? [{ siteId: { equals: currentSite.siteId } }] : []),
+      ...(siteId ? [{ siteId: { equals: siteId } }] : []),
     ],
   }
   const result = await payload.find({

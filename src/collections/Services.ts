@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { APIError } from 'payload'
 import { access } from '@/access'
 import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
 import { siteIdField } from '@/fields/siteId'
@@ -16,12 +17,39 @@ export const Services: CollectionConfig = {
       },
     },
   },
-  hooks: softDeleteHooks,
+  hooks: {
+    ...softDeleteHooks,
+    beforeValidate: [
+      async ({ data, req, operation, originalDoc }) => {
+        if (!data?.slug || !data?.siteId) return data
+        const isCreate = operation === 'create'
+        const slugChanged = operation === 'update' && data.slug !== originalDoc?.slug
+        if (!isCreate && !slugChanged) return data
+        const existing = await req.payload.find({
+          collection: 'services',
+          where: {
+            and: [
+              { slug: { equals: data.slug } },
+              { siteId: { equals: data.siteId } },
+              ...(originalDoc?.id ? [{ id: { not_equals: originalDoc.id } }] : []),
+            ],
+          },
+          limit: 1,
+          depth: 0,
+        })
+        if (existing.totalDocs > 0) {
+          throw new APIError(`A service with slug "${data.slug}" already exists for this site.`, 400)
+        }
+        return data
+      },
+    ],
+    beforeDelete: [...softDeleteHooks.beforeDelete],
+  },
   access: {
     read: access.publicReadSiteScoped,
     create: access.siteScoped,
     update: access.siteScoped,
-    delete: access.siteScoped,
+    delete: access.softDeleteSiteScoped,
   },
   fields: [
     {
@@ -51,10 +79,10 @@ export const Services: CollectionConfig = {
       name: 'slug',
       type: 'text',
       required: true,
-      unique: true,
       index: true,
       admin: {
         position: 'sidebar',
+        description: 'URL-safe identifier. Unique per site.',
       },
     },
     {

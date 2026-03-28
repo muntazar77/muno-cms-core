@@ -43,7 +43,7 @@ export default async function DynamicPage({ params }: PageProps) {
     <>
       <Header variant={headerVariant} />
       <main>
-        <RenderBlocks blocks={page.blocks} />
+        <RenderBlocks blocks={page.blocks} siteId={page.siteId ?? undefined} />
       </main>
       <Footer variant={footerVariant} />
     </>

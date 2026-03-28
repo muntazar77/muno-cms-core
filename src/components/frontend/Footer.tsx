@@ -10,10 +10,11 @@ interface NavLink {
 
 interface FooterProps {
   variant?: FooterVariant
+  site?: Awaited<ReturnType<typeof getCurrentSite>>
 }
 
-export async function Footer({ variant = 'default' }: FooterProps) {
-  const site = await getCurrentSite(0)
+export async function Footer({ variant = 'default', site: siteProp }: FooterProps) {
+  const site = siteProp ?? (await getCurrentSite(0))
 
   const siteName = site?.siteName || 'Muno CMS'
   const email = site?.publicEmail

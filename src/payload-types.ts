@@ -184,7 +184,7 @@ export interface Site {
    */
   timezone?: string | null;
   /**
-   * The primary client user who manages this site.
+   * The client user who manages this site. Only client-role users are shown.
    */
   owner?: (number | null) | User;
   logo?: (number | null) | Media;
@@ -277,7 +277,7 @@ export interface Page {
    */
   title: string;
   /**
-   * URL path without leading slash, e.g. "about" not "/about".
+   * URL path without leading slash, e.g. "about" not "/about". Unique per site.
    */
   slug: string;
   status: 'draft' | 'published';
@@ -399,9 +399,14 @@ export interface Page {
             blockType: 'heroWithImage';
           }
         | {
+            mode?: ('manual' | 'dynamic') | null;
             style?: ('cards' | 'list') | null;
             heading?: string | null;
             subheading?: string | null;
+            /**
+             * Max services to display in dynamic mode.
+             */
+            limit?: number | null;
             services?:
               | {
                   title: string;
@@ -603,6 +608,9 @@ export interface FormSubmission {
 export interface Service {
   id: number;
   title: string;
+  /**
+   * URL-safe identifier. Unique per site.
+   */
   slug: string;
   description?: {
     root: {
@@ -960,9 +968,11 @@ export interface PagesSelect<T extends boolean = true> {
         servicesCards?:
           | T
           | {
+              mode?: T;
               style?: T;
               heading?: T;
               subheading?: T;
+              limit?: T;
               services?:
                 | T
                 | {

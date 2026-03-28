@@ -10,7 +10,12 @@
  *   hooks: softDeleteHooks
  */
 
-import type { CollectionBeforeChangeHook, CollectionBeforeDeleteHook, Field, Where } from 'payload'
+import type {
+  CollectionBeforeChangeHook,
+  CollectionBeforeDeleteHook,
+  Field,
+  Where,
+} from 'payload'
 
 // ─── Fields ──────────────────────────────────────────────────────────
 
@@ -74,8 +79,42 @@ const beforeChangeSoftDelete: CollectionBeforeChangeHook = ({ data, req, origina
   return data
 }
 
+/**
+ * Before delete: intercept hard deletes.
+ * If the item is NOT already soft-deleted, soft-delete it and cancel the hard delete.
+ * Only items already in trash (isDeleted=true) can be permanently deleted.
+ */
+const beforeDeleteSoftDelete: CollectionBeforeDeleteHook = async ({ req, id, collection }) => {
+  const collectionSlug = collection.slug
+
+  const doc = await req.payload.findByID({
+    collection: collectionSlug as 'pages',
+    id,
+    depth: 0,
+    req,
+  })
+
+  if (!doc) return
+
+  const isAlreadyDeleted = (doc as unknown as Record<string, unknown>).isDeleted === true
+
+  if (!isAlreadyDeleted) {
+    // Soft-delete instead of hard-delete
+    await req.payload.update({
+      collection: collectionSlug as 'pages',
+      id,
+      data: { isDeleted: true } as Record<string, unknown>,
+      req,
+    })
+    const { APIError } = await import('payload')
+    throw new APIError('Item moved to trash. Use Trash to permanently delete.', 200)
+  }
+  // If already soft-deleted, allow the permanent hard delete to proceed
+}
+
 export const softDeleteHooks = {
   beforeChange: [beforeChangeSoftDelete],
+  beforeDelete: [beforeDeleteSoftDelete],
 }
 
 // ─── Query Helpers ───────────────────────────────────────────────────

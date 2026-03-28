@@ -21,7 +21,7 @@ export const Forms: CollectionConfig = {
     read: access.publicReadSiteScoped,
     create: access.siteScoped,
     update: access.siteScoped,
-    delete: access.siteScoped,
+    delete: access.softDeleteSiteScoped,
   },
   fields: [
     {

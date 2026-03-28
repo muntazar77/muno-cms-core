@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { APIError } from 'payload'
 import {
   HeroBlock,
   TextBlock,
@@ -48,12 +49,37 @@ export const Pages: CollectionConfig = {
         return data
       },
     ],
+    beforeValidate: [
+      async ({ data, req, operation, originalDoc }) => {
+        if (!data?.slug || !data?.siteId) return data
+        const isCreate = operation === 'create'
+        const slugChanged = operation === 'update' && data.slug !== originalDoc?.slug
+        if (!isCreate && !slugChanged) return data
+        const existing = await req.payload.find({
+          collection: 'pages',
+          where: {
+            and: [
+              { slug: { equals: data.slug } },
+              { siteId: { equals: data.siteId } },
+              ...(originalDoc?.id ? [{ id: { not_equals: originalDoc.id } }] : []),
+            ],
+          },
+          limit: 1,
+          depth: 0,
+        })
+        if (existing.totalDocs > 0) {
+          throw new APIError(`A page with slug "${data.slug}" already exists for this site.`, 400)
+        }
+        return data
+      },
+    ],
+    beforeDelete: [...softDeleteHooks.beforeDelete],
   },
   access: {
     read: access.publicOrSiteScoped,
     create: access.siteScoped,
     update: access.siteScoped,
-    delete: access.siteScoped,
+    delete: access.softDeleteSiteScoped,
   },
   fields: [
     {
@@ -116,10 +142,9 @@ export const Pages: CollectionConfig = {
               type: 'text',
               label: 'Slug',
               required: true,
-              unique: true,
               index: true,
               admin: {
-                description: 'URL path without leading slash, e.g. "about" not "/about".',
+                description: 'URL path without leading slash, e.g. "about" not "/about". Unique per site.',
               },
             },
             {
