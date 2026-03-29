@@ -43,7 +43,7 @@ export default buildConfig({
         },
         trash: {
           path: '/trash',
-          Component: '/components/admin/trash/TrashView',
+          Component: '/components/admin/trash/TrashViewPage',
           exact: true,
         },
         testPage: {

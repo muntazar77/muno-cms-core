@@ -1,8 +1,9 @@
-import type { AdminViewServerProps } from 'payload'
-import { DefaultTemplate } from '@payloadcms/next/templates'
 import React from 'react'
+import { DefaultTemplate } from '@payloadcms/next/templates'
+import type { AdminViewServerProps } from 'payload'
+import TrashView from './TrashView'
 
-export default function TestPage(props: AdminViewServerProps) {
+export default function TrashViewPage(props: AdminViewServerProps) {
   return (
     <DefaultTemplate
       i18n={props.i18n}
@@ -14,10 +15,7 @@ export default function TestPage(props: AdminViewServerProps) {
       user={props.user}
       visibleEntities={props.initPageResult.visibleEntities}
     >
-      <div style={{ padding: 24 }}>
-        <h1>Test Page</h1>
-        <p>Test content</p>
-      </div>
+      <TrashView />
     </DefaultTemplate>
   )
 }

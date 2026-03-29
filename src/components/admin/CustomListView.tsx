@@ -32,6 +32,7 @@ import {
   ChevronsUpDown,
   Plus,
   FileText,
+  Globe,
   Inbox,
   User,
   ChevronLeft,
@@ -81,15 +82,15 @@ interface ListViewCollectionConfig {
   statusField?: string
   statusConfig?: Record<string, StatusBadgeDef>
   columnLabels?: Record<string, string>
-  columnType?: Record<string, 'email' | 'role'>
+  columnType?: Record<string, 'email' | 'role' | 'site'>
   editURL?: (id: string) => string
 }
 
 const LIST_VIEW_CONFIGS: Record<string, ListViewCollectionConfig> = {
   users: {
     description: 'Manage user accounts and permissions',
-    columnType: { email: 'email', role: 'role' },
-    columnLabels: { createdAt: 'Created', updatedAt: 'Updated' },
+    columnType: { email: 'email', role: 'role', siteId: 'site' },
+    columnLabels: { createdAt: 'Created', updatedAt: 'Updated', siteId: 'Site' },
   },
   media: {
     description: 'Uploaded files and images',
@@ -181,6 +182,22 @@ function RoleBadge({ value }: { value: string }) {
       className={cn('rounded-full px-2.5 py-0.5 text-[11px] font-medium', style)}
     >
       {label}
+    </Badge>
+  )
+}
+
+function SiteBadge({ value }: { value: string }) {
+  if (!value) return <span className="text-[var(--cms-text-muted)]">—</span>
+  return (
+    <Badge
+      variant="outline"
+      className={cn(
+        'rounded-full px-2.5 py-0.5 text-[11px] font-medium',
+        'bg-[var(--cms-primary-soft)] text-[var(--cms-primary)] border-[var(--cms-primary-soft)]',
+      )}
+    >
+      <Globe className="mr-1 inline h-3 w-3" />
+      {value}
     </Badge>
   )
 }
@@ -690,6 +707,8 @@ export default function CustomListView() {
                                 <EmailCellInline value={String(doc[col] ?? '')} editURL={editURL} />
                               ) : colType === 'role' ? (
                                 <RoleBadge value={String(doc[col] ?? '')} />
+                              ) : colType === 'site' ? (
+                                <SiteBadge value={String(doc[col] ?? '')} />
                               ) : i === 0 ? (
                                 <Link
                                   href={editURL}

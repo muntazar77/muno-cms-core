@@ -1,6 +1,87 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { CollectionConfig, CollectionAfterChangeHook, Field } from 'payload'
 import { access } from '@/access'
 import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
+
+/**
+ * After a site is saved, keep the owner's user.siteId in sync.
+ *
+ * Handles three cases:
+ *  - create with owner   → set owner.siteId = site.siteId
+ *  - update, owner swapped A→B → clear A.siteId (if no other site), set B.siteId
+ *  - update, owner removed A→null → clear A.siteId (if no other site)
+ *
+ * Uses `context.skipOwnerSync` to guard against infinite loops.
+ * Passes `req` to all nested operations so they share the same DB transaction.
+ */
+const syncOwnerSiteId: CollectionAfterChangeHook = async ({
+  doc,
+  previousDoc,
+  req,
+  operation,
+  context,
+}) => {
+  if (context.skipOwnerSync) return doc
+
+  // Relationship fields come back as a numeric id (depth 0) or an object (depth > 0).
+  // Normalise both to a plain number so comparisons are safe.
+  const toNumericId = (v: unknown): number | null => {
+    if (v === null || v === undefined || v === '') return null
+    if (typeof v === 'object' && 'id' in (v as object)) return Number((v as { id: unknown }).id)
+    const n = Number(v)
+    return isNaN(n) ? null : n
+  }
+
+  const newOwnerId = toNumericId(doc.owner)
+  // On create, previousDoc is undefined — treat old owner as null
+  const oldOwnerId = operation === 'update' ? toNumericId(previousDoc?.owner) : null
+  const siteSiteId: string = typeof doc.siteId === 'string' ? doc.siteId : ''
+
+  // Nothing to sync if there is no slug yet (should not happen after beforeValidate)
+  if (!siteSiteId) return doc
+
+  // Nothing changed on owner field — skip all user writes
+  if (operation === 'update' && newOwnerId === oldOwnerId) return doc
+
+  // ── 1. Clear the old owner if they no longer own any active site ──────────
+  if (oldOwnerId !== null && oldOwnerId !== newOwnerId) {
+    const otherActiveSites = await req.payload.find({
+      collection: 'sites',
+      where: {
+        and: [
+          { owner: { equals: oldOwnerId } },
+          { id: { not_equals: doc.id } },
+          { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      req,
+    })
+
+    if (otherActiveSites.totalDocs === 0) {
+      await req.payload.update({
+        collection: 'users',
+        id: oldOwnerId,
+        data: { siteId: '' },
+        context: { skipOwnerSync: true },
+        req,
+      })
+    }
+  }
+
+  // ── 2. Assign the new owner ───────────────────────────────────────────────
+  if (newOwnerId !== null) {
+    await req.payload.update({
+      collection: 'users',
+      id: newOwnerId,
+      data: { siteId: siteSiteId },
+      context: { skipOwnerSync: true },
+      req,
+    })
+  }
+
+  return doc
+}
 
 const fontFamilyOptions = [
   { label: 'Inter', value: 'inter' },
@@ -99,6 +180,7 @@ export const Sites: CollectionConfig = {
   },
   hooks: {
     ...softDeleteHooks,
+    afterChange: [syncOwnerSiteId],
     beforeValidate: [
       ({ data }) => {
         if (!data) return data
