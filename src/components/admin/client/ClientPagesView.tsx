@@ -313,6 +313,8 @@ export default async function ClientPagesView(props: DocumentViewServerProps) {
                           statusLabel={status}
                           statusTone={pageStatusTones[status] ?? 'neutral'}
                           icon={status === 'published' ? Eye : FileText}
+                          deleteCollection="pages"
+                          deleteDocId={String(page.id)}
                           meta={[
                             {
                               label: 'Updated',

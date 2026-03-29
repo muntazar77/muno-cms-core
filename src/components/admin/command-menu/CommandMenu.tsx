@@ -60,6 +60,7 @@ export default function CommandMenu() {
       group: 'Navigate',
       label: 'Pages',
       icon: FileText,
+      // Clients use the Site Pages workspace; super-admins use the native list
       action: () => navigate('/admin/collections/pages'),
     },
     {
@@ -91,6 +92,7 @@ export default function CommandMenu() {
       label: 'Create Page',
       icon: Plus,
       shortcut: '⌘N',
+      // Native Payload create form; siteId is enforced server-side for clients
       action: () => navigate('/admin/collections/pages/create'),
     },
     {

@@ -30,7 +30,8 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt', 'createdAt'],
-    hidden: ({ user }) => (user?.role as string | undefined) !== 'super-admin',
+    // Note: collection is NOT hidden — native create/edit routes must be available
+    // for client users. The native list is blocked in CustomListView instead.
     components: {
       views: {
         list: {

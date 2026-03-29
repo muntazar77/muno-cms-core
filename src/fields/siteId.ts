@@ -48,6 +48,15 @@ export const siteIdField: Field = {
   hooks: {
     beforeValidate: [
       ({ value, req }) => {
+        const user = req.user as { role?: string; siteId?: string } | undefined
+
+        // ── Client users: ALWAYS force siteId to their own site ──────────
+        // This prevents query-param or form-payload tampering.
+        if (user && user.role !== 'super-admin') {
+          return user.siteId ?? value
+        }
+
+        // ── Super-admin: allow explicit siteId from query or referer ─────
         const requestedSiteId =
           typeof req?.query?.siteId === 'string'
             ? req.query.siteId
@@ -64,14 +73,6 @@ export const siteIdField: Field = {
           return refererSiteId
         }
 
-        // For client users, keep assigned site as fallback.
-        // Avoid forcing admin fallback (e.g. default-site) when explicit context is missing.
-        if (!value && req.user) {
-          const user = req.user as { role?: string; siteId?: string }
-          if (user.role !== 'super-admin') {
-            return user.siteId ?? value
-          }
-        }
         return value
       },
     ],

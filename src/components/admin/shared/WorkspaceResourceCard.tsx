@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import SoftDeleteButton from './SoftDeleteButton'
 
 type ResourceStatusTone = 'success' | 'warning' | 'neutral'
 
@@ -23,6 +24,8 @@ interface WorkspaceResourceCardProps {
   meta: WorkspaceResourceMeta[]
   editHref: string
   builderHref?: string
+  deleteCollection?: string
+  deleteDocId?: string
 }
 
 const statusToneStyles: Record<ResourceStatusTone, string> = {
@@ -41,6 +44,8 @@ export default function WorkspaceResourceCard({
   meta,
   editHref,
   builderHref,
+  deleteCollection,
+  deleteDocId,
 }: WorkspaceResourceCardProps) {
   return (
     <Card className="group rounded-3xl border-(--cms-card-border) bg-(--cms-card-bg) p-0 transition duration-200 hover:-translate-y-0.5 hover:border-(--cms-primary)">
@@ -95,6 +100,9 @@ export default function WorkspaceResourceCard({
                   Builder
                 </Button>
               </Link>
+            ) : null}
+            {deleteCollection && deleteDocId ? (
+              <SoftDeleteButton  collection={deleteCollection} docId={deleteDocId} label="Page"  />
             ) : null}
           </div>
         </div>

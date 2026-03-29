@@ -575,11 +575,32 @@ export default function CustomListView() {
 
   const StatsComponent = STATS_COMPONENTS[slug]
 
+  // Block native Pages list for non-super-admin: redirect to their Site Pages workspace
+  const userSiteId = user && 'siteId' in user ? String((user as { siteId?: string }).siteId ?? '') : ''
   React.useEffect(() => {
     if (slug === 'pages' && userRole !== 'super-admin') {
-      router.replace('/admin/collections/sites')
+      // Resolve the client's site doc ID so we can redirect to the workspace
+      const apiRoute = (config?.routes?.api as string | undefined) ?? '/api'
+      if (userSiteId) {
+        fetch(
+          `${apiRoute}/sites?where[siteId][equals]=${encodeURIComponent(userSiteId)}&limit=1&depth=0`,
+          { credentials: 'include' },
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            const doc = data?.docs?.[0]
+            if (doc?.id) {
+              router.replace(`/admin/collections/sites/${doc.id}/pages`)
+            } else {
+              router.replace('/admin/collections/sites')
+            }
+          })
+          .catch(() => router.replace('/admin/collections/sites'))
+      } else {
+        router.replace('/admin/collections/sites')
+      }
     }
-  }, [slug, userRole, router])
+  }, [slug, userRole, userSiteId, router, config?.routes?.api])
 
   function refreshList() {
     router.refresh()
