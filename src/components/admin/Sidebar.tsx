@@ -234,10 +234,10 @@ function SidebarInner({
               transition={{ duration: 0.15 }}
               className="min-w-0 flex-1 overflow-hidden"
             >
-              <p className="truncate text-[13px] font-semibold leading-tight text-gray-900 dark:text-gray-50">
+              <p className="truncate text-[13px] font-semibold leading-tight text-(--cms-text)">
                 Muno CMS
               </p>
-              <p className="text-[10.5px] leading-tight text-gray-400 dark:text-gray-500">
+              <p className="text-[10.5px] leading-tight text-(--cms-text-muted)">
                 Content Management
               </p>
             </motion.div>
@@ -471,7 +471,7 @@ function SidebarInner({
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[12.5px] font-medium text-gray-900 dark:text-gray-100">
+                <p className="truncate text-[12.5px] font-medium text-(--cms-text)">
                   {user?.email ?? '—'}
                 </p>
                 <p className="text-[10px] text-(--cms-text-muted)">

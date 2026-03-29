@@ -1,0 +1,107 @@
+/* Admin utility/primitives bound to --cms-* tokens */
+
+.cms-card {
+  border: 1px solid var(--cms-card-border);
+  border-radius: var(--cms-radius-lg);
+  background: var(--cms-card-bg);
+  box-shadow: var(--cms-card-shadow);
+}
+
+.cms-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid var(--cms-table-border);
+  border-radius: var(--cms-radius-lg);
+}
+
+.cms-table th {
+  background: var(--cms-table-header-bg);
+  color: var(--cms-text-secondary);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--cms-table-border);
+}
+
+.cms-table td {
+  border-bottom: 1px solid var(--cms-table-border);
+}
+
+.cms-table tbody tr:hover {
+  background: var(--cms-table-row-hover);
+}
+
+.cms-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.cms-input {
+  border: 1px solid var(--cms-input-border);
+  border-radius: var(--cms-radius-md);
+  background: var(--cms-input-bg);
+  color: var(--cms-text);
+}
+
+.cms-input:focus {
+  outline: none;
+  border-color: var(--cms-primary);
+  box-shadow: 0 0 0 3px var(--cms-input-focus-ring);
+}
+
+.cms-sidebar {
+  background: var(--cms-sidebar-bg);
+  border-right: 1px solid var(--cms-sidebar-border);
+}
+
+/* Payload block builder style isolation */
+.payload-block-builder {
+  border-color: var(--cms-border-subtle) !important;
+  border-radius: var(--cms-radius-md);
+  background: var(--cms-bg) !important;
+}
+
+.payload-block-builder * {
+  max-width: none !important;
+}
+
+.payload-block-builder .preview-frame,
+.payload-block-builder [class*='preview'] {
+  max-width: none !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.payload-block-builder [class*='container'] {
+  max-width: none !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.builder-root {
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  color: var(--cms-text);
+  isolation: isolate;
+}
+
+.builder-root *,
+.builder-root *::before,
+.builder-root *::after {
+  box-sizing: border-box;
+}
+
+.builder-root a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.builder-canvas {
+  background-color: var(--builder-canvas-bg);
+  background-image: radial-gradient(circle, var(--builder-canvas-dot) 0.75px, transparent 0.75px);
+  background-size: 20px 20px;
+}

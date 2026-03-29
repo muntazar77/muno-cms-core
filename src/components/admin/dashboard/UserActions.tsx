@@ -12,7 +12,7 @@ export default function UserActions() {
     <div className="flex items-center gap-2">
       {/* Notifications */}
     <button
-          className="relative flex size-9 items-center justify-center rounded-xl border-0 bg-transparent text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-slate-800 dark:hover:text-gray-100 transition-all"
+          className="relative flex size-9 items-center justify-center rounded-xl border-0 bg-transparent text-(--cms-text-secondary) hover:bg-(--cms-bg-muted) hover:text-(--cms-text) transition-all"
           aria-label="Notifications"
         >
           <Bell className="size-4.25" />

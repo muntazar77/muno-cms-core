@@ -1,0 +1,65 @@
+/* Frontend Design Tokens: single source for public-facing UI */
+
+:root {
+  --fe-primary: #6366f1;
+  --fe-primary-dark: #4f46e5;
+  --fe-primary-darker: #4338ca;
+  --fe-primary-light: #a5b4fc;
+  --fe-primary-soft: #eef2ff;
+  --fe-primary-ghost: rgba(99, 102, 241, 0.08);
+
+  --fe-accent: #f59e0b;
+  --fe-accent-soft: #fffbeb;
+
+  --fe-gray-50: #f8fafc;
+  --fe-gray-100: #f1f5f9;
+  --fe-gray-200: #e2e8f0;
+  --fe-gray-300: #cbd5e1;
+  --fe-gray-400: #94a3b8;
+  --fe-gray-500: #64748b;
+  --fe-gray-600: #475569;
+  --fe-gray-700: #334155;
+  --fe-gray-800: #1e293b;
+  --fe-gray-900: #0f172a;
+  --fe-gray-950: #020617;
+
+  --fe-surface-primary: #ffffff;
+  --fe-surface-secondary: var(--fe-gray-50);
+  --fe-surface-tertiary: var(--fe-gray-100);
+  --fe-surface-dark: var(--fe-gray-900);
+  --fe-surface-dark-elevated: var(--fe-gray-800);
+  --fe-surface-brand: var(--fe-primary-soft);
+
+  --fe-text-primary: var(--fe-gray-900);
+  --fe-text-secondary: var(--fe-gray-600);
+  --fe-text-tertiary: var(--fe-gray-500);
+  --fe-text-muted: var(--fe-gray-400);
+  --fe-text-on-dark: #f8fafc;
+  --fe-text-on-dark-secondary: #cbd5e1;
+  --fe-text-on-dark-muted: #94a3b8;
+
+  --fe-border: var(--fe-gray-200);
+  --fe-border-subtle: var(--fe-gray-100);
+  --fe-border-strong: var(--fe-gray-300);
+
+  --fe-section-py: 5rem;
+  --fe-section-py-lg: 7rem;
+  --fe-section-py-sm: 3rem;
+
+  --fe-radius-sm: 0.5rem;
+  --fe-radius-md: 0.75rem;
+  --fe-radius-lg: 1rem;
+  --fe-radius-xl: 1.25rem;
+  --fe-radius-2xl: 1.5rem;
+  --fe-radius-full: 9999px;
+
+  --fe-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --fe-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --fe-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --fe-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --fe-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  --fe-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  --fe-shadow-glow: 0 0 30px rgba(99, 102, 241, 0.15);
+  --fe-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --fe-shadow-card-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -4px rgba(0, 0, 0, 0.04);
+}

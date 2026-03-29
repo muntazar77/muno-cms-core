@@ -576,19 +576,9 @@ export default function SiteSettingsEditor({
         <div className="mx-auto w-full max-w-[1560px] px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div className="min-w-0 flex-1">
-              <Link
-                href={backHref}
-                className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-[var(--cms-border)] bg-[var(--cms-bg)] px-4 text-sm font-medium text-[var(--cms-text-secondary)] no-underline transition duration-200 hover:border-[var(--cms-primary)] hover:text-[var(--cms-primary)]"
-              >
-                <ArrowLeft className="size-4" />
-                Back to workspace
-              </Link>
+           
 
               <div className="mt-4 flex flex-col gap-3">
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--cms-border)] bg-[var(--cms-bg)] px-3 py-1 text-xs font-medium text-[var(--cms-text-secondary)]">
-                  <Sparkles className="size-3.5 text-[var(--cms-primary)]" />
-                  Client website settings
-                </div>
                 <div>
                   <h1 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--cms-text)] sm:text-3xl">
                     Site Settings

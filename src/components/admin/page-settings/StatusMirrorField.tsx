@@ -4,7 +4,7 @@ import type { UIFieldClientComponent } from 'payload'
 import { FieldLabel, useField } from '@payloadcms/ui'
 
 const selectClasses =
-  'flex h-10 w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0 focus-visible:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus-visible:ring-blue-400 dark:focus-visible:border-blue-400 transition-colors'
+  'flex h-10 w-full rounded-lg border border-(--cms-input-border) bg-(--cms-input-bg) px-3 py-1.5 text-sm text-(--cms-text) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--cms-primary) focus-visible:ring-offset-0 focus-visible:border-(--cms-primary) transition-colors'
 
 const StatusMirrorField: UIFieldClientComponent = () => {
   const { value, setValue } = useField<string>({ path: 'status' })

@@ -127,25 +127,25 @@ export default function CommandMenu() {
       />
 
       {/* Panel */}
-      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl">
-        <Command className="[&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input-wrapper]]:border-gray-100">
+      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-(--cms-border-subtle) bg-(--cms-bg) shadow-2xl">
+        <Command className="[&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input-wrapper]]:border-(--cms-border-subtle)">
           {/* Search header */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-            <Search className="size-4 text-gray-400 shrink-0" />
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-(--cms-border-subtle)">
+            <Search className="size-4 text-(--cms-text-muted) shrink-0" />
             <Command.Input
               placeholder="Search commands..."
-              className="flex-1 bg-transparent text-sm text-gray-900 placeholder:text-gray-400 outline-none"
+              className="flex-1 bg-transparent text-sm text-(--cms-text) placeholder:text-(--cms-text-muted) outline-none"
               autoFocus
             />
             <div className="flex items-center gap-1">
-              <kbd className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
+              <kbd className="rounded bg-(--cms-bg-muted) px-1.5 py-0.5 text-[10px] font-medium text-(--cms-text-secondary)">
                 ESC
               </kbd>
             </div>
           </div>
 
           <Command.List className="max-h-[400px] overflow-y-auto p-2">
-            <Command.Empty className="py-8 text-center text-sm text-gray-400">
+            <Command.Empty className="py-8 text-center text-sm text-(--cms-text-muted)">
               No results found.
             </Command.Empty>
 
@@ -153,7 +153,7 @@ export default function CommandMenu() {
               <Command.Group
                 key={group}
                 heading={group}
-                className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-gray-400"
+                className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-(--cms-text-muted)"
               >
                 {items
                   .filter((i) => i.group === group)
@@ -165,21 +165,21 @@ export default function CommandMenu() {
                         value={item.label}
                         onSelect={item.action}
                         className={cn(
-                          'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-700 cursor-pointer',
-                          'data-[selected=true]:bg-blue-50 data-[selected=true]:text-blue-700',
+                          'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-(--cms-text) cursor-pointer',
+                          'data-[selected=true]:bg-(--cms-primary-soft) data-[selected=true]:text-(--cms-primary-text)',
                           'transition-colors',
                         )}
                       >
-                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 data-[selected=true]:bg-blue-100">
+                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-(--cms-bg-muted) data-[selected=true]:bg-(--cms-primary-soft)">
                           <Icon className="size-3.5" />
                         </div>
                         <span className="flex-1">{item.label}</span>
                         {item.shortcut && (
-                          <kbd className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
+                          <kbd className="rounded bg-(--cms-bg-muted) px-1.5 py-0.5 text-[10px] font-medium text-(--cms-text-secondary)">
                             {item.shortcut}
                           </kbd>
                         )}
-                        <MoveRight className="size-3 text-gray-300 opacity-0 group-data-[selected=true]:opacity-100" />
+                        <MoveRight className="size-3 text-(--cms-border) opacity-0 group-data-[selected=true]:opacity-100" />
                       </Command.Item>
                     )
                   })}
@@ -188,15 +188,15 @@ export default function CommandMenu() {
           </Command.List>
 
           {/* Footer */}
-          <div className="border-t border-gray-100 px-4 py-2.5 flex items-center gap-4 text-[11px] text-gray-400">
+          <div className="border-t border-(--cms-border-subtle) px-4 py-2.5 flex items-center gap-4 text-[11px] text-(--cms-text-muted)">
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-gray-100 px-1 font-medium text-gray-500">↑↓</kbd> navigate
+              <kbd className="rounded bg-(--cms-bg-muted) px-1 font-medium text-(--cms-text-secondary)">↑↓</kbd> navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-gray-100 px-1 font-medium text-gray-500">↵</kbd> select
+              <kbd className="rounded bg-(--cms-bg-muted) px-1 font-medium text-(--cms-text-secondary)">↵</kbd> select
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-gray-100 px-1 font-medium text-gray-500">⌘K</kbd> toggle
+              <kbd className="rounded bg-(--cms-bg-muted) px-1 font-medium text-(--cms-text-secondary)">⌘K</kbd> toggle
             </span>
           </div>
         </Command>
