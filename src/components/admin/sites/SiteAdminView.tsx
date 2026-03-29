@@ -635,7 +635,7 @@ export async function SitesListView(props: ListViewServerProps) {
       return <div className="px-6 py-8 text-(--cms-text)">Site not found or access denied.</div>
     }
 
-    redirect(navHref(String(assignedSite.id), 'pages'))
+    redirect(navHref(String(assignedSite.id), 'dashboard'))
   }
 
   return renderSitesIndex(props.payload, user)
@@ -660,7 +660,7 @@ export async function SiteWorkspaceView(props: DocumentViewServerProps) {
     return renderSection(props.payload, user, site, section)
   }
 
-  redirect(navHref(String(site.id), 'pages'))
+  redirect(navHref(String(site.id), 'dashboard'))
 }
 
 export default SitesListView

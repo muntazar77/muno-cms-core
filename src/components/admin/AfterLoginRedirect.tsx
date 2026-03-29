@@ -30,7 +30,7 @@ export default function AfterLoginRedirect() {
       .then((data) => {
         const doc = data?.docs?.[0]
         if (doc?.id) {
-          router.replace(`/admin/collections/sites/${doc.id}/pages`)
+          router.replace(`/admin/collections/sites/${doc.id}/dashboard`)
         }
       })
       .catch(() => {})

@@ -148,9 +148,13 @@ export const Sites: CollectionConfig = {
           Component: '/components/admin/sites/SiteAdminView#SitesListView',
         },
         edit: {
+          dashboard: {
+            path: '/dashboard',
+            Component: '/components/admin/client/ClientDashboardView',
+          },
           pages: {
             path: '/pages',
-            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+            Component: '/components/admin/client/ClientPagesView',
           },
           media: {
             path: '/media',

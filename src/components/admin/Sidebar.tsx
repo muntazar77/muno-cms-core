@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth, useConfig } from '@payloadcms/ui'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -99,7 +99,21 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
   // ── Resolve client's site doc ID and siteId slug ───────────────────
   const [clientSiteDocId, setClientSiteDocId] = useState<string>('')
   const [clientSiteSlug, setClientSiteSlug] = useState<string>('')
+  const siteDataInitRef = useRef(false)
 
+  // Read cached site data synchronously before paint to prevent nav flicker
+  useLayoutEffect(() => {
+    if (siteDataInitRef.current || isSuperAdmin || !userSiteId) return
+    siteDataInitRef.current = true
+    try {
+      const cachedDocId = sessionStorage.getItem('muno-client-site-doc-id') || ''
+      const cachedSlug = sessionStorage.getItem('muno-client-site-slug') || ''
+      if (cachedDocId) setClientSiteDocId(cachedDocId)
+      if (cachedSlug) setClientSiteSlug(cachedSlug)
+    } catch { /* SSR guard */ }
+  }, [isSuperAdmin, userSiteId])
+
+  // Validate with API and update cache
   useEffect(() => {
     if (isSuperAdmin || !userSiteId) return
     const apiRoute = (config?.routes?.api as string | undefined) ?? '/api'
@@ -112,8 +126,16 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
       .then((res) => res.json())
       .then((data) => {
         const doc = data?.docs?.[0]
-        if (doc?.id) setClientSiteDocId(String(doc.id))
-        if (doc?.siteId) setClientSiteSlug(String(doc.siteId))
+        if (doc?.id) {
+          const docId = String(doc.id)
+          setClientSiteDocId(docId)
+          try { sessionStorage.setItem('muno-client-site-doc-id', docId) } catch {}
+        }
+        if (doc?.siteId) {
+          const slug = String(doc.siteId)
+          setClientSiteSlug(slug)
+          try { sessionStorage.setItem('muno-client-site-slug', slug) } catch {}
+        }
       })
       .catch(() => {})
   }, [isSuperAdmin, userSiteId, config?.routes?.api])
@@ -167,11 +189,6 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
           href: `/admin/collections/sites/${siteDocId}/services`,
           label: 'Services',
           icon: Briefcase,
-        },
-        {
-          href: `/admin/collections/sites/${siteDocId}/settings`,
-          label: 'Site Settings',
-          icon: Settings,
         },
       ]
     : []
@@ -305,16 +322,19 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
             {siteDocId ? (
               <>
                 <NavLink
-                  href={`/admin/collections/sites/${siteDocId}`}
+                  href={`/admin/collections/sites/${siteDocId}/dashboard`}
                   icon={LayoutDashboard}
-                  label="Overview"
-                  active={pathname === `/admin/collections/sites/${siteDocId}`}
+                  label="Dashboard"
+                  active={
+                    pathname === `/admin/collections/sites/${siteDocId}` ||
+                    pathname === `/admin/collections/sites/${siteDocId}/dashboard`
+                  }
                   collapsed={collapsed}
                 />
 
                 {!collapsed && (
                   <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
-                    My Site
+                    Content
                   </p>
                 )}
                 {siteContextLinks.map((link) => (
@@ -342,13 +362,20 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
 
                 {!collapsed && (
                   <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
-                    Settings
+                    Manage
                   </p>
                 )}
                 <NavLink
+                  href={`/admin/collections/sites/${siteDocId}/settings`}
+                  icon={Settings}
+                  label="Settings"
+                  active={Boolean(pathname?.startsWith(`/admin/collections/sites/${siteDocId}/settings`))}
+                  collapsed={collapsed}
+                />
+                <NavLink
                   href="/admin/trash"
                   icon={Trash2}
-                  label="Site Trash"
+                  label="Trash"
                   active={pathname === '/admin/trash'}
                   collapsed={collapsed}
                 />
@@ -369,45 +396,64 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
       {/* Footer: user */}
       <div
         className={cn(
-          'shrink-0 border-t border-gray-100 p-3 dark:border-gray-800',
-          collapsed ? 'flex justify-center' : 'flex items-center gap-2.5',
+          'shrink-0 border-t border-gray-100 dark:border-gray-800',
+          collapsed ? 'flex flex-col items-center gap-2 p-2' : 'p-3',
         )}
       >
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Avatar className="size-8 shrink-0 cursor-pointer">
-              <AvatarFallback className="bg-blue-100 text-[11px] font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            <p className="text-[12px] font-medium">{user?.email}</p>
-          </TooltipContent>
-        </Tooltip>
-        <AnimatePresence initial={false}>
-          {!collapsed && (
-            <motion.div
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: 'auto' }}
-              exit={{ opacity: 0, width: 0 }}
-              transition={{ duration: 0.15 }}
-              className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden"
+        {collapsed ? (
+          /* Collapsed: avatar + logout below */
+          <>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar className="size-8 shrink-0 cursor-pointer">
+                  <AvatarFallback className="bg-blue-100 text-[11px] font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p className="text-[12px] font-medium">{user?.email}</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => void handleLogOut()}
+                  className="flex size-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:text-gray-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                >
+                  <LogOut className="size-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Log out</TooltipContent>
+            </Tooltip>
+          </>
+        ) : (
+          /* Expanded: full user row + logout button */
+          <div className="space-y-2">
+            <div className="flex items-center gap-2.5">
+              <Avatar className="size-8 shrink-0">
+                <AvatarFallback className="bg-blue-100 text-[11px] font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[12.5px] font-medium text-gray-900 dark:text-gray-100">
+                  {user?.email ?? '—'}
+                </p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                  {isSuperAdmin ? 'Administrator' : 'Client'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => void handleLogOut()}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-100 px-3 py-2 text-[12px] font-medium text-gray-500 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-gray-800 dark:text-gray-400 dark:hover:border-red-900/40 dark:hover:bg-red-900/20 dark:hover:text-red-400"
             >
-              <p className="min-w-0 flex-1 truncate text-[12.5px] font-medium text-gray-900 dark:text-gray-100">
-                {user?.email ?? '—'}
-              </p>
-              <button
-                onClick={() => void handleLogOut()}
-                title="Log out"
-                className="flex size-7 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:text-gray-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-              >
-                <LogOut className="size-3.5" />
-                <span className="sr-only">Log out</span>
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <LogOut className="size-3.5" />
+              Log out
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
