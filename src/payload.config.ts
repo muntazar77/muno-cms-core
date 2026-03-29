@@ -46,11 +46,7 @@ export default buildConfig({
           Component: '/components/admin/trash/TrashViewPage',
           exact: true,
         },
-        testPage: {
-          path: '/test-page',
-          Component: '/components/admin/TestPage',
-          exact: true,
-        }
+
       },
     },
   },

@@ -13,7 +13,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { DashboardChartCard } from './primitives'
 
 const weeklyUsers = [
   { day: 'Mon', users: 2 },
@@ -46,126 +46,83 @@ const monthlyApplications = [
 ]
 
 const tooltipStyle = {
-  backgroundColor: '#fff',
-  border: '1px solid #e5e7eb',
+  backgroundColor: 'var(--cms-bg)',
+  border: '1px solid var(--cms-border)',
   borderRadius: '8px',
-  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.08)',
+  boxShadow: 'var(--cms-card-shadow)',
   fontSize: '12px',
 }
+
+const axisTick = { fontSize: 11, fill: 'var(--cms-text-muted)' }
 
 export function DashboardCharts() {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       {/* User Registrations */}
-      <Card>
-        <CardHeader>
-          <CardTitle>User Registrations</CardTitle>
-          <CardDescription>New users this week</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <DashboardChartCard title="User Registrations" description="New users this week">
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={weeklyUsers} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--cms-primary)" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="var(--cms-primary)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-              <XAxis
-                dataKey="day"
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
-                axisLine={false}
-                tickLine={false}
-                allowDecimals={false}
-              />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: '#e5e7eb' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--cms-border-subtle)" />
+              <XAxis dataKey="day" tick={axisTick} axisLine={false} tickLine={false} />
+              <YAxis tick={axisTick} axisLine={false} tickLine={false} allowDecimals={false} />
+              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: 'var(--cms-border)' }} />
               <Area
                 type="monotone"
                 dataKey="users"
-                stroke="#2563eb"
+                stroke="var(--cms-primary)"
                 strokeWidth={2}
                 fill="url(#userGradient)"
                 dot={false}
-                activeDot={{ r: 4, fill: '#2563eb' }}
+                activeDot={{ r: 4, fill: 'var(--cms-primary)' }}
               />
             </AreaChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      </DashboardChartCard>
 
       {/* Media Uploads */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Media Uploads</CardTitle>
-          <CardDescription>Files uploaded this week</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <DashboardChartCard title="Media Uploads" description="Files uploaded this week">
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={weeklyMedia} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-              <XAxis
-                dataKey="day"
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
-                axisLine={false}
-                tickLine={false}
-                allowDecimals={false}
-              />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: '#f9fafb' }} />
-              <Bar dataKey="uploads" fill="#7c3aed" radius={[4, 4, 0, 0]} maxBarSize={28} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--cms-border-subtle)" vertical={false} />
+              <XAxis dataKey="day" tick={axisTick} axisLine={false} tickLine={false} />
+              <YAxis tick={axisTick} axisLine={false} tickLine={false} allowDecimals={false} />
+              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'var(--cms-bg-muted)' }} />
+              <Bar dataKey="uploads" fill="var(--cms-info)" radius={[4, 4, 0, 0]} maxBarSize={28} />
             </BarChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      </DashboardChartCard>
 
       {/* Application Submissions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Application Submissions</CardTitle>
-          <CardDescription>Monthly submissions (6 months)</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <DashboardChartCard
+        title="Application Submissions"
+        description="Monthly submissions (6 months)"
+      >
           <ResponsiveContainer width="100%" height={180}>
             <LineChart
               data={monthlyApplications}
               margin={{ top: 4, right: 4, bottom: 0, left: -20 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-              <XAxis
-                dataKey="month"
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 11, fill: '#9ca3af' }}
-                axisLine={false}
-                tickLine={false}
-                allowDecimals={false}
-              />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: '#e5e7eb' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--cms-border-subtle)" />
+              <XAxis dataKey="month" tick={axisTick} axisLine={false} tickLine={false} />
+              <YAxis tick={axisTick} axisLine={false} tickLine={false} allowDecimals={false} />
+              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: 'var(--cms-border)' }} />
               <Line
                 type="monotone"
                 dataKey="apps"
-                stroke="#d97706"
+                stroke="var(--cms-warning)"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: '#d97706' }}
+                activeDot={{ r: 4, fill: 'var(--cms-warning)' }}
               />
             </LineChart>
           </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      </DashboardChartCard>
     </div>
   )
 }

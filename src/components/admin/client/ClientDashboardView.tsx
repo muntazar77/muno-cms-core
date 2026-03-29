@@ -1,28 +1,41 @@
 import Link from 'next/link'
 import type { DocumentViewServerProps } from 'payload'
 import {
-  FileText,
-  Image as ImageIcon,
-  Mail,
-  Briefcase,
-  Plus,
-  Upload,
-  Settings2,
-  Eye,
-  PenLine,
-  Inbox,
-  ArrowRight,
-  Globe,
   Calendar,
   ExternalLink,
+  Eye,
+  FileText,
+  Globe,
+  Image as ImageIcon,
+  Inbox,
+  Mail,
+  PenLine,
+  Plus,
+  Settings2,
+  Upload,
+  Briefcase,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { getSiteDomain } from '@/lib/sites'
-
-/* ─── Types ───────────────────────────────────────────────────────── */
+import {
+  DashboardActivityList,
+  DashboardChecklistCard,
+  DashboardGrid,
+  DashboardHeader,
+  DashboardInfoCard,
+  DashboardPageShell,
+  DashboardQuickActions,
+  DashboardSection,
+  DashboardStatsRow,
+  EmptyState,
+  type DashboardActivityItem,
+  type DashboardChecklistItem,
+  type DashboardQuickActionItem,
+  type DashboardStatItem,
+} from '@/components/admin/dashboard/primitives'
 
 interface UserWithSite {
   id?: string | number
@@ -42,8 +55,6 @@ interface SiteDoc {
   updatedAt?: string | null
   createdAt?: string | null
 }
-
-/* ─── Helpers ─────────────────────────────────────────────────────── */
 
 function formatDate(value?: string | null): string {
   if (!value) return '—'
@@ -80,8 +91,6 @@ function notDeletedWhere() {
   return { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] }
 }
 
-/* ─── Component ───────────────────────────────────────────────────── */
-
 export default async function ClientDashboardView(props: DocumentViewServerProps) {
   const user = props.user as UserWithSite | null
   const site = props.doc as SiteDoc | null
@@ -99,7 +108,6 @@ export default async function ClientDashboardView(props: DocumentViewServerProps
   const previewUrl = `/preview/${encodeURIComponent(siteKey)}`
   const siteWhere = { and: [{ siteId: { equals: siteKey } }, notDeletedWhere()] }
 
-  // Fetch all stats in parallel
   const [
     pagesResult,
     publishedResult,
@@ -109,6 +117,7 @@ export default async function ClientDashboardView(props: DocumentViewServerProps
     servicesResult,
     mediaResult,
     recentPagesResult,
+    recentSubmissionsResult,
   ] = await Promise.all([
     props.payload.find({
       collection: 'pages',
@@ -183,50 +192,66 @@ export default async function ClientDashboardView(props: DocumentViewServerProps
       overrideAccess: false,
       where: siteWhere,
     }),
+    props.payload.find({
+      collection: 'form-submissions',
+      depth: 0,
+      limit: 5,
+      sort: '-createdAt',
+      user,
+      overrideAccess: false,
+      where: siteWhere,
+    }),
   ])
 
-  const stats = [
+  const stats: DashboardStatItem[] = [
     {
       label: 'Total Pages',
       value: pagesResult.totalDocs,
       icon: FileText,
-      color: 'bg-(--cms-primary-soft) text-(--cms-primary)',
+      tone: 'primary',
+      description: 'All site pages',
     },
     {
       label: 'Published',
       value: publishedResult.totalDocs,
       icon: Eye,
-      color: 'bg-(--cms-success-soft) text-(--cms-success-text)',
+      tone: 'success',
+      description: 'Live content',
     },
     {
       label: 'Drafts',
       value: draftResult.totalDocs,
       icon: PenLine,
-      color: 'bg-(--cms-warning-soft) text-(--cms-warning-text)',
+      tone: 'warning',
+      description: 'Work in progress',
+    },
+    {
+      label: 'Media Files',
+      value: mediaResult.totalDocs,
+      icon: ImageIcon,
+      tone: 'info',
+      description: 'Uploaded assets',
     },
     {
       label: 'Forms',
       value: formsResult.totalDocs,
       icon: Mail,
-      color: 'bg-(--cms-info-soft) text-(--cms-info-text)',
+      tone: 'neutral',
+      description: 'Lead capture forms',
     },
     {
       label: 'Submissions',
       value: submissionsResult.totalDocs,
       icon: Inbox,
-      color: 'bg-violet-50 text-violet-600',
+      tone: 'danger',
+      description: 'Captured responses',
     },
     {
       label: 'Services',
       value: servicesResult.totalDocs,
       icon: Briefcase,
-      color: 'bg-amber-50 text-amber-600',
-    },
-    {
-      label: 'Media',
-      value: mediaResult.totalDocs,
-      icon: ImageIcon,
-      color: 'bg-rose-50 text-rose-600',
+      tone: 'neutral',
+      description: 'Service listings',
     },
   ]
 
@@ -238,21 +263,117 @@ export default async function ClientDashboardView(props: DocumentViewServerProps
     updatedAt?: string
   }>
 
+  const recentSubmissionItems: DashboardActivityItem[] = recentSubmissionsResult.docs.map((doc) => {
+    const submission = doc as unknown as {
+      id: string | number
+      createdAt?: string
+      form?: string | { title?: string }
+      siteId?: string
+    }
+
+    const formLabel =
+      typeof submission.form === 'object' && submission.form?.title
+        ? submission.form.title
+        : typeof submission.form === 'string'
+          ? submission.form
+          : 'Form submission'
+
+    return {
+      id: String(submission.id),
+      title: formLabel,
+      subtitle: `Site: ${submission.siteId ?? siteKey}`,
+      time: submission.createdAt ?? new Date().toISOString(),
+      icon: Inbox,
+      tone: 'info',
+      href: `/admin/collections/form-submissions/${submission.id}`,
+    }
+  })
+
   const domain = getSiteDomain(site as Parameters<typeof getSiteDomain>[0])
   const siteStatus = site.status ?? 'draft'
 
+  const quickActions: DashboardQuickActionItem[] = [
+    {
+      label: 'Create New Page',
+      description: 'Start a fresh page draft',
+      href: `/admin/collections/pages/create?siteId=${encodeURIComponent(siteKey)}`,
+      icon: Plus,
+    },
+    {
+      label: 'Upload Media',
+      description: 'Add images and files',
+      href: `/admin/collections/media/create?siteId=${encodeURIComponent(siteKey)}`,
+      icon: Upload,
+    },
+    {
+      label: 'Edit Site Settings',
+      description: 'Branding, domain and SEO',
+      href: `/admin/collections/sites/${siteDocId}/settings`,
+      icon: Settings2,
+    },
+    {
+      label: 'View Forms',
+      description: 'Manage forms and responses',
+      href: `/admin/collections/sites/${siteDocId}/forms`,
+      icon: Inbox,
+    },
+    {
+      label: 'Preview Site',
+      description: 'Open public preview',
+      href: previewUrl,
+      icon: ExternalLink,
+    },
+  ]
+
+  const checklistItems: DashboardChecklistItem[] = [
+    {
+      id: 'pages-created',
+      label: 'Pages created',
+      done: pagesResult.totalDocs > 0,
+      actionLabel: 'Create a page',
+      actionHref: `/admin/collections/pages/create?siteId=${encodeURIComponent(siteKey)}`,
+    },
+    {
+      id: 'media-uploaded',
+      label: 'Media uploaded',
+      done: mediaResult.totalDocs > 0,
+      actionLabel: 'Upload media',
+      actionHref: `/admin/collections/media/create?siteId=${encodeURIComponent(siteKey)}`,
+    },
+    {
+      id: 'settings-configured',
+      label: 'Settings configured',
+      done: Boolean(site.siteName),
+      actionLabel: 'Edit settings',
+      actionHref: `/admin/collections/sites/${siteDocId}/settings`,
+    },
+    {
+      id: 'page-published',
+      label: 'Page published',
+      done: publishedResult.totalDocs > 0,
+      actionLabel: 'Publish a page',
+      actionHref: `/admin/collections/sites/${siteDocId}/pages`,
+    },
+  ]
+
   return (
-    <div className="min-h-screen bg-(--cms-bg-elevated)">
-      {/* ── Page Header ─────────────────────────────────────────── */}
-      <div className="border-b border-(--cms-border-subtle) bg-(--cms-card-bg) px-6 py-5">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight text-(--cms-text)">Dashboard</h1>
-            <p className="mt-0.5 text-sm text-(--cms-text-secondary)">
-              Overview of your website content and activity
-            </p>
+    <DashboardPageShell>
+      <DashboardHeader
+        title="Website Dashboard"
+        subtitle="Manage your site content, leads, and publishing workflow from one place"
+        meta={site.siteName ?? siteKey}
+        icon={
+          <div
+            className="flex size-12 items-center justify-center rounded-2xl text-white shadow-sm"
+            style={{
+              background: 'linear-gradient(135deg, var(--cms-primary), var(--cms-primary-hover))',
+            }}
+          >
+            <Globe className="size-5" />
           </div>
-          <div className="flex items-center gap-2">
+        }
+        actions={
+          <>
             <Link href={previewUrl} target="_blank">
               <Button variant="outline" size="sm" className="gap-2">
                 <ExternalLink className="size-3.5" />
@@ -265,267 +386,152 @@ export default async function ClientDashboardView(props: DocumentViewServerProps
                 Site Settings
               </Button>
             </Link>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
-      {/* ── Content ─────────────────────────────────────────────── */}
-      <div className="space-y-6 p-6">
-        {/* Stat Cards */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="border-(--cms-card-border)">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={cn(
-                      'flex size-9 shrink-0 items-center justify-center rounded-lg',
-                      stat.color,
-                    )}
-                  >
-                    <stat.icon className="size-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-2xl font-bold leading-tight text-(--cms-text)">
-                      {stat.value}
-                    </p>
-                    <p className="truncate text-xs text-(--cms-text-muted)">{stat.label}</p>
-                  </div>
-                </div>
+      <div className="space-y-6 p-4 sm:p-6">
+        <DashboardSection>
+          <DashboardStatsRow
+            items={stats}
+            className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-7"
+          />
+        </DashboardSection>
+
+        <DashboardGrid>
+          <DashboardSection title="Site overview" className="lg:col-span-1">
+            <DashboardInfoCard
+              title="Site info"
+              icon={<Globe className="size-4 text-(--cms-text-muted)" />}
+              rows={[
+                { label: 'Name', value: site.siteName || '—' },
+                { label: 'Domain', value: domain },
+                { label: 'Last Updated', value: formatDate(site.updatedAt) },
+                { label: 'Status', value: siteStatus },
+              ]}
+            />
+            <div className="px-6 pb-5 -mt-4">
+              <Badge
+                className={cn(
+                  'text-[11px] font-semibold',
+                  statusStyles[siteStatus] ?? 'bg-(--cms-bg-muted) text-(--cms-text-secondary)',
+                )}
+              >
+                {siteStatus}
+              </Badge>
+            </div>
+          </DashboardSection>
+
+          <DashboardSection title="Quick actions" className="lg:col-span-1">
+            <DashboardQuickActions items={quickActions} columnsClassName="grid grid-cols-1 gap-2" />
+          </DashboardSection>
+
+          <DashboardSection
+            title="Recent submissions"
+            description="Latest form entries for your site"
+            className="lg:col-span-1"
+          >
+            <Card className="border-(--cms-card-border)">
+              <CardContent className="pt-6">
+                <DashboardActivityList
+                  items={recentSubmissionItems}
+                  emptyTitle="No submissions yet"
+                  emptyDescription="Submissions will appear here once your forms receive responses."
+                />
               </CardContent>
             </Card>
-          ))}
-        </div>
+          </DashboardSection>
+        </DashboardGrid>
 
-        {/* Three-column cards */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* ── Site Info ──────────────────────────────────────── */}
+        <DashboardGrid className="grid gap-6 lg:grid-cols-3">
+          <DashboardSection
+            className="lg:col-span-2"
+            title="Recent pages"
+            description="Most recently edited pages"
+            aside={
+              <Link
+                href={`/admin/collections/sites/${siteDocId}/pages`}
+                className="text-xs font-medium text-(--cms-primary) hover:underline"
+              >
+                View all
+              </Link>
+            }
+          >
+            <Card className="border-(--cms-card-border)">
+              <CardContent className="pt-6">
+                {recentPages.length === 0 ? (
+                  <EmptyState
+                    icon={FileText}
+                    title="No pages yet"
+                    description="Create your first page to start building your site."
+                    actionLabel="Create your first page"
+                    actionHref={`/admin/collections/pages/create?siteId=${encodeURIComponent(siteKey)}`}
+                  />
+                ) : (
+                  <div className="-mx-1 space-y-0.5">
+                    {recentPages.map((page) => (
+                      <Link
+                        key={String(page.id)}
+                        href={`/admin/collections/pages/${page.id}`}
+                        className="flex items-center justify-between rounded-lg px-2 py-2.5 transition hover:bg-(--cms-bg-muted)"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-(--cms-text)">
+                            {page.title || 'Untitled'}
+                          </p>
+                          <p className="text-xs text-(--cms-text-muted)">
+                            /{page.slug || ''}{' '}
+                            {page.updatedAt && (
+                              <span className="ml-1 text-(--cms-text-muted)">
+                                · {timeAgo(page.updatedAt)}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                        <Badge
+                          className={cn(
+                            'ml-2 shrink-0 text-[10px]',
+                            pageStatusStyles[page.status ?? 'draft'] ??
+                              'bg-(--cms-bg-muted) text-(--cms-text-secondary)',
+                          )}
+                        >
+                          {page.status || 'draft'}
+                        </Badge>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </DashboardSection>
+
+          <DashboardSection className="lg:col-span-1">
+            <DashboardChecklistCard title="Site checklist" items={checklistItems} />
+          </DashboardSection>
+        </DashboardGrid>
+
+        <DashboardSection
+          title="Publishing momentum"
+          description="Keep your site active and conversion-ready"
+        >
           <Card className="border-(--cms-card-border)">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <Globe className="size-4 text-(--cms-text-muted)" />
-                <CardTitle className="text-sm font-semibold text-(--cms-text)">Site Info</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-(--cms-text-secondary)">Name</span>
-                <span className="text-sm font-medium text-(--cms-text)">
-                  {site.siteName || '—'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-(--cms-text-secondary)">Status</span>
-                <Badge
-                  className={cn(
-                    'text-[11px] font-semibold',
-                    statusStyles[siteStatus] ?? 'bg-(--cms-bg-muted) text-(--cms-text-secondary)',
-                  )}
-                >
-                  {siteStatus}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-(--cms-text-secondary)">Domain</span>
-                <span className="max-w-45 truncate text-sm font-medium text-(--cms-text)">
-                  {domain}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-(--cms-text-secondary)">Last Updated</span>
-                <span className="text-xs text-(--cms-text-muted)">
-                  {formatDate(site.updatedAt)}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* ── Quick Actions ──────────────────────────────────── */}
-          <Card className="border-(--cms-card-border)">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-(--cms-text)">
-                Quick Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-2">
-              {[
-                {
-                  label: 'New Page',
-                  href: `/admin/collections/pages/create?siteId=${encodeURIComponent(siteKey)}`,
-                  icon: Plus,
-                },
-                {
-                  label: 'Upload Media',
-                  href: `/admin/collections/media/create?siteId=${encodeURIComponent(siteKey)}`,
-                  icon: Upload,
-                },
-                {
-                  label: 'Edit Settings',
-                  href: `/admin/collections/sites/${siteDocId}/settings`,
-                  icon: Settings2,
-                },
-                {
-                  label: 'View Forms',
-                  href: `/admin/collections/sites/${siteDocId}/forms`,
-                  icon: Inbox,
-                },
-              ].map((action) => (
-                <Link key={action.label} href={action.href}>
-                  <div className="flex items-center gap-2.5 rounded-xl border border-(--cms-border) p-3 text-[13px] font-medium text-(--cms-text) transition hover:border-(--cms-primary) hover:bg-(--cms-primary-soft) hover:text-(--cms-primary-text)">
-                    <action.icon className="size-4 shrink-0" />
-                    <span className="truncate">{action.label}</span>
-                  </div>
-                </Link>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* ── Recent Pages ───────────────────────────────────── */}
-          <Card className="border-(--cms-card-border)">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+                <Calendar className="size-4 text-(--cms-text-muted)" />
                 <CardTitle className="text-sm font-semibold text-(--cms-text)">
-                  Recent Pages
+                  Weekly focus
                 </CardTitle>
-                <Link
-                  href={`/admin/collections/sites/${siteDocId}/pages`}
-                  className="text-xs font-medium text-(--cms-primary) hover:underline"
-                >
-                  View all
-                </Link>
               </div>
             </CardHeader>
             <CardContent>
-              {recentPages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <FileText className="mb-2 size-8 text-(--cms-border)" />
-                  <p className="text-sm text-(--cms-text-muted)">No pages yet</p>
-                  <Link
-                    href={`/admin/collections/pages/create?siteId=${encodeURIComponent(siteKey)}`}
-                    className="mt-2 text-xs font-medium text-(--cms-primary) hover:underline"
-                  >
-                    Create your first page
-                  </Link>
-                </div>
-              ) : (
-                <div className="-mx-1 space-y-0.5">
-                  {recentPages.map((page) => (
-                    <Link
-                      key={String(page.id)}
-                      href={`/admin/collections/pages/${page.id}`}
-                      className="flex items-center justify-between rounded-lg px-2 py-2.5 transition hover:bg-(--cms-bg-muted)"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-(--cms-text)">
-                          {page.title || 'Untitled'}
-                        </p>
-                        <p className="text-xs text-(--cms-text-muted)">
-                          /{page.slug || ''}{' '}
-                          {page.updatedAt && (
-                            <span className="ml-1 text-(--cms-text-muted)">
-                              · {timeAgo(page.updatedAt)}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                      <Badge
-                        className={cn(
-                          'ml-2 shrink-0 text-[10px]',
-                          pageStatusStyles[page.status ?? 'draft'] ??
-                            'bg-(--cms-bg-muted) text-(--cms-text-secondary)',
-                        )}
-                      >
-                        {page.status || 'draft'}
-                      </Badge>
-                    </Link>
-                  ))}
-                </div>
-              )}
+              <p className="text-sm text-(--cms-text-secondary)">
+                Publish at least one page update, respond to new submissions, and review your media
+                library to keep your website fresh and effective.
+              </p>
             </CardContent>
           </Card>
-        </div>
-
-        {/* ── Site Health / Checklist ────────────────────────────── */}
-        <Card className="border-(--cms-card-border)">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <Calendar className="size-4 text-(--cms-text-muted)" />
-              <CardTitle className="text-sm font-semibold text-(--cms-text)">
-                Site Checklist
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {
-                  label: 'Pages created',
-                  done: pagesResult.totalDocs > 0,
-                  action: 'Create a page',
-                  href: `/admin/collections/pages/create?siteId=${encodeURIComponent(siteKey)}`,
-                },
-                {
-                  label: 'Media uploaded',
-                  done: mediaResult.totalDocs > 0,
-                  action: 'Upload media',
-                  href: `/admin/collections/media/create?siteId=${encodeURIComponent(siteKey)}`,
-                },
-                {
-                  label: 'Settings configured',
-                  done: Boolean(site.siteName),
-                  action: 'Edit settings',
-                  href: `/admin/collections/sites/${siteDocId}/settings`,
-                },
-                {
-                  label: 'Page published',
-                  done: publishedResult.totalDocs > 0,
-                  action: 'Publish a page',
-                  href: `/admin/collections/sites/${siteDocId}/pages`,
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className={cn(
-                    'rounded-xl border p-4 transition',
-                    item.done
-                      ? 'border-(--cms-success-soft) bg-(--cms-success-soft)'
-                      : 'border-(--cms-border) bg-(--cms-card-bg)',
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={cn(
-                        'flex size-5 items-center justify-center rounded-full text-xs font-bold',
-                        item.done
-                          ? 'bg-(--cms-success) text-white'
-                          : 'border-2 border-(--cms-border)',
-                      )}
-                    >
-                      {item.done && '✓'}
-                    </div>
-                    <span
-                      className={cn(
-                        'text-sm font-medium',
-                        item.done ? 'text-(--cms-success-text)' : 'text-(--cms-text)',
-                      )}
-                    >
-                      {item.label}
-                    </span>
-                  </div>
-                  {!item.done && (
-                    <Link
-                      href={item.href}
-                      className="mt-2 inline-block text-xs font-medium text-(--cms-primary) hover:underline"
-                    >
-                      {item.action} →
-                    </Link>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        </DashboardSection>
       </div>
-    </div>
+    </DashboardPageShell>
   )
 }
