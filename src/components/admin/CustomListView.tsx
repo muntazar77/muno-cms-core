@@ -123,22 +123,16 @@ const STATS_COMPONENTS: Record<string, React.ComponentType> = {
 // ─── Status Variant Styles ───────────────────────────────────────────
 
 const STATUS_VARIANT_CLASSES: Record<string, string> = {
-  success:
-    'bg-[var(--cms-success-soft)] text-[var(--cms-success-text)] border-[var(--cms-success-soft)]',
-  warning:
-    'bg-[var(--cms-warning-soft)] text-[var(--cms-warning-text)] border-[var(--cms-warning-soft)]',
-  danger:
-    'bg-[var(--cms-danger-soft)] text-[var(--cms-danger-text)] border-[var(--cms-danger-soft)]',
-  info: 'bg-[var(--cms-info-soft)] text-[var(--cms-info-text)] border-[var(--cms-info-soft)]',
-  default:
-    'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] border-[var(--cms-border-subtle)]',
+  success: 'bg-(--cms-success-soft) text-(--cms-success-text) border-(--cms-success-soft)',
+  warning: 'bg-(--cms-warning-soft) text-(--cms-warning-text) border-(--cms-warning-soft)',
+  danger: 'bg-(--cms-danger-soft) text-(--cms-danger-text) border-(--cms-danger-soft)',
+  info: 'bg-(--cms-info-soft) text-(--cms-info-text) border-(--cms-info-soft)',
+  default: 'bg-(--cms-bg-muted) text-(--cms-text-secondary) border-(--cms-border-subtle)',
 }
 
 const ROLE_VARIANT_CLASSES: Record<string, string> = {
-  'super-admin':
-    'bg-[var(--cms-info-soft)] text-[var(--cms-info-text)] border-[var(--cms-info-soft)]',
-  client:
-    'bg-[var(--cms-warning-soft)] text-[var(--cms-warning-text)] border-[var(--cms-warning-soft)]',
+  'super-admin': 'bg-(--cms-info-soft) text-(--cms-info-text) border-(--cms-info-soft)',
+  client: 'bg-(--cms-warning-soft) text-(--cms-warning-text) border-(--cms-warning-soft)',
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -161,10 +155,10 @@ function formatDate(value: string): string {
 function EmailCellInline({ value, editURL }: { value: string; editURL: string }) {
   return (
     <Link href={editURL} className="group/email flex items-center gap-2.5">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--cms-primary-soft)] text-[var(--cms-primary)]">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-(--cms-primary-soft) text-(--cms-primary)">
         <User className="h-3.5 w-3.5" />
       </div>
-      <span className="font-medium text-[var(--cms-text)] transition-colors group-hover/email:text-[var(--cms-primary)]">
+      <span className="font-medium text-(--cms-text) transition-colors group-hover/email:text-(--cms-primary)">
         {value}
       </span>
     </Link>
@@ -174,7 +168,7 @@ function EmailCellInline({ value, editURL }: { value: string; editURL: string })
 function RoleBadge({ value }: { value: string }) {
   const style =
     ROLE_VARIANT_CLASSES[value] ??
-    'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] border-[var(--cms-border-subtle)]'
+    'bg-(--cms-bg-muted) text-(--cms-text-secondary) border-(--cms-border-subtle)'
   const label = value ? value.charAt(0).toUpperCase() + value.slice(1) : '—'
   return (
     <Badge
@@ -187,13 +181,13 @@ function RoleBadge({ value }: { value: string }) {
 }
 
 function SiteBadge({ value }: { value: string }) {
-  if (!value) return <span className="text-[var(--cms-text-muted)]">—</span>
+  if (!value) return <span className="text-(--cms-text-muted)">—</span>
   return (
     <Badge
       variant="outline"
       className={cn(
         'rounded-full px-2.5 py-0.5 text-[11px] font-medium',
-        'bg-[var(--cms-primary-soft)] text-[var(--cms-primary)] border-[var(--cms-primary-soft)]',
+        'bg-(--cms-primary-soft) text-(--cms-primary) border-(--cms-primary-soft)',
       )}
     >
       <Globe className="mr-1 inline h-3 w-3" />
@@ -210,7 +204,7 @@ function StatusBadgeCell({
   config: Record<string, StatusBadgeDef>
 }) {
   const def = config[value]
-  if (!def) return <span className="text-[var(--cms-text-muted)]">{value || '—'}</span>
+  if (!def) return <span className="text-(--cms-text-muted)">{value || '—'}</span>
   const classes = STATUS_VARIANT_CLASSES[def.variant] ?? STATUS_VARIANT_CLASSES.default
   return (
     <Badge
@@ -224,7 +218,7 @@ function StatusBadgeCell({
 
 function CellValue({ value }: { value: unknown }) {
   if (value === null || value === undefined || value === '') {
-    return <span className="text-[var(--cms-text-muted)]">—</span>
+    return <span className="text-(--cms-text-muted)">—</span>
   }
 
   if (typeof value === 'boolean') {
@@ -242,7 +236,7 @@ function CellValue({ value }: { value: unknown }) {
   }
 
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
-    return <span className="text-[var(--cms-text-muted)] tabular-nums">{formatDate(value)}</span>
+    return <span className="text-(--cms-text-muted) tabular-nums">{formatDate(value)}</span>
   }
 
   if (typeof value === 'string' || typeof value === 'number') {
@@ -253,7 +247,7 @@ function CellValue({ value }: { value: unknown }) {
     return (
       <Badge
         variant="outline"
-        className="rounded-full px-2.5 py-0.5 text-[11px] text-[var(--cms-text-muted)] border-[var(--cms-border)]"
+        className="rounded-full px-2.5 py-0.5 text-[11px] text-(--cms-text-muted) border-(--cms-border)"
       >
         {value.length} item{value.length !== 1 ? 's' : ''}
       </Badge>
@@ -274,14 +268,14 @@ function CellValue({ value }: { value: unknown }) {
             <img
               src={url}
               alt={filename}
-              className="h-8 w-8 rounded-lg border border-[var(--cms-border)] object-cover"
+              className="h-8 w-8 rounded-lg border border-(--cms-border) object-cover"
             />
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--cms-border)] bg-[var(--cms-bg-muted)]">
-              <FileText className="h-3.5 w-3.5 text-[var(--cms-text-muted)]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-(--cms-border) bg-(--cms-bg-muted)">
+              <FileText className="h-3.5 w-3.5 text-(--cms-text-muted)" />
             </div>
           )}
-          <span className="max-w-[180px] truncate text-[13px]">{filename}</span>
+          <span className="max-w-45 truncate text-[13px]">{filename}</span>
         </div>
       )
     }
@@ -295,11 +289,11 @@ function CellValue({ value }: { value: unknown }) {
 
 function SortIndicator({ field, currentSort }: { field: string; currentSort: string }) {
   if (currentSort === field)
-    return <ChevronUp className="ml-1 inline h-3.5 w-3.5 text-[var(--cms-primary)]" />
+    return <ChevronUp className="ml-1 inline h-3.5 w-3.5 text-(--cms-primary)" />
   if (currentSort === `-${field}`)
-    return <ChevronDown className="ml-1 inline h-3.5 w-3.5 text-[var(--cms-primary)]" />
+    return <ChevronDown className="ml-1 inline h-3.5 w-3.5 text-(--cms-primary)" />
   return (
-    <ChevronsUpDown className="ml-1 inline h-3.5 w-3.5 text-[var(--cms-text-muted)] opacity-0 transition-opacity group-hover/sort:opacity-100" />
+    <ChevronsUpDown className="ml-1 inline h-3.5 w-3.5 text-(--cms-text-muted) opacity-0 transition-opacity group-hover/sort:opacity-100" />
   )
 }
 
@@ -343,11 +337,6 @@ function ActionMenu({
     const message = error instanceof Error ? error.message : ''
     return `${action}${message ? ` (${message})` : ''}`
   }
-
-  function buildCollectionTrashWherePath() {
-    return `${apiRoute}/${slug}/${id}`
-  }
-
   async function runAction(request: RequestInfo | URL, init: RequestInit) {
     const res = await fetch(request, {
       credentials: 'include',
@@ -445,7 +434,7 @@ function ActionMenu({
             variant="ghost"
             size="icon-sm"
             disabled={isWorking}
-            className="h-8 w-8 rounded-lg text-[var(--cms-text-muted)] opacity-100 transition-all hover:bg-[var(--cms-bg-muted)] hover:text-[var(--cms-text)] sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40"
+            className="h-8 w-8 rounded-lg text-(--cms-text-muted) opacity-100 transition-all hover:bg-(--cms-bg-muted) hover:text-(--cms-text) sm:opacity-0 sm:group-hover:opacity-100 disabled:opacity-40"
           >
             <MoreHorizontal className="size-4" />
             <span className="sr-only">Open menu</span>
@@ -453,28 +442,28 @@ function ActionMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-44 rounded-xl border-[var(--cms-border)] bg-[var(--cms-card-bg)] shadow-lg"
+          className="w-44 rounded-xl border-(--cms-border) bg-(--cms-card-bg) shadow-lg"
         >
-          <DropdownMenuItem className="rounded-lg text-[var(--cms-text-secondary)]" asChild>
+          <DropdownMenuItem className="rounded-lg text-(--cms-text-secondary)" asChild>
             <Link href={editHref}>
               <Eye className="mr-2 size-4" />
               Open
             </Link>
           </DropdownMenuItem>
           {!isTrashView && (
-            <DropdownMenuItem className="rounded-lg text-[var(--cms-text-secondary)]" asChild>
+            <DropdownMenuItem className="rounded-lg text-(--cms-text-secondary)" asChild>
               <Link href={editURL}>
                 <Pencil className="mr-2 size-4" />
                 Edit
               </Link>
             </DropdownMenuItem>
           )}
-          <DropdownMenuSeparator className="bg-[var(--cms-border-subtle)]" />
+          <DropdownMenuSeparator className="bg-(--cms-border-subtle)" />
 
           {isTrashView ? (
             <>
               <DropdownMenuItem
-                className="rounded-lg text-[var(--cms-text-secondary)]"
+                className="rounded-lg text-(--cms-text-secondary)"
                 onSelect={(event) => {
                   event.preventDefault()
                   handleRestore()
@@ -485,7 +474,7 @@ function ActionMenu({
                 Restore
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="rounded-lg text-[var(--cms-danger-text)] focus:bg-[var(--cms-danger-soft)] focus:text-[var(--cms-danger-text)]"
+                className="rounded-lg text-(--cms-danger-text) focus:bg-(--cms-danger-soft) focus:text-(--cms-danger-text)"
                 onSelect={(event) => {
                   event.preventDefault()
                   handlePermanentDelete()
@@ -498,7 +487,7 @@ function ActionMenu({
             </>
           ) : (
             <DropdownMenuItem
-              className="rounded-lg text-[var(--cms-danger-text)] focus:bg-[var(--cms-danger-soft)] focus:text-[var(--cms-danger-text)]"
+              className="rounded-lg text-(--cms-danger-text) focus:bg-(--cms-danger-soft) focus:text-(--cms-danger-text)"
               onSelect={(event) => {
                 event.preventDefault()
                 handleTrash()
@@ -549,6 +538,7 @@ export default function CustomListView() {
   const pathParts = (pathname ?? '').split('/').filter(Boolean)
   const collectionsIdx = pathParts.lastIndexOf('collections')
   const slug = collectionsIdx !== -1 ? (pathParts[collectionsIdx + 1] ?? '') : ''
+  const userRole = user && 'role' in user ? String((user as { role?: string }).role ?? '') : ''
   const isTrashView = false // Trash is now centralized at /admin/trash
 
   const collectionConfig = config?.collections?.find((c) => c.slug === slug)
@@ -585,9 +575,17 @@ export default function CustomListView() {
 
   const StatsComponent = STATS_COMPONENTS[slug]
 
+  React.useEffect(() => {
+    if (slug === 'pages' && userRole !== 'super-admin') {
+      router.replace('/admin/collections/sites')
+    }
+  }, [slug, userRole, router])
+
   function refreshList() {
     router.refresh()
   }
+
+  if (slug === 'pages' && userRole !== 'super-admin') return null
 
   return (
     <div className="px-6 pb-6 pt-5">
@@ -611,19 +609,19 @@ export default function CustomListView() {
 
       <section
         aria-labelledby="list-heading"
-        className="overflow-hidden rounded-2xl border border-[var(--cms-card-border)] bg-[var(--cms-card-bg)]"
+        className="overflow-hidden rounded-2xl border border-(--cms-card-border) bg-(--cms-card-bg)"
         style={{ boxShadow: 'var(--cms-card-shadow)' }}
       >
         {/* Header */}
-        <div className="flex flex-col gap-2 border-b border-[var(--cms-border-subtle)] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 border-b border-(--cms-border-subtle) px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2
               id="list-heading"
-              className="text-[16px] font-semibold tracking-tight text-[var(--cms-text)]"
+              className="text-[16px] font-semibold tracking-tight text-(--cms-text)"
             >
               {isTrashView ? `Deleted ${pluralLabel}` : pluralLabel}
             </h2>
-            <p className="mt-0.5 text-[13px] text-[var(--cms-text-muted)]">
+            <p className="mt-0.5 text-[13px] text-(--cms-text-muted)">
               {`${totalDocs.toLocaleString()} ${totalDocs === 1 ? singularLabel.toLowerCase() : pluralLabel.toLowerCase()}`}
             </p>
           </div>
@@ -631,15 +629,15 @@ export default function CustomListView() {
 
         {docs.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-6 py-24 text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--cms-bg-muted)]">
-              <Inbox className="h-6 w-6 text-[var(--cms-text-muted)]" />
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-(--cms-bg-muted)">
+              <Inbox className="h-6 w-6 text-(--cms-text-muted)" />
             </div>
-            <h3 className="text-[15px] font-semibold text-[var(--cms-text)]">
+            <h3 className="text-[15px] font-semibold text-(--cms-text)">
               {isTrashView
                 ? `No deleted ${pluralLabel.toLowerCase()} yet`
                 : `No ${pluralLabel.toLowerCase()} yet`}
             </h3>
-            <p className="mt-1 text-[13px] text-[var(--cms-text-muted)]">
+            <p className="mt-1 text-[13px] text-(--cms-text-muted)">
               {isTrashView
                 ? `Documents moved to trash will appear here.`
                 : `Get started by creating your first ${singularLabel.toLowerCase()}.`}
@@ -649,7 +647,7 @@ export default function CustomListView() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="rounded-xl border-[var(--cms-border)] text-[var(--cms-text-secondary)]"
+                  className="rounded-xl border-(--cms-border) text-(--cms-text-secondary)"
                 >
                   <Plus className="mr-1.5 h-3.5 w-3.5" />
                   Create {singularLabel.toLowerCase()}
@@ -667,11 +665,11 @@ export default function CustomListView() {
                     {columns.map((col) => {
                       if (listCfg?.statusField && col === listCfg.statusField) return null
                       return (
-                        <TableHead key={col} className="min-w-[120px]">
+                        <TableHead key={col} className="min-w-30">
                           <button
                             type="button"
                             onClick={() => toggleSort(col)}
-                            className="group/sort inline-flex items-center whitespace-nowrap transition-colors hover:text-[var(--cms-text)]"
+                            className="group/sort inline-flex items-center whitespace-nowrap transition-colors hover:text-(--cms-text)"
                           >
                             {listCfg?.columnLabels?.[col] ?? toLabel(col)}
                             <SortIndicator field={col} currentSort={currentSort} />
@@ -680,12 +678,12 @@ export default function CustomListView() {
                       )
                     })}
                     {listCfg?.statusField && (
-                      <TableHead className="min-w-[100px]">
+                      <TableHead className="min-w-25">
                         {listCfg.columnLabels?.[listCfg.statusField] ??
                           toLabel(listCfg.statusField)}
                       </TableHead>
                     )}
-                    <TableHead className="w-[52px]">
+                    <TableHead className="w-13">
                       <span className="sr-only">Actions</span>
                     </TableHead>
                   </TableRow>
@@ -712,7 +710,7 @@ export default function CustomListView() {
                               ) : i === 0 ? (
                                 <Link
                                   href={editURL}
-                                  className="font-medium text-[var(--cms-text)] transition-colors hover:text-[var(--cms-primary)]"
+                                  className="font-medium text-(--cms-text) transition-colors hover:text-(--cms-primary)"
                                 >
                                   <CellValue value={doc[col]} />
                                 </Link>
@@ -752,13 +750,13 @@ export default function CustomListView() {
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between border-t border-[var(--cms-border-subtle)] px-6 py-3.5">
-              <p className="text-[13px] text-[var(--cms-text-muted)]">
-                <span className="font-medium text-[var(--cms-text-secondary)]">
+            <div className="flex items-center justify-between border-t border-(--cms-border-subtle) px-6 py-3.5">
+              <p className="text-[13px] text-(--cms-text-muted)">
+                <span className="font-medium text-(--cms-text-secondary)">
                   {startIndex}–{endIndex}
                 </span>{' '}
                 of{' '}
-                <span className="font-medium text-[var(--cms-text-secondary)]">
+                <span className="font-medium text-(--cms-text-secondary)">
                   {totalDocs.toLocaleString()}
                 </span>
               </p>
@@ -766,7 +764,7 @@ export default function CustomListView() {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  className="h-8 w-8 rounded-lg text-[var(--cms-text-muted)] hover:bg-[var(--cms-bg-muted)] hover:text-[var(--cms-text)] disabled:opacity-30"
+                  className="h-8 w-8 rounded-lg text-(--cms-text-muted) hover:bg-(--cms-bg-muted) hover:text-(--cms-text) disabled:opacity-30"
                   disabled={currentPage <= 1}
                   onClick={() => void handlePageChange?.(currentPage - 1)}
                 >
@@ -792,8 +790,8 @@ export default function CustomListView() {
                       className={cn(
                         'flex h-8 w-8 items-center justify-center rounded-lg text-[13px] font-medium transition-colors',
                         page === currentPage
-                          ? 'bg-[var(--cms-primary)] text-white'
-                          : 'text-[var(--cms-text-muted)] hover:bg-[var(--cms-bg-muted)] hover:text-[var(--cms-text)]',
+                          ? 'bg-(--cms-primary) text-white'
+                          : 'text-(--cms-text-muted) hover:bg-(--cms-bg-muted) hover:text-(--cms-text)',
                       )}
                     >
                       {page}
@@ -804,7 +802,7 @@ export default function CustomListView() {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  className="h-8 w-8 rounded-lg text-[var(--cms-text-muted)] hover:bg-[var(--cms-bg-muted)] hover:text-[var(--cms-text)] disabled:opacity-30"
+                  className="h-8 w-8 rounded-lg text-(--cms-text-muted) hover:bg-(--cms-bg-muted) hover:text-(--cms-text) disabled:opacity-30"
                   disabled={currentPage >= totalPages}
                   onClick={() => void handlePageChange?.(currentPage + 1)}
                 >

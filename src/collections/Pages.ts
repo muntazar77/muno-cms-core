@@ -30,6 +30,7 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'updatedAt', 'createdAt'],
+    hidden: ({ user }) => (user?.role as string | undefined) !== 'super-admin',
     components: {
       views: {
         list: {

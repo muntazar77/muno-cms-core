@@ -7,6 +7,7 @@ import {
   Image as ImageIcon,
   Users,
   LogOut,
+  Menu,
   PanelLeftClose,
   PanelLeftOpen,
   FileText,
@@ -23,6 +24,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 function NavLink({
@@ -31,21 +33,24 @@ function NavLink({
   label,
   active,
   collapsed,
+  onNavigate,
 }: {
   href: string
   icon: LucideIcon
   label: string
   active: boolean
   collapsed: boolean
+  onNavigate?: () => void
 }) {
   const link = (
     <Link
       href={href}
+      onClick={onNavigate}
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium no-underline transition-all duration-150',
         active
-          ? 'bg-blue-600 text-white shadow-sm'
-          : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100',
+          ? 'bg-(--cms-primary) text-white shadow-sm shadow-black/10'
+          : 'text-(--cms-text-secondary) hover:bg-(--cms-bg-muted) hover:text-(--cms-text)',
         collapsed && 'justify-center px-2',
       )}
     >
@@ -79,7 +84,17 @@ function NavLink({
   return link
 }
 
-function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+function SidebarInner({
+  collapsed,
+  onToggle,
+  onNavigate,
+  mobileMode = false,
+}: {
+  collapsed: boolean
+  onToggle: () => void
+  onNavigate?: () => void
+  mobileMode?: boolean
+}) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, logOut } = useAuth()
@@ -194,11 +209,16 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
     : []
 
   return (
-    <div className="flex h-full flex-col border-r border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-950">
+    <div
+      className={cn(
+        'flex h-full flex-col border-r border-(--cms-sidebar-border) bg-(--cms-sidebar-bg)',
+        !mobileMode && 'md:sticky md:top-0 md:h-dvh',
+      )}
+    >
       {/* Header */}
       <div
         className={cn(
-          'flex h-13 shrink-0 items-center border-b border-gray-100 dark:border-gray-800',
+          'flex h-13 shrink-0 items-center border-b border-(--cms-border-subtle)',
           collapsed ? 'justify-center gap-0 px-2' : 'gap-2.5 px-3',
         )}
       >
@@ -223,30 +243,32 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
             </motion.div>
           )}
         </AnimatePresence>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={onToggle}
-              className="flex size-7 shrink-0 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {collapsed ? (
-                <PanelLeftOpen className="size-3.75" />
-              ) : (
-                <PanelLeftClose className="size-3.75" />
-              )}
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            {collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          </TooltipContent>
-        </Tooltip>
+        {!mobileMode && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onToggle}
+                className="flex size-7 shrink-0 items-center justify-center rounded-md text-(--cms-text-muted) transition-colors hover:bg-(--cms-bg-muted) hover:text-(--cms-text)"
+                aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {collapsed ? (
+                  <PanelLeftOpen className="size-3.75" />
+                ) : (
+                  <PanelLeftClose className="size-3.75" />
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
         {!collapsed && (
-          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-(--cms-text-muted)">
             Menu
           </p>
         )}
@@ -260,6 +282,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
               label="Dashboard"
               active={pathname === '/admin'}
               collapsed={collapsed}
+              onNavigate={onNavigate}
             />
             <NavLink
               href="/admin/collections/sites"
@@ -267,10 +290,11 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
               label="All Sites"
               active={Boolean(pathname?.startsWith('/admin/collections/sites'))}
               collapsed={collapsed}
+              onNavigate={onNavigate}
             />
 
             {siteContextLinks.length > 0 && !collapsed && (
-              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-(--cms-text-muted)">
                 Site Context
               </p>
             )}
@@ -282,6 +306,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                 label={link.label}
                 active={pathname === link.href || Boolean(pathname?.startsWith(link.href + '/'))}
                 collapsed={collapsed}
+                onNavigate={onNavigate}
               />
             ))}
             {previewSiteSlug && (
@@ -291,11 +316,12 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                 label="Preview Site"
                 active={false}
                 collapsed={collapsed}
+                onNavigate={onNavigate}
               />
             )}
 
             {!collapsed && (
-              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-(--cms-text-muted)">
                 Admin
               </p>
             )}
@@ -305,6 +331,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
               label="Users"
               active={Boolean(pathname?.startsWith('/admin/collections/users'))}
               collapsed={collapsed}
+              onNavigate={onNavigate}
             />
             <NavLink
               href="/admin/trash"
@@ -312,6 +339,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
               label="Trash"
               active={pathname === '/admin/trash'}
               collapsed={collapsed}
+              onNavigate={onNavigate}
             />
           </>
         )}
@@ -330,10 +358,11 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                     pathname === `/admin/collections/sites/${siteDocId}/dashboard`
                   }
                   collapsed={collapsed}
+                  onNavigate={onNavigate}
                 />
 
                 {!collapsed && (
-                  <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+                  <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-(--cms-text-muted)">
                     Content
                   </p>
                 )}
@@ -347,6 +376,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                       pathname === link.href || Boolean(pathname?.startsWith(link.href + '/'))
                     }
                     collapsed={collapsed}
+                    onNavigate={onNavigate}
                   />
                 ))}
 
@@ -357,11 +387,12 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                     label="Preview Site"
                     active={false}
                     collapsed={collapsed}
+                    onNavigate={onNavigate}
                   />
                 )}
 
                 {!collapsed && (
-                  <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-600">
+                  <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-(--cms-text-muted)">
                     Manage
                   </p>
                 )}
@@ -371,6 +402,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                   label="Settings"
                   active={Boolean(pathname?.startsWith(`/admin/collections/sites/${siteDocId}/settings`))}
                   collapsed={collapsed}
+                  onNavigate={onNavigate}
                 />
                 <NavLink
                   href="/admin/trash"
@@ -378,6 +410,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                   label="Trash"
                   active={pathname === '/admin/trash'}
                   collapsed={collapsed}
+                  onNavigate={onNavigate}
                 />
               </>
             ) : (
@@ -387,6 +420,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                 label="Dashboard"
                 active={pathname === '/admin'}
                 collapsed={collapsed}
+                onNavigate={onNavigate}
               />
             )}
           </>
@@ -396,7 +430,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
       {/* Footer: user */}
       <div
         className={cn(
-          'shrink-0 border-t border-gray-100 dark:border-gray-800',
+          'shrink-0 border-t border-(--cms-border-subtle)',
           collapsed ? 'flex flex-col items-center gap-2 p-2' : 'p-3',
         )}
       >
@@ -419,7 +453,7 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
               <TooltipTrigger asChild>
                 <button
                   onClick={() => void handleLogOut()}
-                  className="flex size-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:text-gray-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                  className="flex size-8 items-center justify-center rounded-lg text-(--cms-text-muted) transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-300"
                 >
                   <LogOut className="size-3.5" />
                 </button>
@@ -440,14 +474,14 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
                 <p className="truncate text-[12.5px] font-medium text-gray-900 dark:text-gray-100">
                   {user?.email ?? '—'}
                 </p>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                <p className="text-[10px] text-(--cms-text-muted)">
                   {isSuperAdmin ? 'Administrator' : 'Client'}
                 </p>
               </div>
             </div>
             <button
               onClick={() => void handleLogOut()}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-100 px-3 py-2 text-[12px] font-medium text-gray-500 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-gray-800 dark:text-gray-400 dark:hover:border-red-900/40 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-(--cms-border) px-3 py-2 text-[12px] font-medium text-(--cms-text-secondary) transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-900/40 dark:hover:bg-red-900/20 dark:hover:text-red-300"
             >
               <LogOut className="size-3.5" />
               Log out
@@ -461,6 +495,8 @@ function SidebarInner({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -472,5 +508,34 @@ export default function Sidebar() {
     document.documentElement.dataset.navCollapsed = String(collapsed)
   }, [collapsed])
 
-  return <SidebarInner collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
+
+  return (
+    <>
+      <div className="hidden md:block h-full">
+        <SidebarInner collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
+      </div>
+
+      <div className="fixed bottom-4 left-4 z-40 md:hidden">
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger
+            className="flex size-10 items-center justify-center rounded-xl bg-(--cms-primary) text-white shadow-lg shadow-black/20 transition hover:bg-(--cms-primary-hover)"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="size-5" />
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[86vw] max-w-[320px] p-0" showCloseButton>
+            <SidebarInner
+              collapsed={false}
+              onToggle={() => {}}
+              onNavigate={() => setMobileOpen(false)}
+              mobileMode
+            />
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
+  )
 }
