@@ -58,10 +58,7 @@ function findByKeys(value: unknown, keys: Set<string>): string | undefined {
 }
 
 function findEmail(value: unknown): string | undefined {
-  const fromKey = findByKeys(
-    value,
-    new Set(['email', 'emailaddress', 'contactemail', 'workemail']),
-  )
+  const fromKey = findByKeys(value, new Set(['email', 'emailaddress', 'contactemail', 'workemail']))
   if (fromKey) return fromKey
 
   const stack: unknown[] = [value]
@@ -167,8 +164,10 @@ export default async function ClientSubmissionsView(props: DocumentViewServerPro
 
   const submissions: SubmissionListItem[] = list.map((item) => {
     const name =
-      findByKeys(item.data, new Set(['name', 'fullname', 'first_name', 'firstname', 'contactname'])) ||
-      'Unknown submitter'
+      findByKeys(
+        item.data,
+        new Set(['name', 'fullname', 'first_name', 'firstname', 'contactname']),
+      ) || 'Unknown submitter'
     const email = findEmail(item.data) || 'No email provided'
 
     const formName =
