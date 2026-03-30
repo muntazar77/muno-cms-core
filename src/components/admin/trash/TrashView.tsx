@@ -77,12 +77,12 @@ const COLLECTION_ICONS: Record<string, LucideIcon> = {
 }
 
 const COLLECTION_COLORS: Record<string, string> = {
-  users: 'bg-cyan-50 text-cyan-700 border-cyan-100',
-  pages: 'bg-blue-50 text-blue-600 border-blue-100',
-  media: 'bg-purple-50 text-purple-600 border-purple-100',
-  forms: 'bg-amber-50 text-amber-600 border-amber-100',
-  'form-submissions': 'bg-green-50 text-green-600 border-green-100',
-  services: 'bg-rose-50 text-rose-600 border-rose-100',
+  users: 'bg-(--cms-info-soft) text-(--cms-info-text) border-(--cms-border)',
+  pages: 'bg-(--cms-primary-soft) text-(--cms-primary-text) border-(--cms-border)',
+  media: 'bg-(--cms-warning-soft) text-(--cms-warning-text) border-(--cms-border)',
+  forms: 'bg-(--cms-warning-soft) text-(--cms-warning-text) border-(--cms-border)',
+  'form-submissions': 'bg-(--cms-success-soft) text-(--cms-success-text) border-(--cms-border)',
+  services: 'bg-(--cms-danger-soft) text-(--cms-danger-text) border-(--cms-border)',
 }
 
 const BASE_COLLECTION_FILTERS = [
@@ -324,7 +324,7 @@ export default function TrashView() {
       {/* Header */}
       <div className="mb-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-500">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-(--cms-danger-soft) text-(--cms-danger-text)">
             <Trash2 className="h-5 w-5" />
           </div>
           <div>
@@ -389,7 +389,7 @@ export default function TrashView() {
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 text-[13px]"
+                className="rounded-xl border-(--cms-danger-soft) text-(--cms-danger-text) hover:bg-(--cms-danger-soft) text-[13px]"
                 disabled={actionLoading}
                 onClick={() =>
                   setConfirm({
@@ -484,7 +484,7 @@ export default function TrashView() {
                     key={key}
                     className={cn(
                       'flex items-center gap-4 px-6 py-4 transition-colors',
-                      isSelected ? 'bg-blue-50/50' : 'hover:bg-[var(--cms-bg-muted)]/50',
+                      isSelected ? 'bg-(--cms-primary-soft)/50' : 'hover:bg-[var(--cms-bg-muted)]/50',
                     )}
                   >
                     {/* Checkbox */}
@@ -550,7 +550,7 @@ export default function TrashView() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 rounded-lg px-3 text-[12px] font-medium text-[var(--cms-text-secondary)] hover:bg-green-50 hover:text-green-700"
+                          className="h-8 rounded-lg px-3 text-[12px] font-medium text-[var(--cms-text-secondary)] hover:bg-(--cms-success-soft) hover:text-(--cms-success-text)"
                           disabled={actionLoading}
                           onClick={() =>
                             setConfirm({
@@ -570,7 +570,7 @@ export default function TrashView() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 rounded-lg px-3 text-[12px] font-medium text-red-500 hover:bg-red-50 hover:text-red-700"
+                            className="h-8 rounded-lg px-3 text-[12px] font-medium text-(--cms-danger-text) hover:bg-(--cms-danger-soft) hover:text-(--cms-danger-text)"
                             disabled={actionLoading}
                             onClick={() =>
                               setConfirm({

@@ -158,15 +158,15 @@ export const Sites: CollectionConfig = {
           },
           media: {
             path: '/media',
-            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+            Component: '/components/admin/client/ClientMediaView',
           },
           forms: {
             path: '/forms',
-            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+            Component: '/components/admin/client/ClientFormsView',
           },
           services: {
             path: '/services',
-            Component: '/components/admin/sites/SiteAdminView#SiteWorkspaceView',
+            Component: '/components/admin/client/ClientServicesView',
           },
           settings: {
             path: '/settings',
