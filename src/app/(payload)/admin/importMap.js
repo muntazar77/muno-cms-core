@@ -38,13 +38,14 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_a03c966868bf6fe3a5fdb337136b5f42 } from '../../../components/admin/Sidebar'
-import { default as default_0a8df66eb6b1381af6f87d9d553b7329 } from '../../../components/admin/dashboard/UserActions'
 import { default as default_7130eca2f5356ca338458f80c216a64d } from '../../../components/admin/dashboard/SearchAction'
+import { default as default_0a8df66eb6b1381af6f87d9d553b7329 } from '../../../components/admin/dashboard/UserActions'
 import { default as default_54301f0aaf1f6906feed1634d2a468bb } from '../../../components/admin/AfterLoginRedirect'
 import { default as default_87174a96e964349564e02fc37eed4968 } from '../../../components/admin/GlobalProvider'
 import { default as default_90d94a8a05a7cf2177ecc4e95646ec1f } from '../../../components/admin/dashboard/DashboardView'
 import { default as default_277896e5f7e20ebc50f56bcf621a4de8 } from '../../../components/admin/builder/BuilderPage'
 import { default as default_b95a1cdc9c756cfe4bafa66ca9530752 } from '../../../components/admin/trash/TrashViewPage'
+import { default as default_fe3a6622af0b4ad21a17e603e6378220 } from '../../../components/admin/account/AccountViewPage'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
@@ -88,12 +89,13 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/Sidebar#default": default_a03c966868bf6fe3a5fdb337136b5f42,
-  "./components/admin/dashboard/UserActions#default": default_0a8df66eb6b1381af6f87d9d553b7329,
   "./components/admin/dashboard/SearchAction#default": default_7130eca2f5356ca338458f80c216a64d,
+  "./components/admin/dashboard/UserActions#default": default_0a8df66eb6b1381af6f87d9d553b7329,
   "/components/admin/AfterLoginRedirect#default": default_54301f0aaf1f6906feed1634d2a468bb,
   "/components/admin/GlobalProvider#default": default_87174a96e964349564e02fc37eed4968,
   "/components/admin/dashboard/DashboardView#default": default_90d94a8a05a7cf2177ecc4e95646ec1f,
   "/components/admin/builder/BuilderPage#default": default_277896e5f7e20ebc50f56bcf621a4de8,
   "/components/admin/trash/TrashViewPage#default": default_b95a1cdc9c756cfe4bafa66ca9530752,
+  "/components/admin/account/AccountViewPage#default": default_fe3a6622af0b4ad21a17e603e6378220,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

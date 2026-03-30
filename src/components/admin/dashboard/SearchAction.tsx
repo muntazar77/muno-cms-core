@@ -7,14 +7,14 @@ export default function SearchAction() {
   }
 
   return (
-    <div className="flex-1 max-w-md mx-4 w-3xl"> 
+    <div className="flex min-w-0 flex-1 items-center pr-2 sm:pr-3">
       <button
         onClick={openCommandMenu}
-        className="flex items-center gap-2.5 rounded-xl border border-(--cms-border) bg-(--cms-bg-elevated) px-4 py-2 text-sm text-(--cms-text-muted) hover:bg-(--cms-bg) hover:shadow-sm transition-all w-full"
+        className="flex h-10 w-full max-w-140 items-center gap-2.5 rounded-xl border border-(--cms-border) bg-(--cms-bg-elevated) px-3.5 text-sm text-(--cms-text-muted) transition-all hover:bg-(--cms-bg) hover:shadow-sm"
       >
-        <Search className="size-4" />
-        <span className="flex-1 text-left text-xs">Search records...</span>
-        <kbd className="hidden sm:flex items-center gap-1 rounded-md bg-(--cms-bg) border border-(--cms-border-subtle) px-1.5 py-0.5 text-[10px]">
+        <Search className="size-4 shrink-0" />
+        <span className="flex-1 truncate text-left text-xs">Search records, pages, media...</span>
+        <kbd className="hidden items-center gap-1 rounded-md border border-(--cms-border-subtle) bg-(--cms-bg) px-1.5 py-0.5 text-[10px] sm:flex">
           <CommandIcon className="size-2.5" />K
         </kbd>
       </button>

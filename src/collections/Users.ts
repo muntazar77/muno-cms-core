@@ -115,6 +115,37 @@ export const Users: CollectionConfig = {
   },
   fields: [
     {
+      name: 'fullName',
+      type: 'text',
+      admin: {
+        description: 'Display name used in the admin account UI.',
+      },
+      saveToJWT: true,
+    },
+    {
+      name: 'avatar',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Profile Image',
+      saveToJWT: true,
+    },
+    {
+      name: 'timezone',
+      type: 'text',
+      defaultValue: 'UTC',
+      saveToJWT: true,
+    },
+    {
+      name: 'language',
+      type: 'select',
+      options: [
+        { label: 'English', value: 'en' },
+        { label: 'Arabic', value: 'ar' },
+      ],
+      defaultValue: 'en',
+      saveToJWT: true,
+    },
+    {
       name: 'role',
       type: 'select',
       options: [

@@ -25,8 +25,8 @@ export default buildConfig({
     },
     components: {
       actions: [
-        './components/admin/dashboard/UserActions',
         './components/admin/dashboard/SearchAction',
+        './components/admin/dashboard/UserActions',
       ],
       Nav: '/components/admin/Sidebar#default',
       providers: ['/components/admin/GlobalProvider#default'],
@@ -44,6 +44,11 @@ export default buildConfig({
         trash: {
           path: '/trash',
           Component: '/components/admin/trash/TrashViewPage',
+          exact: true,
+        },
+        account: {
+          path: '/account',
+          Component: '/components/admin/account/AccountViewPage',
           exact: true,
         },
 

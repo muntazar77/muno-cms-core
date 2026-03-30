@@ -1,30 +1,93 @@
 'use client'
-import { Bell } from 'lucide-react'
+import { Bell, LogOut, Settings2 } from 'lucide-react'
 import { useAuth } from '@payloadcms/ui'
+import { useRouter } from 'next/navigation'
 import { ThemeToggle } from '../ThemeToggle'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import AccountAvatar from '@/components/admin/account/AccountAvatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export default function UserActions() {
-  const { user } = useAuth()
-  const initials = user?.email ? user.email.slice(0, 2).toUpperCase() : 'AD'
+  const { user, logOut } = useAuth()
+  const router = useRouter()
+
+  const fullName =
+    user && typeof user === 'object' && 'fullName' in user ? String(user.fullName ?? '') : ''
+  const email = user?.email ?? ''
+  const avatar =
+    user && typeof user === 'object' && 'avatar' in user
+      ? (user.avatar as string | { url?: string | null } | null)
+      : null
+  const avatarUrl =
+    avatar && typeof avatar === 'object' ? (avatar.url ?? null) : typeof avatar === 'string' ? avatar : null
+
+  async function handleLogout() {
+    await logOut()
+    router.replace('/admin/login')
+    router.refresh()
+  }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex shrink-0 items-center justify-end gap-1.5 pl-2 sm:gap-2">
       {/* Notifications */}
-    <button
-          className="relative flex size-9 items-center justify-center rounded-xl border-0 bg-transparent text-(--cms-text-secondary) hover:bg-(--cms-bg-muted) hover:text-(--cms-text) transition-all"
-          aria-label="Notifications"
-        >
-          <Bell className="size-4.25" />
-          <span className="absolute top-2 right-2 size-1.5 rounded-full bg-red-500" />
-        </button>
+      <button
+        className="relative flex size-9 items-center justify-center rounded-xl border-0 bg-transparent text-(--cms-text-secondary) transition-all hover:bg-(--cms-bg-muted) hover:text-(--cms-text)"
+        aria-label="Notifications"
+      >
+        <Bell className="size-4.25" />
+        <span className="absolute right-2 top-2 size-1.5 rounded-full bg-(--cms-danger)" />
+      </button>
+
       <ThemeToggle />
 
-      <Avatar className="size-8 border-2 border-white shadow-sm">
-        <AvatarFallback className="bg-gradient-to-tr from-indigo-500 to-purple-500 text-[10px] text-white">
-          {initials}
-        </AvatarFallback>
-      </Avatar>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            aria-label="Open account menu"
+            className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--cms-primary)"
+          >
+            <AccountAvatar fullName={fullName} email={email} imageUrl={avatarUrl} />
+          </button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          align="end"
+          className="w-60 rounded-xl border-(--cms-border) bg-(--cms-card-bg) p-2 shadow-lg"
+        >
+          <DropdownMenuLabel className="px-2 py-1.5">
+            <p className="truncate text-xs font-semibold text-(--cms-text)">{fullName || 'Account'}</p>
+            <p className="truncate text-[11px] font-normal text-(--cms-text-muted)">{email || '—'}</p>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator className="my-1 bg-(--cms-border-subtle)" />
+          <DropdownMenuItem
+            className="rounded-lg text-(--cms-text-secondary)"
+            onSelect={(event) => {
+              event.preventDefault()
+              router.push('/admin/account')
+            }}
+          >
+            <Settings2 className="mr-2 size-4" />
+            My Account
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="my-1 bg-(--cms-border-subtle)" />
+          <DropdownMenuItem
+            className="rounded-lg text-(--cms-danger-text) focus:bg-(--cms-danger-soft) focus:text-(--cms-danger-text)"
+            onSelect={(event) => {
+              event.preventDefault()
+              void handleLogout()
+            }}
+          >
+            <LogOut className="mr-2 size-4" />
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }

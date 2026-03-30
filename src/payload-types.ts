@@ -133,6 +133,13 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  /**
+   * Display name used in the admin account UI.
+   */
+  fullName?: string | null;
+  avatar?: (number | null) | Media;
+  timezone?: string | null;
+  language?: ('en' | 'ar') | null;
   role: 'super-admin' | 'client';
   /**
    * The site this user belongs to.
@@ -159,6 +166,33 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  caption?: string | null;
+  /**
+   * Site context is assigned automatically in normal workflows.
+   */
+  siteId?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -241,33 +275,6 @@ export interface Site {
   deletedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  caption?: string | null;
-  /**
-   * Site context is assigned automatically in normal workflows.
-   */
-  siteId?: string | null;
-  isDeleted?: boolean | null;
-  deletedAt?: string | null;
-  deletedBy?: (number | null) | User;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -740,6 +747,10 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  fullName?: T;
+  avatar?: T;
+  timezone?: T;
+  language?: T;
   role?: T;
   siteId?: T;
   isDeleted?: T;
