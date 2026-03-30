@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Image as ImageIcon,
   Users,
+  Inbox,
   LogOut,
   Menu,
   PanelLeftClose,
@@ -201,6 +202,11 @@ function SidebarInner({
           icon: Mail,
         },
         {
+          href: `/admin/collections/sites/${siteDocId}/submissions`,
+          label: 'Submissions',
+          icon: Inbox,
+        },
+        {
           href: `/admin/collections/sites/${siteDocId}/services`,
           label: 'Services',
           icon: Briefcase,
@@ -330,6 +336,14 @@ function SidebarInner({
               icon={Users}
               label="Users"
               active={Boolean(pathname?.startsWith('/admin/collections/users'))}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+            <NavLink
+              href="/admin/collections/form-submissions"
+              icon={Inbox}
+              label="Submissions"
+              active={Boolean(pathname?.startsWith('/admin/collections/form-submissions'))}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />

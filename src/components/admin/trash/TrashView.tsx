@@ -316,124 +316,165 @@ export default function TrashView() {
   }
 
   const hasSelection = selectedIds.size > 0
+  const selectedCount = selectedIds.size
+  const recentDeletedCount = items.filter((item) => {
+    if (!item.deletedAt) return false
+    const ts = new Date(item.deletedAt).getTime()
+    if (isNaN(ts)) return false
+    return Date.now() - ts < 7 * 24 * 60 * 60 * 1000
+  }).length
+  const typeCount = new Set(items.map((item) => item.collection)).size
 
   // ─── Render ──────────────────────────────────────────────────────
 
   return (
-    <div className="px-6 pb-6 pt-5">
-      {/* Header */}
-      <div className="mb-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-(--cms-danger-soft) text-(--cms-danger-text)">
-            <Trash2 className="h-5 w-5" />
+    <div className="min-h-screen bg-(--cms-bg-elevated) px-4 pb-6 pt-4 sm:px-6 sm:pt-6">
+      <div className="mx-auto w-full max-w-[1680px] space-y-5">
+        <section
+          className="rounded-[24px] border border-(--cms-card-border) bg-(--cms-card-bg) p-5 sm:p-6"
+          style={{ boxShadow: 'var(--cms-card-shadow)' }}
+        >
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-(--cms-danger-soft) text-(--cms-danger-text)">
+                <Trash2 className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-[24px] font-semibold tracking-[-0.02em] text-[var(--cms-text)]">
+                  Trash Workspace
+                </h1>
+                <p className="mt-1 text-[13px] text-[var(--cms-text-muted)]">
+                  Review deleted content, restore records safely, or permanently remove items when needed.
+                </p>
+              </div>
+            </div>
+
+            {hasSelection && canRestore ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-lg bg-(--cms-bg-muted) px-3 py-1.5 text-[12px] font-medium text-[var(--cms-text-secondary)]">
+                  {selectedCount} selected
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl border-[var(--cms-border)] text-[13px]"
+                  disabled={actionLoading}
+                  onClick={() =>
+                    setConfirm({
+                      open: true,
+                      title: 'Restore Selected Items',
+                      description: `Restore ${selectedCount} items? They will become active again.`,
+                      label: 'Restore All',
+                      variant: 'default',
+                      action: bulkRestore,
+                    })
+                  }
+                >
+                  <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+                  Restore
+                </Button>
+                {canPermanentDelete && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl border-(--cms-danger-soft) text-(--cms-danger-text) hover:bg-(--cms-danger-soft) text-[13px]"
+                    disabled={actionLoading}
+                    onClick={() =>
+                      setConfirm({
+                        open: true,
+                        title: 'Permanently Delete Selected',
+                        description: `Delete ${selectedCount} items permanently? This cannot be undone.`,
+                        label: 'Delete Permanently',
+                        variant: 'danger',
+                        action: bulkDelete,
+                      })
+                    }
+                  >
+                    <ShieldAlert className="mr-1.5 h-3.5 w-3.5" />
+                    Delete
+                  </Button>
+                )}
+              </div>
+            ) : null}
           </div>
-          <div>
-            <h1 className="text-[22px] font-semibold tracking-tight text-[var(--cms-text)]">
-              Trash
-            </h1>
-            <p className="mt-0.5 text-[13px] text-[var(--cms-text-muted)]">
-              {totalDocs} deleted {totalDocs === 1 ? 'item' : 'items'}
-              {isAdmin ? ' across all collections' : ' for your site'}
-            </p>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-2xl border border-(--cms-border) bg-(--cms-bg-muted) px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-(--cms-text-muted)">
+                Total Items
+              </p>
+              <p className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-(--cms-text)">{totalDocs}</p>
+            </div>
+            <div className="rounded-2xl border border-(--cms-border) bg-(--cms-bg-muted) px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-(--cms-text-muted)">
+                Recent (7 days)
+              </p>
+              <p className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-(--cms-text)">{recentDeletedCount}</p>
+            </div>
+            <div className="rounded-2xl border border-(--cms-border) bg-(--cms-bg-muted) px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-(--cms-text-muted)">
+                Content Types
+              </p>
+              <p className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-(--cms-text)">{typeCount}</p>
+            </div>
+            <div className="rounded-2xl border border-(--cms-border) bg-(--cms-bg-muted) px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-(--cms-text-muted)">
+                Scope
+              </p>
+              <p className="mt-1 text-sm font-semibold text-(--cms-text)">
+                {isAdmin ? 'All collections' : 'Current site only'}
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Toolbar */}
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        {/* Search */}
-        <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--cms-text-muted)]" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search deleted items..."
-            className="h-9 rounded-xl border-[var(--cms-border)] pl-9 text-[13px]"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--cms-text-muted)] hover:text-[var(--cms-text)]"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
+        <section
+          className="rounded-[20px] border border-[var(--cms-card-border)] bg-[var(--cms-card-bg)] p-4 sm:p-5"
+          style={{ boxShadow: 'var(--cms-card-shadow)' }}
+        >
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div className="relative max-w-lg">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--cms-text-muted)]" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search deleted items..."
+                className="h-10 rounded-xl border-[var(--cms-border)] pl-9 text-[13px]"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--cms-text-muted)] hover:text-[var(--cms-text)]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
 
-        {/* Bulk Actions */}
-        {hasSelection && canRestore && (
-          <div className="flex items-center gap-2">
-            <span className="text-[13px] font-medium text-[var(--cms-text-secondary)]">
-              {selectedIds.size} selected
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl border-[var(--cms-border)] text-[13px]"
-              disabled={actionLoading}
-              onClick={() =>
-                setConfirm({
-                  open: true,
-                  title: 'Restore Selected Items',
-                  description: `Restore ${selectedIds.size} items? They will become active again.`,
-                  label: 'Restore All',
-                  variant: 'default',
-                  action: bulkRestore,
-                })
-              }
-            >
-              <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-              Restore
-            </Button>
-            {canPermanentDelete && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl border-(--cms-danger-soft) text-(--cms-danger-text) hover:bg-(--cms-danger-soft) text-[13px]"
-                disabled={actionLoading}
-                onClick={() =>
-                  setConfirm({
-                    open: true,
-                    title: 'Permanently Delete Selected',
-                    description: `Delete ${selectedIds.size} items permanently? This cannot be undone.`,
-                    label: 'Delete Permanently',
-                    variant: 'danger',
-                    action: bulkDelete,
-                  })
-                }
-              >
-                <ShieldAlert className="mr-1.5 h-3.5 w-3.5" />
-                Delete
-              </Button>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <Filter className="h-4 w-4 text-[var(--cms-text-muted)]" />
+              {collectionFilters.map((f) => (
+                <button
+                  key={f.slug}
+                  onClick={() => setCollectionFilter(f.slug)}
+                  className={cn(
+                    'rounded-lg px-3 py-1.5 text-[12px] font-medium transition-all',
+                    collectionFilter === f.slug
+                      ? 'bg-[var(--cms-primary)] text-white shadow-sm'
+                      : 'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] hover:bg-[var(--cms-border-subtle)]',
+                  )}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
+        </section>
 
-      {/* Collection Filters */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <Filter className="h-4 w-4 text-[var(--cms-text-muted)]" />
-        {collectionFilters.map((f) => (
-          <button
-            key={f.slug}
-            onClick={() => setCollectionFilter(f.slug)}
-            className={cn(
-              'rounded-lg px-3 py-1.5 text-[12px] font-medium transition-all',
-              collectionFilter === f.slug
-                ? 'bg-[var(--cms-primary)] text-white shadow-sm'
-                : 'bg-[var(--cms-bg-muted)] text-[var(--cms-text-secondary)] hover:bg-gray-200',
-            )}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Content */}
-      <section
-        className="overflow-hidden rounded-2xl border border-[var(--cms-card-border)] bg-[var(--cms-card-bg)]"
-        style={{ boxShadow: 'var(--cms-card-shadow)' }}
-      >
+        <section
+          className="overflow-hidden rounded-2xl border border-[var(--cms-card-border)] bg-[var(--cms-card-bg)]"
+          style={{ boxShadow: 'var(--cms-card-shadow)' }}
+        >
         {loading ? (
           <div className="flex flex-col items-center justify-center px-6 py-20">
             <Loader2 className="h-6 w-6 animate-spin text-[var(--cms-text-muted)]" />
@@ -477,7 +518,8 @@ export default function TrashView() {
                 const isSelected = selectedIds.has(key)
                 const Icon = COLLECTION_ICONS[item.collection] || FileText
                 const colorClass =
-                  COLLECTION_COLORS[item.collection] || 'bg-gray-50 text-gray-600 border-gray-100'
+                  COLLECTION_COLORS[item.collection] ||
+                  'bg-(--cms-bg-muted) text-(--cms-text-secondary) border-(--cms-border)'
 
                 return (
                   <div
@@ -538,7 +580,7 @@ export default function TrashView() {
                         {item.siteId && (
                           <>
                             <span className="text-[var(--cms-border)]">·</span>
-                            <span>Site: {item.siteId}</span>
+                            <span>Source: {item.siteId}</span>
                           </>
                         )}
                       </div>
@@ -595,7 +637,8 @@ export default function TrashView() {
             </div>
           </>
         )}
-      </section>
+        </section>
+      </div>
 
       {/* Confirmation Dialog */}
       <AlertDialog open={confirm.open} onOpenChange={(open) => setConfirm((s) => ({ ...s, open }))}>

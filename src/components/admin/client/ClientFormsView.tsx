@@ -362,7 +362,7 @@ export default async function ClientFormsView(props: DocumentViewServerProps) {
                     Access individual submission data via the form submissions collection.
                   </p>
                   <Link
-                    href={`/admin/collections/form-submissions?where[siteId][equals]=${encodeURIComponent(siteKey)}`}
+                    href={`/admin/collections/sites/${site.id}/submissions`}
                     className="mt-4 inline-flex"
                   >
                     <Button

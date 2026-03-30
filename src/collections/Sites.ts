@@ -164,6 +164,10 @@ export const Sites: CollectionConfig = {
             path: '/forms',
             Component: '/components/admin/client/ClientFormsView',
           },
+          submissions: {
+            path: '/submissions',
+            Component: '/components/admin/client/ClientSubmissionsView',
+          },
           services: {
             path: '/services',
             Component: '/components/admin/client/ClientServicesView',

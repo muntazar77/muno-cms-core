@@ -14,7 +14,6 @@ import {
   Trash2,
   Upload,
   FolderOpen,
-  ChevronRight,
   Check,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -22,7 +21,6 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
 
 /* ─── Types ───────────────────────────────────────────────────────── */
 
@@ -120,38 +118,45 @@ export default function ClientMediaBrowser({
     async (filter: FilterTab, query: string) => {
       setLoading(true)
       try {
-        const conditions: Array<Record<string, unknown>> = [
-          { siteId: { equals: siteKey } },
-          {
-            or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }],
-          },
-        ]
+        const params = new URLSearchParams({
+          limit: '200',
+          sort: '-createdAt',
+          depth: '0',
+          'where[siteId][equals]': siteKey,
+        })
 
         if (filter === 'images') {
-          conditions.push({ mimeType: { contains: 'image' } })
+          params.set('where[mimeType][contains]', 'image/')
         } else if (filter === 'pdfs') {
-          conditions.push({ mimeType: { contains: 'pdf' } })
-        } else if (filter === 'other') {
-          conditions.push({ mimeType: { not_in: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/pdf'] } })
+          params.set('where[mimeType][equals]', 'application/pdf')
         }
 
-        if (query) {
-          conditions.push({
-            or: [
-              { alt: { contains: query } },
-              { filename: { contains: query } },
-              { caption: { contains: query } },
-            ],
-          })
-        }
-
-        const where = JSON.stringify({ and: conditions })
-        const url = `/api/media?where=${encodeURIComponent(where)}&limit=50&sort=-createdAt&depth=0`
-
+        const url = `/api/media?${params.toString()}`
         const res = await fetch(url, { credentials: 'include' })
         if (!res.ok) throw new Error('Failed to fetch media')
         const data = await res.json()
-        setMedia((data.docs as MediaItem[]) ?? [])
+
+        const rawDocs = (data.docs as MediaItem[]) ?? []
+        const q = query.trim().toLowerCase()
+        const docsByTab =
+          filter === 'other'
+            ? rawDocs.filter((doc) => {
+                const mime = doc.mimeType?.toLowerCase() ?? ''
+                return !mime.startsWith('image/') && mime !== 'application/pdf'
+              })
+            : rawDocs
+
+        const docsBySearch = q
+          ? docsByTab.filter((doc) => {
+              const haystack = [doc.filename, doc.alt, doc.caption, doc.mimeType]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase()
+              return haystack.includes(q)
+            })
+          : docsByTab
+
+        setMedia(docsBySearch.slice(0, 50))
       } catch {
         toast.error('Failed to load media')
       } finally {
