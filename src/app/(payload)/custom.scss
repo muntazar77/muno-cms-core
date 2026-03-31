@@ -33,6 +33,48 @@ html {
   background-color: var(--cms-bg) !important;
 }
 
+/* ── Client workspace shell cleanup ──────────────────────────────────── */
+/*
+ * The native Payload account link is hidden unconditionally because:
+ *   1. ShellAvatar (admin.avatar.Component) returns null → link is empty
+ *   2. UserActions (admin.components.actions) provides the full avatar UI
+ *      for ALL users, making this link redundant for everyone
+ * No data-attribute selector needed — no JS dependency, applies from stylesheet load.
+ */
+.app-header__account {
+  display: none !important;
+}
+
+:root[data-admin-role='client'][data-client-workspace='true'] .app-header__step-nav-wrapper {
+  display: none !important;
+}
+
+:root[data-admin-role='client'][data-client-workspace='true'] .app-header__controls-wrapper {
+  justify-content: flex-end !important;
+}
+
+:root[data-admin-role='client'][data-client-workspace='true'] .app-header__actions-wrapper {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin-right: 0 !important;
+}
+
+:root[data-admin-role='client'][data-client-workspace='true'] .app-header__actions {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+:root[data-admin-role='client'][data-client-workspace='true'] .app-header__last-action {
+  margin-right: 0 !important;
+}
+
+:root[data-admin-role='client'][data-client-site-workspace='true'] .doc-header,
+:root[data-admin-role='client'][data-client-site-workspace='true'] .doc-controls {
+  display: none !important;
+}
+
 /* ── Collection list controls ────────────────────────────────────────── */
 .collection-list__wrap {
   padding-top: 0 !important;
@@ -319,9 +361,61 @@ html {
 /* ── Hide Payload's native NavHamburger (Sidebar has its own toggle) ─── */
 .hamburger,
 .app-header .hamburger,
+[class*='app-header__mobile-nav-toggler'],
 [class*='nav__hamburger'],
 [class*='hamburger-nav'] {
   display: none !important;
+}
+
+/* ── Mobile shell fixes for custom nav ───────────────────────────────── */
+@media (max-width: 768px) {
+  .template-default,
+  .template-default--nav-animate,
+  .template-default--nav-hydrated,
+  .template-default--nav-open {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .template-default__nav-toggler-wrapper {
+    display: none !important;
+  }
+
+  .template-default__wrap {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .nav {
+    width: 0 !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    border-right: none !important;
+  }
+
+  [dir='rtl'] .nav {
+    border-left: none !important;
+  }
+
+  :root[data-admin-role='client'] .app-header__content {
+    padding-left: 60px !important;
+  }
+
+  :root[data-admin-role='client'][data-client-workspace='true'] .app-header__wrapper {
+    gap: 0 !important;
+  }
+
+  :root[data-admin-role='client'][data-client-workspace='true'] .app-header__controls-wrapper {
+    min-width: 0 !important;
+  }
+
+  :root[data-admin-role='client'][data-client-workspace='true'] .app-header__actions-wrapper {
+    gap: calc(var(--base) / 3) !important;
+  }
+
+  :root[data-admin-role='client'][data-client-workspace='true'] .app-header__actions {
+    overflow: visible !important;
+    gap: calc(var(--base) / 3) !important;
+  }
 }
 
 /* ── Collection list view – unified card ─────────────────────────────── */

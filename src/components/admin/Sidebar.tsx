@@ -28,6 +28,17 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
+function isClientSiteWorkspacePath(pathname: string): boolean {
+  return /^\/admin\/collections\/sites\/[^/?#]+(?:\/(dashboard|pages|media|forms|submissions|services|settings))?$/.test(
+    pathname,
+  )
+}
+
+function isClientWorkspacePath(pathname: string): boolean {
+  if (pathname === '/admin/account' || pathname === '/admin/trash') return true
+  return isClientSiteWorkspacePath(pathname)
+}
+
 function NavLink({
   href,
   icon: Icon,
@@ -126,7 +137,9 @@ function SidebarInner({
       const cachedSlug = sessionStorage.getItem('muno-client-site-slug') || ''
       if (cachedDocId) setClientSiteDocId(cachedDocId)
       if (cachedSlug) setClientSiteSlug(cachedSlug)
-    } catch { /* SSR guard */ }
+    } catch {
+      /* SSR guard */
+    }
   }, [isSuperAdmin, userSiteId])
 
   // Validate with API and update cache
@@ -145,12 +158,16 @@ function SidebarInner({
         if (doc?.id) {
           const docId = String(doc.id)
           setClientSiteDocId(docId)
-          try { sessionStorage.setItem('muno-client-site-doc-id', docId) } catch {}
+          try {
+            sessionStorage.setItem('muno-client-site-doc-id', docId)
+          } catch {}
         }
         if (doc?.siteId) {
           const slug = String(doc.siteId)
           setClientSiteSlug(slug)
-          try { sessionStorage.setItem('muno-client-site-slug', slug) } catch {}
+          try {
+            sessionStorage.setItem('muno-client-site-slug', slug)
+          } catch {}
         }
       })
       .catch(() => {})
@@ -414,7 +431,9 @@ function SidebarInner({
                   href={`/admin/collections/sites/${siteDocId}/settings`}
                   icon={Settings}
                   label="Settings"
-                  active={Boolean(pathname?.startsWith(`/admin/collections/sites/${siteDocId}/settings`))}
+                  active={Boolean(
+                    pathname?.startsWith(`/admin/collections/sites/${siteDocId}/settings`),
+                  )}
                   collapsed={collapsed}
                   onNavigate={onNavigate}
                 />
@@ -495,7 +514,7 @@ function SidebarInner({
             </div>
             <button
               onClick={() => void handleLogOut()}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-(--cms-border) px-3 py-2 text-[12px] font-medium text-(--cms-text-secondary) transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-900/40 dark:hover:bg-red-900/20 dark:hover:text-red-300"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-(--cms-border)  py-2 text-[12px] font-medium text-(--cms-text-secondary) transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-900/40 dark:hover:bg-red-900/20 dark:hover:text-red-300"
             >
               <LogOut className="size-3.5" />
               Log out
@@ -508,9 +527,13 @@ function SidebarInner({
 }
 
 export default function Sidebar() {
+  const { user } = useAuth()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
+  const userRole = user && 'role' in user ? String(user.role ?? '') : ''
+  const clientWorkspace = userRole === 'client' && isClientWorkspacePath(pathname ?? '')
+  const clientSiteWorkspace = userRole === 'client' && isClientSiteWorkspacePath(pathname ?? '')
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -526,21 +549,47 @@ export default function Sidebar() {
     setMobileOpen(false)
   }, [pathname])
 
+  useEffect(() => {
+    const root = document.documentElement
+
+    root.dataset.adminRole = userRole || 'unknown'
+    root.dataset.clientWorkspace = String(clientWorkspace)
+    root.dataset.clientSiteWorkspace = String(clientSiteWorkspace)
+    root.dataset.clientMobileNavOpen = String(clientWorkspace && mobileOpen)
+
+    return () => {
+      delete root.dataset.adminRole
+      delete root.dataset.clientWorkspace
+      delete root.dataset.clientSiteWorkspace
+      delete root.dataset.clientMobileNavOpen
+    }
+  }, [userRole, clientWorkspace, clientSiteWorkspace, mobileOpen])
+
   return (
     <>
-      <div className="hidden md:block h-full">
+      <div className="hidden h-full md:block">
         <SidebarInner collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} />
       </div>
 
-      <div className="fixed bottom-4 left-4 z-40 md:hidden">
+      <div
+        className="fixed left-3 top-3 z-50 md:hidden"
+        style={{ top: 'max(0.75rem, env(safe-area-inset-top))' }}
+      >
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger
-            className="flex size-10 items-center justify-center rounded-xl bg-(--cms-primary) text-white shadow-lg shadow-black/20 transition hover:bg-(--cms-primary-hover)"
+            className={cn(
+              'flex size-11 items-center justify-center rounded-2xl bg-(--cms-primary) text-white shadow-lg shadow-black/20 transition hover:bg-(--cms-primary-hover)',
+              mobileOpen && 'pointer-events-none opacity-0',
+            )}
             aria-label="Open navigation menu"
           >
             <Menu className="size-5" />
           </SheetTrigger>
-          <SheetContent side="left" className="w-[86vw] max-w-[320px] p-0" showCloseButton>
+          <SheetContent
+            side="left"
+            className="w-[86vw] max-w-[320px] overflow-hidden p-0"
+            showCloseButton
+          >
             <SidebarInner
               collapsed={false}
               onToggle={() => {}}

@@ -19,11 +19,25 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    suppressHydrationWarning: true,
 
     importMap: {
       baseDir: path.resolve(dirname),
     },
+
+    // Structurally removes the native Payload account avatar link.
+    // ShellAvatar returns null → RenderCustomComponent renders null (not fallback)
+    // → the account <Link> is empty. CSS hides the wrapper unconditionally.
+    avatar: {
+      Component: '/components/admin/ShellAvatar',
+    },
+
     components: {
+      // Injects a synchronous inline script (before first paint) that writes
+      // role/route data attributes on <html>, enabling CSS to apply from
+      // frame #1 with no visible flash on page reload.
+      header: ['/components/admin/ClientShellInit'],
+
       actions: [
         './components/admin/dashboard/SearchAction',
         './components/admin/dashboard/UserActions',
@@ -51,7 +65,6 @@ export default buildConfig({
           Component: '/components/admin/account/AccountViewPage',
           exact: true,
         },
-
       },
     },
   },
