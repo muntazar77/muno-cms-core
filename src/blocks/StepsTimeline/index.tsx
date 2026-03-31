@@ -106,7 +106,9 @@ export function StepsTimelineBlock({
                     {step.stepLabel}
                   </p>
                 )}
-                <h3 className="mt-3 text-lg font-semibold text-[var(--fe-text-primary)]">{step.title}</h3>
+                <h3 className="mt-3 text-lg font-semibold text-[var(--fe-text-primary)]">
+                  {step.title}
+                </h3>
                 {step.description && (
                   <p className="mt-2 text-sm leading-relaxed text-[var(--fe-text-secondary)]">
                     {step.description}
@@ -132,7 +134,9 @@ export function StepsTimelineBlock({
               {heading}
             </h2>
           )}
-          {intro && <p className="mt-5 text-base leading-8 text-[var(--fe-text-secondary)]">{intro}</p>}
+          {intro && (
+            <p className="mt-5 text-base leading-8 text-[var(--fe-text-secondary)]">{intro}</p>
+          )}
         </div>
 
         <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -153,7 +157,9 @@ export function StepsTimelineBlock({
                   <div
                     className={cn(
                       'flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-extrabold shadow-sm',
-                      isHighlighted ? 'bg-white/70 text-amber-900' : 'bg-white text-[var(--fe-primary)]',
+                      isHighlighted
+                        ? 'bg-white/70 text-amber-900'
+                        : 'bg-white text-[var(--fe-primary)]',
                     )}
                   >
                     {step.icon || step.numberOverride || String(index + 1).padStart(2, '0')}
