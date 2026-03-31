@@ -50,14 +50,15 @@ export async function Header({ variant = 'default', site: siteProp }: HeaderProp
     ...(showLanguageSwitcher ? ['Language'] : []),
     ...(showThemeToggle ? ['Theme'] : []),
   ]
+  const editorialShellClassName = stickyHeader
+    ? 'fixed top-4 left-1/2 z-50 w-[min(calc(100%-2rem),80rem)] -translate-x-1/2 sm:w-[min(calc(100%-3rem),80rem)] lg:w-[min(calc(100%-4rem),80rem)]'
+    : 'absolute top-4 left-1/2 z-50 w-[min(calc(100%-2rem),80rem)] -translate-x-1/2 sm:w-[min(calc(100%-3rem),80rem)] lg:w-[min(calc(100%-4rem),80rem)]'
   const headerClassName = stickyHeader ? 'sticky top-0 z-40' : ''
 
   if (v === 'editorial') {
     return (
-      <header
-        className={cn('fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8', headerClassName)}
-      >
-        <nav className="glass-shell mx-auto flex max-w-7xl items-center justify-between rounded-3xl px-5 py-4 shadow-lg ring-1 ring-white/50 lg:px-7">
+      <header className={cn('pointer-events-none', editorialShellClassName)}>
+        <nav className="glass-shell pointer-events-auto mx-auto flex w-full items-center justify-between rounded-3xl px-5 py-4 shadow-lg ring-1 ring-white/50 lg:px-7">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--fe-primary)] to-[var(--fe-primary-dark)] text-white shadow-lg">
               {logo?.url ? (

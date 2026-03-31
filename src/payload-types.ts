@@ -454,13 +454,28 @@ export interface Page {
             blockType: 'servicesCards';
           }
         | {
-            style?: ('timeline' | 'cards') | null;
+            style?: ('default' | 'alt' | 'timeline' | 'cards') | null;
+            eyebrow?: string | null;
             heading?: string | null;
+            description?: string | null;
+            /**
+             * Legacy field kept for older content. Use Section Description for new pages.
+             */
             subheading?: string | null;
             steps?:
               | {
+                  stepLabel?: string | null;
                   title: string;
+                  /**
+                   * Optional emoji or icon label for the step badge.
+                   */
+                  icon?: string | null;
                   description?: string | null;
+                  /**
+                   * Optional label shown instead of the auto step number.
+                   */
+                  numberOverride?: string | null;
+                  isHighlighted?: boolean | null;
                   id?: string | null;
                 }[]
               | null;
@@ -1177,13 +1192,19 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               style?: T;
+              eyebrow?: T;
               heading?: T;
+              description?: T;
               subheading?: T;
               steps?:
                 | T
                 | {
+                    stepLabel?: T;
                     title?: T;
+                    icon?: T;
                     description?: T;
+                    numberOverride?: T;
+                    isHighlighted?: T;
                     id?: T;
                   };
               id?: T;

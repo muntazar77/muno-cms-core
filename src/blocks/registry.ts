@@ -174,27 +174,44 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     icon: ArrowRight,
     color: '#34d399',
     defaultData: {
-      heading: 'How it works',
-      subheading: 'Get started in three simple steps. No technical knowledge required.',
-      style: 'timeline',
+      eyebrow: 'How it works',
+      heading: 'A calmer road to Germany, built in four precise steps.',
+      description:
+        'The process is intentionally simple: understand the student, select the right route, build the file properly, and move with confidence.',
+      style: 'default',
       steps: [
         {
           id: id(),
-          title: 'Create your account',
+          stepLabel: 'Discovery',
+          numberOverride: '01',
+          title: 'Consultation',
           description:
-            'Sign up in seconds with your email. No credit card required to get started.',
+            'We evaluate language level, documents, background, and realistic routes before making any promise.',
         },
         {
           id: id(),
-          title: 'Design your site',
+          stepLabel: 'Planning',
+          numberOverride: '02',
+          title: 'Application Strategy',
           description:
-            'Use our visual builder to create beautiful pages with drag-and-drop blocks.',
+            'Programs, companies, or pathways are matched carefully to avoid wasted time and weak submissions.',
         },
         {
           id: id(),
-          title: 'Publish and grow',
+          stepLabel: 'Execution',
+          numberOverride: '03',
+          title: 'Visa Preparation',
           description:
-            'Go live with one click and start reaching your audience. Scale as you grow.',
+            'Every document is checked with precision so the embassy process becomes smoother and less stressful.',
+        },
+        {
+          id: id(),
+          stepLabel: 'Outcome',
+          icon: '✈',
+          title: 'Arrival & Success',
+          isHighlighted: true,
+          description:
+            'The goal is not just a visa approval, but a confident arrival into study, training, or work life in Germany.',
         },
       ],
     },
