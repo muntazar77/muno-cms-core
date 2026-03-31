@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
 import { Trash2, Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
@@ -123,32 +124,10 @@ export function FieldRenderer({ field, value, onChange }: FieldRendererProps) {
       )
 
     case 'upload':
-      return (
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-[var(--cms-text-secondary)]">{label}</label>
-          <Input
-            type="number"
-            value={(value as number) ?? ''}
-            onChange={(e) => onChange(e.target.value ? Number(e.target.value) : undefined)}
-            placeholder={`${field.relationTo || 'media'} ID`}
-          />
-          <p className="text-[11px] text-[var(--cms-text-muted)]">
-            Enter {field.relationTo || 'media'} ID
-          </p>
-        </div>
-      )
+      return <RelationFieldRenderer field={field} value={value} onChange={onChange} />
 
     case 'relationship':
-      return (
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-[var(--cms-text-secondary)]">{label}</label>
-          <Input
-            value={(value as string) || ''}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={`${field.relationTo || 'document'} ID`}
-          />
-        </div>
-      )
+      return <RelationFieldRenderer field={field} value={value} onChange={onChange} />
 
     case 'array':
       return <ArrayFieldRenderer field={field} value={value} onChange={onChange} />
@@ -166,6 +145,101 @@ export function FieldRenderer({ field, value, onChange }: FieldRendererProps) {
         </div>
       )
   }
+}
+
+interface RelationOption {
+  id: string
+  label: string
+}
+
+function RelationFieldRenderer({ field, value, onChange }: FieldRendererProps) {
+  const [options, setOptions] = useState<RelationOption[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const relationTo = field.relationTo || 'media'
+  const label = field.label || formatLabel(field.name)
+  const selectedId = useMemo(() => {
+    if (typeof value === 'number' || typeof value === 'string') {
+      return String(value)
+    }
+    if (value && typeof value === 'object' && 'id' in (value as Record<string, unknown>)) {
+      return String((value as { id: string | number }).id)
+    }
+    return ''
+  }, [value])
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function fetchOptions() {
+      setIsLoading(true)
+      try {
+        const response = await fetch(`/api/${relationTo}?limit=100&depth=0`, {
+          credentials: 'include',
+        })
+        if (!response.ok) return
+
+        const json = (await response.json()) as { docs?: Array<Record<string, unknown>> }
+        const docs = json?.docs ?? []
+
+        const mapped = docs.map((doc) => {
+          const id = String(doc.id ?? '')
+          const labelText =
+            relationTo === 'media'
+              ? String(doc.title || doc.alt || doc.filename || `Media #${id}`)
+              : String(doc.title || doc.name || doc.label || `Document #${id}`)
+
+          return { id, label: labelText }
+        })
+
+        if (isMounted) {
+          setOptions(mapped)
+        }
+      } finally {
+        if (isMounted) setIsLoading(false)
+      }
+    }
+
+    void fetchOptions()
+
+    return () => {
+      isMounted = false
+    }
+  }, [relationTo])
+
+  const handleChange = (next: string) => {
+    if (!next) {
+      onChange(undefined)
+      return
+    }
+
+    onChange(/^\d+$/.test(next) ? Number(next) : next)
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-[var(--cms-text-secondary)]">{label}</label>
+      <select
+        value={selectedId}
+        onChange={(e) => handleChange(e.target.value)}
+        className={selectClasses}
+      >
+        <option value="">
+          {isLoading ? `Loading ${relationTo}...` : `Select ${relationTo}...`}
+        </option>
+        {options.map((opt) => (
+          <option key={opt.id} value={opt.id}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      <p className="text-[11px] text-[var(--cms-text-muted)]">
+        {options.length > 0
+          ? `Showing ${options.length} available ${relationTo} entries.`
+          : `No ${relationTo} entries found yet.`}
+      </p>
+    </div>
+  )
 }
 
 function ArrayFieldRenderer({ field, value, onChange }: FieldRendererProps) {

@@ -21,6 +21,9 @@ import {
   LogoCloudBlock,
   PricingTableBlock,
   FAQBlock,
+  HeroEditorialBlock,
+  ServicesBentoBlock,
+  SplitContentBlock,
 } from '@/blocks'
 
 const allBlockConfigs = [
@@ -38,10 +41,19 @@ const allBlockConfigs = [
   LogoCloudBlock,
   PricingTableBlock,
   FAQBlock,
+  HeroEditorialBlock,
+  ServicesBentoBlock,
+  SplitContentBlock,
 ]
 
 function serializeFields(fields: Record<string, unknown>[]): BuilderField[] {
   return fields
+    .flatMap((f: any) => {
+      if (f?.type === 'row' && Array.isArray(f?.fields)) {
+        return f.fields
+      }
+      return [f]
+    })
     .filter((f: any) => f.name && f.type)
     .map((f: any) => {
       const serialized: BuilderField = {

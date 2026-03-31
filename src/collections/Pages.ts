@@ -15,6 +15,9 @@ import {
   LogoCloudBlock,
   PricingTableBlock,
   FAQBlock,
+  HeroEditorialBlock,
+  ServicesBentoBlock,
+  SplitContentBlock,
 } from '../blocks'
 import { access } from '@/access'
 import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
@@ -241,6 +244,7 @@ export const Pages: CollectionConfig = {
                     { label: 'Centered', value: 'centered' },
                     { label: 'Minimal', value: 'minimal' },
                     { label: 'Transparent', value: 'transparent' },
+                    { label: 'Editorial (Glass Nav)', value: 'editorial' },
                   ],
                 },
                 {
@@ -252,6 +256,7 @@ export const Pages: CollectionConfig = {
                     { label: 'Centered', value: 'centered' },
                     { label: 'Minimal', value: 'minimal' },
                     { label: 'Columns', value: 'columns' },
+                    { label: 'Editorial (Dark Gradient)', value: 'editorial' },
                   ],
                 },
               ],
@@ -365,6 +370,9 @@ export const Pages: CollectionConfig = {
         LogoCloudBlock,
         PricingTableBlock,
         FAQBlock,
+        HeroEditorialBlock,
+        ServicesBentoBlock,
+        SplitContentBlock,
       ],
       admin: {
         condition: () => false,

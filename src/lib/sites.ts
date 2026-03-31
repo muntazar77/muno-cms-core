@@ -28,6 +28,11 @@ interface SiteLike {
   footerTagline?: string | null
   footerNote?: string | null
   copyrightText?: string | null
+  footerShowCtaBanner?: boolean | null
+  footerCtaHeading?: string | null
+  footerCtaDescription?: string | null
+  footerCtaButtonLabel?: string | null
+  footerCtaButtonUrl?: string | null
   headerNav?: unknown[] | null
   footerLinks?: unknown[] | null
   socialLinks?: unknown[] | null

@@ -463,6 +463,49 @@ export const Sites: CollectionConfig = {
                   name: 'copyrightText',
                   type: 'text',
                 },
+                {
+                  name: 'footerShowCtaBanner',
+                  type: 'checkbox',
+                  label: 'Show CTA banner in footer',
+                  defaultValue: false,
+                },
+                {
+                  name: 'footerCtaHeading',
+                  type: 'text',
+                  label: 'Banner headline',
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.footerShowCtaBanner,
+                  },
+                },
+                {
+                  name: 'footerCtaDescription',
+                  type: 'textarea',
+                  label: 'Banner description',
+                  admin: {
+                    rows: 2,
+                    condition: (_data, siblingData) => siblingData?.footerShowCtaBanner,
+                  },
+                },
+                {
+                  type: 'row',
+                  admin: {
+                    condition: (_data, siblingData) => siblingData?.footerShowCtaBanner,
+                  },
+                  fields: [
+                    {
+                      name: 'footerCtaButtonLabel',
+                      type: 'text',
+                      label: 'Banner button text',
+                      admin: { width: '40%' },
+                    },
+                    {
+                      name: 'footerCtaButtonUrl',
+                      type: 'text',
+                      label: 'Banner button URL',
+                      admin: { width: '60%' },
+                    },
+                  ],
+                },
               ],
             },
           ],

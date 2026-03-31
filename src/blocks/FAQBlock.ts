@@ -11,11 +11,20 @@ export const FAQBlock: Block = {
       options: [
         { label: 'Accordion', value: 'accordion' },
         { label: 'Grid', value: 'grid' },
+        { label: 'Sidebar', value: 'sidebar' },
       ],
     },
     {
       name: 'heading',
       type: 'text',
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        condition: (_, siblingData) => siblingData?.style === 'sidebar',
+        description: 'Shown in the sidebar panel alongside the heading.',
+      },
     },
     {
       name: 'items',

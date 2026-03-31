@@ -13,6 +13,9 @@ import {
   Building2,
   ArrowRight,
   Star,
+  Sparkles,
+  LayoutGrid,
+  SplitSquareVertical,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -222,29 +225,29 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     icon: MessageSquareQuote,
     color: '#fbbf24',
     defaultData: {
-      heading: 'What our customers say',
-      style: 'cards',
+      heading: 'Voice of success, told with confidence.',
+      style: 'featured',
       testimonials: [
         {
           id: id(),
           quote:
-            'This platform completely transformed our online presence. The visual builder is incredibly intuitive and powerful.',
-          author: 'Sarah Johnson',
-          role: 'CEO, TechStart',
+            'The path into my nursing Ausbildung in Hamburg felt impossible at first. They turned it into a sequence of clear tasks, and that changed everything.',
+          author: 'Ahmed Mansour',
+          role: 'Nursing Apprentice, Hamburg',
         },
         {
           id: id(),
           quote:
-            'We switched from our old CMS and the difference is night and day. Our team loves how easy it is to make changes.',
-          author: 'Michael Chen',
-          role: 'Marketing Director, GrowthCo',
+            'They did not just improve my admission file. They made the whole move to Germany feel possible.',
+          author: 'Sara Khan',
+          role: 'M.Sc. Data Science, Munich',
         },
         {
           id: id(),
           quote:
-            'The best investment we made this year. Our site looks professional and our conversion rates have doubled.',
-          author: 'Emily Rodriguez',
-          role: 'Founder, DesignLab',
+            'Professional, calm, and detail-focused. I always knew what the next step was, and that gave me confidence before the embassy interview.',
+          author: 'Javier Lopez',
+          role: 'IT Specialist, Berlin',
         },
       ],
     },
@@ -258,6 +261,12 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     color: '#94a3b8',
     defaultData: {
       heading: 'Trusted by leading companies',
+      logos: [
+        { id: id(), name: 'Partner One' },
+        { id: id(), name: 'Partner Two' },
+        { id: id(), name: 'Partner Three' },
+        { id: id(), name: 'Partner Four' },
+      ],
     },
   },
   {
@@ -345,26 +354,28 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     icon: HelpCircle,
     color: '#fb7185',
     defaultData: {
-      heading: 'Frequently asked questions',
-      style: 'accordion',
+      heading: 'Questions students usually ask before making a move.',
+      description:
+        'This section feels stronger with context and visual weight, not just plain accordion rows.',
+      style: 'sidebar',
       items: [
         {
           id: id(),
-          question: 'How do I get started?',
+          question: 'What is the Dual Ausbildung system?',
           answer:
-            'Simply create an account and you can start building your website immediately. Our visual builder makes it easy to create beautiful pages without any coding knowledge.',
+            'The Dual Ausbildung system combines school-based learning with paid company training. It is a strong route for practical experience and structured career growth.',
         },
         {
           id: id(),
-          question: 'Can I use my own domain?',
+          question: 'Do I need German fluency before applying?',
           answer:
-            'Yes! All plans include custom domain support. You can connect your existing domain or purchase a new one directly through our platform.',
+            'For many Ausbildung and undergraduate paths, B1 or B2 German is important. Some postgraduate programs are available in English, depending on institution requirements.',
         },
         {
           id: id(),
-          question: 'Is there a free trial?',
+          question: 'How long does visa processing usually take?',
           answer:
-            'Absolutely! We offer a 14-day free trial on all plans. No credit card required. You can explore all features before deciding which plan works best for you.',
+            'Depending on embassy and country, a realistic planning window is often 4 to 12 weeks after complete file submission. Starting early matters.',
         },
       ],
     },
@@ -378,6 +389,11 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     color: '#fb923c',
     defaultData: {
       heading: 'Our work',
+      images: [
+        { id: id(), caption: 'Campus mentorship session' },
+        { id: id(), caption: 'Visa file preparation' },
+        { id: id(), caption: 'Student success story' },
+      ],
     },
   },
   {
@@ -388,9 +404,18 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
     icon: FileText,
     color: '#a78bfa',
     defaultData: {
-      heading: 'Get in touch',
+      style: 'split',
+      heading: 'Start your journey with a clearer first step.',
       description:
-        'Have a question or want to work together? Fill out the form below and we will get back to you as soon as possible.',
+        'Tell us about your background, target path, and current stage. We will guide you toward the most realistic next move.',
+      leftPanelHeading: 'Start your journey with a clearer first step.',
+      leftPanelDescription:
+        'Tell us about your background, target path, and current stage. We will guide you toward the most realistic next move.',
+      contactItems: [
+        { id: id(), icon: '✉', label: 'hello@academiccurator.de' },
+        { id: id(), icon: '☎', label: '+49 (0) 30 1234567' },
+      ],
+      submitLabel: 'Send My Inquiry',
     },
   },
   {
@@ -407,6 +432,176 @@ export const BLOCK_REGISTRY: BlockRegistryItem[] = [
       buttonLabel: 'Start Free Trial',
       buttonLink: '#',
       style: 'withBackground',
+    },
+  },
+  {
+    slug: 'heroEditorial',
+    label: 'Hero Editorial',
+    description: 'Two-column hero with stats, side images, and overlay cards',
+    category: 'hero',
+    icon: Sparkles,
+    color: '#818cf8',
+    defaultData: {
+      eyebrow: 'Precision support for Germany-bound students',
+      badgeLabel: 'Precision support for Germany-bound students',
+      heading: 'Build your path to education, work, and life in Germany.',
+      highlightedWord: 'education',
+      subheading:
+        'From Ausbildung placement and university admissions to visa strategy and relocation guidance, Academic Curator turns a stressful process into a clear, human journey.',
+      primaryCtaLabel: 'Explore Services',
+      primaryCtaLink: '#services',
+      secondaryCtaLabel: 'Get a Consultation',
+      secondaryCtaLink: '#contact',
+      stats: [
+        {
+          id: id(),
+          value: '100+',
+          label: 'Successful placements',
+          description: 'Admissions and placement journeys guided end-to-end.',
+          color: 'blue',
+        },
+        {
+          id: id(),
+          value: '98%',
+          label: 'Visa support success',
+          description: 'Approval support rate with detail-first document checks.',
+          color: 'amber',
+        },
+        {
+          id: id(),
+          value: '1:1',
+          label: 'Hands-on guidance',
+          description: 'Personal guidance for admissions, embassy, and arrival.',
+          color: 'green',
+        },
+      ],
+      topOverlayCard: {
+        cardLabel: 'Current focus',
+        cardText: 'Admission + Visa + Arrival',
+      },
+      bottomOverlayCard: {
+        cardLabel: 'What clients value',
+        itemTitle: 'Clear next steps',
+        itemDescription: 'No confusion around paperwork, timeline, or eligibility.',
+      },
+      sideImages: [{ id: id() }],
+      featureHighlights: [
+        { id: id(), title: 'Application strategy' },
+        { id: id(), title: 'Document review' },
+        { id: id(), title: 'Embassy prep' },
+        { id: id(), title: 'Arrival guidance' },
+      ],
+    },
+  },
+  {
+    slug: 'servicesBento',
+    label: 'Services Bento',
+    description: 'Bento grid layout with featured and themed service cards',
+    category: 'features',
+    icon: LayoutGrid,
+    color: '#34d399',
+    defaultData: {
+      eyebrow: 'Core Services',
+      heading: 'Precision-driven support, shaped around real student goals.',
+      description:
+        'Each service is packaged around a real outcome: an admission offer, an Ausbildung contract, a complete visa file, or a stronger long-term plan.',
+      items: [
+        {
+          id: id(),
+          icon: '🎓',
+          title: 'Ausbildung Placement Support',
+          description:
+            'Find strong vocational opportunities, prepare applications, and move through interviews with confidence.',
+          badge: 'Featured service',
+          ctaLabel: 'Featured service',
+          ctaLink: '#',
+          isFeatured: true,
+          theme: 'light',
+          iconStyle: 'primarySoft',
+        },
+        {
+          id: id(),
+          icon: '🏛',
+          title: 'University Admission Strategy',
+          description:
+            'Bachelor and Master admissions planning with clearer targeting and stronger documentation.',
+          theme: 'dark',
+          iconStyle: 'darkGlass',
+          details: [
+            { id: id(), detail: 'Program matching' },
+            { id: id(), detail: 'SOP guidance' },
+            { id: id(), detail: 'Application review' },
+            { id: id(), detail: 'Deadline planning' },
+          ],
+        },
+        {
+          id: id(),
+          icon: '📄',
+          title: 'Visa & Documents',
+          description:
+            'Blocked account setup, document review, and embassy preparation with disciplined detail.',
+          theme: 'light',
+          iconStyle: 'secondarySoft',
+        },
+        {
+          id: id(),
+          icon: '🧠',
+          title: '1:1 Consultation',
+          description: 'Evaluate documents, language level, and best practical route into Germany.',
+          theme: 'light',
+          iconStyle: 'primarySoft',
+        },
+        {
+          id: id(),
+          icon: '💼',
+          title: 'Career Guidance',
+          description:
+            'Long-term planning and labor-market orientation for post-study opportunities.',
+          theme: 'light',
+          iconStyle: 'surfaceHigh',
+        },
+      ],
+    },
+  },
+  {
+    slug: 'splitContent',
+    label: 'Split Content',
+    description: 'Two-column split layout with features and images',
+    category: 'content',
+    icon: SplitSquareVertical,
+    color: '#f472b6',
+    defaultData: {
+      eyebrow: 'Why students trust us',
+      heading: 'A premium service feel, without losing empathy.',
+      description:
+        'Students trust Academic Curator because the process feels organized, honest, and deeply human.',
+      theme: 'brand',
+      imagePosition: 'right',
+      calloutText: 'Editorial clarity, practical action, and less noise.',
+      showSkewAccent: true,
+      features: [
+        {
+          id: id(),
+          icon: '🏆',
+          title: 'Uncompromising precision',
+          description:
+            'Documents, timelines, and requirements are handled carefully so mistakes do not cost months.',
+        },
+        {
+          id: id(),
+          icon: '⚡',
+          title: 'Faster, clearer execution',
+          description:
+            'Students always know the next step, what is missing, and which path is realistic.',
+        },
+        {
+          id: id(),
+          icon: '🤝',
+          title: 'Warm human guidance',
+          description: 'Premium experience without cold or robotic communication.',
+        },
+      ],
+      images: [{ id: id() }, { id: id() }, { id: id() }],
     },
   },
 ]

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academic Curator | Refined Editorial Landing Page</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#003a49',
+            'primary-container': '#005366',
+            'primary-fixed': '#b5ebff',
+            secondary: '#795900',
+            'secondary-container': '#ffc641',
+            'secondary-fixed': '#ffdfa0',
+            surface: '#f8f9fa',
+            'surface-dim': '#d9dadb',
+            'surface-container': '#edeeef',
+            'surface-container-low': '#f3f4f5',
+            'surface-container-high': '#e7e8e9',
+            'surface-container-lowest': '#ffffff',
+            'outline-variant': '#bfc8cc',
+            'on-surface': '#191c1d',
+            'on-surface-variant': '#40484c',
+            'on-primary': '#ffffff',
+            'on-secondary-container': '#715300',
+            'on-secondary-fixed': '#261a00'
+          },
+          fontFamily: {
+            headline: ['Manrope', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            ambient: '0px 20px 40px rgba(25, 28, 29, 0.06)',
+            soft: '0px 10px 30px rgba(25, 28, 29, 0.05)',
+            premium: '0px 24px 60px rgba(0, 58, 73, 0.14)'
+          },
+          borderRadius: {
+            '4xl': '2rem',
+            '5xl': '2.5rem'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fa;
+      color: #191c1d;
+    }
+    .font-headline { font-family: 'Manrope', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+    }
+    .hero-bleed {
+      background:
+        radial-gradient(circle at 12% 18%, rgba(181, 235, 255, 0.34), transparent 30%),
+        radial-gradient(circle at 88% 22%, rgba(255, 223, 160, 0.22), transparent 22%),
+        linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(248,249,250,1) 72%);
+    }
+    .section-noise::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(0,58,73,0.05) 0.7px, transparent 0.7px);
+      background-size: 18px 18px;
+      opacity: 0.22;
+      pointer-events: none;
+    }
+    .glass-shell {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(18px);
+    }
+    .highlight-word {
+      color: #003a49;
+      position: relative;
+      display: inline-block;
+    }
+    .highlight-word::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.1em;
+      height: 0.26em;
+      background: rgba(255, 198, 65, 0.5);
+      z-index: -1;
+      border-radius: 999px;
+    }
+    .footer-glow {
+      background:
+        radial-gradient(circle at top left, rgba(181,235,255,0.15), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(255,223,160,0.12), transparent 22%),
+        linear-gradient(180deg, #032b36 0%, #052833 100%);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+
+  <!-- BLOCK: Header -->
+  <header class="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8">
+    <nav class="glass-shell mx-auto flex max-w-7xl items-center justify-between rounded-3xl px-5 py-4 shadow-ambient ring-1 ring-white/50 lg:px-7">
+      <div class="flex items-center gap-3">
+        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-lg shadow-primary/20">
+          <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' 1;">school</span>
+        </div>
+        <div>
+          <p class="font-headline text-lg font-extrabold tracking-tight text-primary sm:text-xl">Academic Curator</p>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-on-surface-variant">Admissions • Visa • Relocation</p>
+        </div>
+      </div>
+
+      <div class="hidden items-center gap-8 font-headline text-[15px] font-bold tracking-tight md:flex">
+        <a class="text-primary" href="#home">Home</a>
+        <a class="text-on-surface-variant transition hover:text-primary" href="#services">Services</a>
+        <a class="text-on-surface-variant transition hover:text-primary" href="#process">Process</a>
+        <a class="text-on-surface-variant transition hover:text-primary" href="#trust">Why Us</a>
+        <a class="text-on-surface-variant transition hover:text-primary" href="#faq">FAQ</a>
+      </div>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <button class="hidden items-center gap-2 rounded-full bg-surface-container-low px-4 py-2 text-sm font-semibold text-primary transition hover:bg-surface-container md:inline-flex">
+          <span class="material-symbols-outlined text-[18px]">language</span>
+          EN
+        </button>
+        <button class="rounded-full bg-gradient-to-br from-primary to-primary-container px-5 py-3 text-sm font-bold text-on-primary shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-premium sm:px-6">
+          Book Free Assessment
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- BLOCK: Hero -->
+    <section id="home" class="hero-bleed relative overflow-hidden px-4 pt-36 sm:px-6 lg:px-8 lg:pt-44">
+      <div class="section-noise absolute inset-0"></div>
+      <div class="relative mx-auto grid max-w-7xl grid-cols-1 gap-16 pb-20 lg:grid-cols-12 lg:gap-12 lg:pb-28">
+        <div class="lg:col-span-6 lg:pt-10">
+          <div class="mb-7 inline-flex items-center gap-2 rounded-full bg-secondary-fixed px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.22em] text-on-secondary-fixed shadow-soft">
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1;">verified</span>
+            Precision support for Germany-bound students
+          </div>
+
+          <h1 class="font-headline max-w-3xl text-5xl font-extrabold leading-[0.96] tracking-tight text-on-surface sm:text-6xl lg:text-7xl xl:text-[5.25rem]">
+            Build your path to <span class="highlight-word italic">education</span>, work, and life in Germany.
+          </h1>
+
+          <p class="mt-7 max-w-2xl text-lg leading-8 text-on-surface-variant sm:text-xl">
+            From Ausbildung placement and university admissions to visa strategy and relocation guidance, Academic Curator turns a stressful process into a clear, human journey.
+          </p>
+
+          <div class="mt-10 flex flex-col gap-4 sm:flex-row">
+            <button class="rounded-2xl bg-gradient-to-br from-primary to-primary-container px-8 py-4 text-base font-bold text-on-primary shadow-premium transition hover:-translate-y-0.5">
+              Explore Services
+            </button>
+            <button class="rounded-2xl bg-secondary-container px-8 py-4 text-base font-bold text-on-secondary-container shadow-soft transition hover:-translate-y-0.5 hover:bg-secondary-fixed">
+              Get a Consultation
+            </button>
+          </div>
+
+          <div class="mt-12 grid gap-4 sm:grid-cols-3">
+            <div class="rounded-3xl bg-surface-container-lowest p-5 shadow-soft">
+              <p class="text-3xl font-extrabold text-primary">100+</p>
+              <p class="mt-2 text-sm leading-6 text-on-surface-variant">Successful placements and admissions guided from start to finish.</p>
+            </div>
+            <div class="rounded-3xl bg-surface-container-lowest p-5 shadow-soft">
+              <p class="text-3xl font-extrabold text-secondary">98%</p>
+              <p class="mt-2 text-sm leading-6 text-on-surface-variant">Visa approval support rate with precise document preparation.</p>
+            </div>
+            <div class="rounded-3xl bg-surface-container-lowest p-5 shadow-soft">
+              <p class="text-3xl font-extrabold text-primary">1:1</p>
+              <p class="mt-2 text-sm leading-6 text-on-surface-variant">Hands-on guidance for admissions, embassy steps, and relocation.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative lg:col-span-6">
+          <div class="relative mx-auto max-w-2xl lg:ml-auto">
+            <div class="absolute -top-8 right-6 z-20 rounded-3xl bg-surface-container-lowest px-5 py-4 shadow-ambient">
+              <p class="text-xs font-bold uppercase tracking-[0.2em] text-on-surface-variant">Current focus</p>
+              <p class="mt-2 font-headline text-xl font-extrabold text-primary">Admission + Visa + Arrival</p>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4 lg:gap-5">
+              <div class="col-span-7 overflow-hidden rounded-[2rem] bg-surface-container-lowest p-3 shadow-premium">
+                <img
+                  src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80"
+                  alt="Students walking on a European university campus"
+                  class="h-[430px] w-full rounded-[1.4rem] object-cover"
+                />
+              </div>
+              <div class="col-span-5 flex flex-col gap-4">
+                <div class="overflow-hidden rounded-[2rem] bg-surface-container-lowest p-3 shadow-soft">
+                  <img
+                    src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80"
+                    alt="Student consultation meeting"
+                    class="h-[204px] w-full rounded-[1.2rem] object-cover"
+                  />
+                </div>
+                <div class="rounded-[2rem] bg-primary p-6 text-on-primary shadow-premium">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary-fixed/80">Student journey</p>
+                    <span class="material-symbols-outlined text-primary-fixed">south_east</span>
+                  </div>
+                  <p class="mt-4 font-headline text-2xl font-extrabold leading-tight">A calmer, clearer process from first call to arrival.</p>
+                  <div class="mt-6 grid grid-cols-2 gap-3 text-sm text-primary-fixed/85">
+                    <div class="rounded-2xl bg-white/10 p-4">Application strategy</div>
+                    <div class="rounded-2xl bg-white/10 p-4">Document review</div>
+                    <div class="rounded-2xl bg-white/10 p-4">Embassy prep</div>
+                    <div class="rounded-2xl bg-white/10 p-4">Arrival guidance</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute -bottom-8 left-2 z-20 hidden max-w-xs rounded-[1.75rem] bg-surface-container-lowest p-5 shadow-ambient sm:block">
+              <p class="text-xs font-bold uppercase tracking-[0.18em] text-on-surface-variant">What clients value</p>
+              <div class="mt-4 space-y-3">
+                <div class="flex items-start gap-3">
+                  <span class="material-symbols-outlined rounded-full bg-secondary-fixed p-2 text-[18px] text-on-secondary-fixed">verified_user</span>
+                  <div>
+                    <p class="font-semibold text-primary">Clear next steps</p>
+                    <p class="text-sm leading-6 text-on-surface-variant">No confusion around paperwork, timeline, or eligibility.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK: Services -->
+    <section id="services" class="bg-surface-container-low px-4 py-24 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="grid gap-8 lg:grid-cols-12 lg:items-end">
+          <div class="lg:col-span-7">
+            <p class="mb-4 text-xs font-extrabold uppercase tracking-[0.24em] text-secondary">Core Services</p>
+            <h2 class="font-headline text-4xl font-extrabold tracking-tight text-on-surface sm:text-5xl">Precision-driven support, shaped around real student goals.</h2>
+          </div>
+          <div class="lg:col-span-5 lg:pl-10">
+            <p class="text-base leading-8 text-on-surface-variant">Instead of generic consulting, each service is packaged around a real outcome: an admission offer, an Ausbildung contract, a complete visa file, or a stronger long-term plan.</p>
+          </div>
+        </div>
+
+        <div class="mt-14 grid grid-cols-1 gap-5 md:grid-cols-12">
+          <article class="md:col-span-7 rounded-[2rem] bg-surface-container-lowest p-7 shadow-soft transition hover:-translate-y-1 hover:shadow-premium lg:p-8">
+            <div class="grid gap-7 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+              <div>
+                <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-fixed/35 text-primary">
+                  <span class="material-symbols-outlined text-[28px]">school</span>
+                </div>
+                <h3 class="font-headline text-3xl font-extrabold tracking-tight">Ausbildung Placement Support</h3>
+                <p class="mt-4 max-w-xl text-base leading-8 text-on-surface-variant">We help students and career changers find strong vocational opportunities, prepare applications, understand contracts, and move through interview and relocation steps with confidence.</p>
+                <div class="mt-6 inline-flex items-center gap-2 rounded-full bg-surface-container-low px-4 py-2 text-sm font-bold text-primary">
+                  Featured service
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </div>
+              </div>
+              <div class="overflow-hidden rounded-[1.6rem] bg-surface-container p-3">
+                <img
+                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1000&q=80"
+                  alt="Students in a consultation or workshop session"
+                  class="h-64 w-full rounded-[1.2rem] object-cover"
+                />
+              </div>
+            </div>
+          </article>
+
+          <article class="md:col-span-5 rounded-[2rem] bg-primary p-8 text-on-primary shadow-premium">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-primary-fixed">
+              <span class="material-symbols-outlined text-[28px]">account_balance</span>
+            </div>
+            <h3 class="mt-6 font-headline text-3xl font-extrabold tracking-tight">University Admission Strategy</h3>
+            <p class="mt-4 text-base leading-8 text-primary-fixed/80">Bachelor’s and Master’s admissions planning for public and private institutions, with clearer program targeting and stronger documentation.</p>
+            <div class="mt-8 grid gap-3 sm:grid-cols-2">
+              <div class="rounded-2xl bg-white/10 p-4 text-sm text-primary-fixed">Program matching</div>
+              <div class="rounded-2xl bg-white/10 p-4 text-sm text-primary-fixed">SOP guidance</div>
+              <div class="rounded-2xl bg-white/10 p-4 text-sm text-primary-fixed">Application review</div>
+              <div class="rounded-2xl bg-white/10 p-4 text-sm text-primary-fixed">Deadline planning</div>
+            </div>
+          </article>
+
+          <article class="md:col-span-4 rounded-[2rem] bg-surface-container-lowest p-7 shadow-soft transition hover:-translate-y-1 hover:shadow-soft">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-fixed/40 text-secondary">
+              <span class="material-symbols-outlined">description</span>
+            </div>
+            <h3 class="mt-5 font-headline text-2xl font-extrabold">Visa & Documents</h3>
+            <p class="mt-3 text-sm leading-7 text-on-surface-variant">Blocked account setup, document review, translations, and embassy preparation done with detail-first discipline.</p>
+          </article>
+
+          <article class="md:col-span-4 rounded-[2rem] bg-surface-container-lowest p-7 shadow-soft transition hover:-translate-y-1 hover:shadow-soft">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed/35 text-primary">
+              <span class="material-symbols-outlined">psychology</span>
+            </div>
+            <h3 class="mt-5 font-headline text-2xl font-extrabold">1:1 Consultation</h3>
+            <p class="mt-3 text-sm leading-7 text-on-surface-variant">Personal consultations to evaluate your documents, language level, target path, and best practical route into Germany.</p>
+          </article>
+
+          <article class="md:col-span-4 rounded-[2rem] bg-surface-container-lowest p-7 shadow-soft transition hover:-translate-y-1 hover:shadow-soft">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-container-high text-primary">
+              <span class="material-symbols-outlined">work</span>
+            </div>
+            <h3 class="mt-5 font-headline text-2xl font-extrabold">Career Guidance</h3>
+            <p class="mt-3 text-sm leading-7 text-on-surface-variant">Support around long-term planning, labor market orientation, and post-study or post-training opportunities in Germany.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK: Process -->
+    <section id="process" class="bg-surface px-4 py-24 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="mx-auto max-w-3xl text-center">
+          <p class="mb-4 text-xs font-extrabold uppercase tracking-[0.24em] text-secondary">How it works</p>
+          <h2 class="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl">A calmer road to Germany, built in four precise steps.</h2>
+          <p class="mt-5 text-base leading-8 text-on-surface-variant">The process is intentionally simple: understand the student, select the right route, build the file properly, and move with confidence.</p>
+        </div>
+
+        <div class="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <article class="rounded-[2rem] bg-surface-container-low p-7 shadow-soft">
+            <div class="flex items-center gap-4">
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-container-lowest text-xl font-extrabold text-primary shadow-soft">01</div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-on-surface-variant">Discovery</p>
+            </div>
+            <h3 class="mt-6 font-headline text-2xl font-extrabold">Consultation</h3>
+            <p class="mt-3 text-sm leading-7 text-on-surface-variant">We evaluate language level, documents, background, and realistic routes before making any promise.</p>
+          </article>
+          <article class="rounded-[2rem] bg-surface-container-low p-7 shadow-soft">
+            <div class="flex items-center gap-4">
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-container-lowest text-xl font-extrabold text-primary shadow-soft">02</div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-on-surface-variant">Planning</p>
+            </div>
+            <h3 class="mt-6 font-headline text-2xl font-extrabold">Application Strategy</h3>
+            <p class="mt-3 text-sm leading-7 text-on-surface-variant">Programs, companies, or pathways are matched carefully to avoid wasted time and weak submissions.</p>
+          </article>
+          <article class="rounded-[2rem] bg-surface-container-low p-7 shadow-soft">
+            <div class="flex items-center gap-4">
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-container-lowest text-xl font-extrabold text-primary shadow-soft">03</div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.22em] text-on-surface-variant">Execution</p>
+            </div>
+            <h3 class="mt-6 font-headline text-2xl font-extrabold">Visa Preparation</h3>
+            <p class="mt-3 text-sm leading-7 text-on-surface-variant">Every document is checked with precision so the embassy process becomes smoother and less stressful.</p>
+          </article>
+          <article class="rounded-[2rem] bg-gradient-to-br from-secondary-container to-secondary-fixed p-7 text-on-secondary-container shadow-soft">
+            <div class="flex items-center gap-4">
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/70 shadow-soft">
+                <span class="material-symbols-outlined text-[24px]">flight_takeoff</span>
+              </div>
+              <p class="text-xs font-extrabold uppercase tracking-[0.22em]">Outcome</p>
+            </div>
+            <h3 class="mt-6 font-headline text-2xl font-extrabold">Arrival & Success</h3>
+            <p class="mt-3 text-sm leading-7">The goal is not just a visa approval, but a confident arrival into study, training, or work life in Germany.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK: Trust Section -->
+    <section id="trust" class="relative overflow-hidden bg-primary px-4 py-24 sm:px-6 lg:px-8">
+      <div class="absolute right-[-12%] top-0 h-full w-[42%] -skew-x-12 bg-primary-container/20"></div>
+      <div class="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-12 lg:items-center">
+        <div class="lg:col-span-5">
+          <p class="mb-4 text-xs font-extrabold uppercase tracking-[0.24em] text-primary-fixed/80">Why students trust us</p>
+          <h2 class="font-headline text-4xl font-extrabold leading-tight text-on-primary sm:text-5xl">A premium service feel, without losing empathy.</h2>
+          <p class="mt-6 text-base leading-8 text-primary-fixed/80">Students trust Academic Curator because the process feels organized, honest, and deeply human. We are not just handing over a checklist — we are shaping a future move.</p>
+
+          <div class="mt-10 space-y-5">
+            <div class="rounded-[1.75rem] bg-white/8 p-5 backdrop-blur-sm">
+              <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed/15 text-primary-fixed">
+                  <span class="material-symbols-outlined">workspace_premium</span>
+                </div>
+                <div>
+                  <h3 class="font-headline text-2xl font-extrabold text-on-primary">Uncompromising precision</h3>
+                  <p class="mt-2 text-sm leading-7 text-primary-fixed/75">Documents, timelines, and requirements are treated carefully so mistakes do not cost the student months.</p>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-[1.75rem] bg-white/8 p-5 backdrop-blur-sm">
+              <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed/15 text-primary-fixed">
+                  <span class="material-symbols-outlined">bolt</span>
+                </div>
+                <div>
+                  <h3 class="font-headline text-2xl font-extrabold text-on-primary">Faster, clearer execution</h3>
+                  <p class="mt-2 text-sm leading-7 text-primary-fixed/75">Students know exactly what to do next, what is missing, and which path is realistic for them.</p>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-[1.75rem] bg-white/8 p-5 backdrop-blur-sm">
+              <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed/15 text-primary-fixed">
+                  <span class="material-symbols-outlined">support_agent</span>
+                </div>
+                <div>
+                  <h3 class="font-headline text-2xl font-extrabold text-on-primary">Warm human guidance</h3>
+                  <p class="mt-2 text-sm leading-7 text-primary-fixed/75">The experience stays premium without becoming cold, robotic, or intimidating for the client.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div class="grid grid-cols-2 gap-4 lg:gap-5">
+            <div class="space-y-4 pt-10">
+              <div class="overflow-hidden rounded-[2rem] bg-white/10 p-3 backdrop-blur-sm shadow-soft">
+                <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1000&q=80" alt="Students in a library" class="h-72 w-full rounded-[1.35rem] object-cover" />
+              </div>
+              <div class="rounded-[2rem] bg-secondary-fixed p-6 text-on-secondary-fixed shadow-soft">
+                <p class="text-xs font-bold uppercase tracking-[0.2em]">What makes it different</p>
+                <p class="mt-3 font-headline text-2xl font-extrabold leading-tight">Editorial clarity, practical action, and less noise.</p>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="rounded-[2rem] bg-white/10 p-3 backdrop-blur-sm shadow-soft">
+                <img src="https://images.unsplash.com/photo-1516321310764-8d1f1f2c5f1f?auto=format&fit=crop&w=1000&q=80" alt="Professional discussion" class="h-52 w-full rounded-[1.35rem] object-cover" />
+              </div>
+              <div class="rounded-[2rem] bg-white/10 p-3 backdrop-blur-sm shadow-soft">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=80" alt="Student graduation celebration" class="h-80 w-full rounded-[1.35rem] object-cover" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK: Testimonials -->
+    <section class="bg-surface-container-low px-4 py-24 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        <div class="mx-auto max-w-3xl text-center">
+          <p class="mb-4 text-xs font-extrabold uppercase tracking-[0.24em] text-secondary">Testimonials</p>
+          <h2 class="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl">Voice of success, told with confidence.</h2>
+        </div>
+
+        <div class="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <article class="rounded-[2rem] bg-surface-container-lowest p-8 shadow-soft">
+            <div class="mb-5 flex gap-1 text-secondary">
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+            </div>
+            <p class="text-base leading-8 text-on-surface-variant">“The path into my nursing Ausbildung in Hamburg felt impossible at first. They turned it into a sequence of clear tasks, and that changed everything.”</p>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-fixed text-sm font-bold text-primary">AM</div>
+              <div>
+                <p class="font-bold text-on-surface">Ahmed Mansour</p>
+                <p class="text-sm text-on-surface-variant">Nursing Apprentice, Hamburg</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="rounded-[2rem] bg-primary p-8 text-on-primary shadow-premium lg:-translate-y-5">
+            <div class="mb-5 flex gap-1 text-secondary-container">
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+            </div>
+            <p class="font-headline text-2xl font-extrabold leading-tight text-on-primary">“They did not just improve my admission file. They made the whole move to Germany feel possible.”</p>
+            <p class="mt-6 text-base leading-8 text-primary-fixed/80">“My grades were not perfect, but their positioning strategy, document optimization, and guidance around program choices made the difference.”</p>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-fixed text-sm font-bold text-on-secondary-fixed">SK</div>
+              <div>
+                <p class="font-bold text-on-primary">Sara Khan</p>
+                <p class="text-sm text-primary-fixed/75">M.Sc. Data Science, Munich</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="rounded-[2rem] bg-surface-container-lowest p-8 shadow-soft">
+            <div class="mb-5 flex gap-1 text-secondary">
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">star</span>
+            </div>
+            <p class="text-base leading-8 text-on-surface-variant">“Professional, calm, and detail-focused. I always knew what the next step was, and that gave me a lot of confidence before the embassy interview.”</p>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-fixed text-sm font-bold text-primary">JL</div>
+              <div>
+                <p class="font-bold text-on-surface">Javier Lopez</p>
+                <p class="text-sm text-on-surface-variant">IT Specialist, Berlin</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK: FAQ -->
+    <section id="faq" class="bg-surface px-4 py-24 sm:px-6 lg:px-8">
+      <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-12">
+        <div class="lg:col-span-4 lg:pr-8">
+          <p class="mb-4 text-xs font-extrabold uppercase tracking-[0.24em] text-secondary">FAQ</p>
+          <h2 class="font-headline text-4xl font-extrabold tracking-tight sm:text-5xl">Questions students usually ask before making a move.</h2>
+          <p class="mt-6 text-base leading-8 text-on-surface-variant">This section feels stronger now because it has context and visual weight, not just plain accordion rows. Keep this structure when converting to a block.</p>
+        </div>
+        <div class="space-y-4 lg:col-span-8">
+          <details class="group rounded-[1.75rem] bg-surface-container-low p-6 shadow-soft" open>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 font-headline text-xl font-extrabold tracking-tight">
+              What is the Dual Ausbildung system?
+              <span class="material-symbols-outlined transition group-open:rotate-180">expand_more</span>
+            </summary>
+            <p class="mt-4 max-w-3xl text-base leading-8 text-on-surface-variant">The Dual Ausbildung system combines school-based learning with paid company training. It is one of Germany’s strongest routes for people who want practical experience and a structured career start.</p>
+          </details>
+          <details class="group rounded-[1.75rem] bg-surface-container-low p-6 shadow-soft">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 font-headline text-xl font-extrabold tracking-tight">
+              Do I need German fluency before applying?
+              <span class="material-symbols-outlined transition group-open:rotate-180">expand_more</span>
+            </summary>
+            <p class="mt-4 max-w-3xl text-base leading-8 text-on-surface-variant">For many Ausbildung and undergraduate paths, B1 or B2 German is important. Some postgraduate programs are available in English, but language expectations vary a lot by route and institution.</p>
+          </details>
+          <details class="group rounded-[1.75rem] bg-surface-container-low p-6 shadow-soft">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 font-headline text-xl font-extrabold tracking-tight">
+              How long does visa processing usually take?
+              <span class="material-symbols-outlined transition group-open:rotate-180">expand_more</span>
+            </summary>
+            <p class="mt-4 max-w-3xl text-base leading-8 text-on-surface-variant">The answer depends on the embassy and country, but a realistic planning window is often between 4 and 12 weeks after a complete file is submitted. Starting early matters.</p>
+          </details>
+          <details class="group rounded-[1.75rem] bg-surface-container-low p-6 shadow-soft">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 font-headline text-xl font-extrabold tracking-tight">
+              Can you review my documents before I apply?
+              <span class="material-symbols-outlined transition group-open:rotate-180">expand_more</span>
+            </summary>
+            <p class="mt-4 max-w-3xl text-base leading-8 text-on-surface-variant">Yes. Document review is one of the most valuable parts of the service because weak formatting, missing items, or poor positioning can delay everything.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK: Contact Form -->
+    <section class="bg-surface-container-low px-4 py-24 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-surface-container-lowest shadow-premium">
+        <div class="grid lg:grid-cols-[0.95fr_1.25fr]">
+          <div class="bg-primary px-8 py-12 text-on-primary sm:px-10 lg:px-12">
+            <p class="text-xs font-extrabold uppercase tracking-[0.24em] text-primary-fixed/75">Start here</p>
+            <h2 class="mt-4 font-headline text-4xl font-extrabold leading-tight">Start your journey with a clearer first step.</h2>
+            <p class="mt-5 text-base leading-8 text-primary-fixed/80">Tell us about your background, target path, and current stage. We will guide you toward the most realistic next move.</p>
+
+            <div class="mt-10 space-y-5">
+              <div class="flex items-center gap-4 rounded-2xl bg-white/10 px-4 py-4">
+                <span class="material-symbols-outlined text-primary-fixed">mail</span>
+                <span>hello@academiccurator.de</span>
+              </div>
+              <div class="flex items-center gap-4 rounded-2xl bg-white/10 px-4 py-4">
+                <span class="material-symbols-outlined text-primary-fixed">call</span>
+                <span>+49 (0) 30 1234567</span>
+              </div>
+              <div class="rounded-[1.75rem] bg-white/8 p-5">
+                <p class="text-sm leading-7 text-primary-fixed/80">This layout is a good candidate for a reusable <strong>LeadFormBlock</strong> later, with the form relation coming from your Payload Forms collection.</p>
+              </div>
+            </div>
+          </div>
+
+          <form class="grid grid-cols-1 gap-5 px-8 py-12 sm:px-10 lg:grid-cols-2 lg:px-12">
+            <div>
+              <label class="mb-2 block text-sm font-bold text-on-surface-variant">Full Name</label>
+              <input type="text" placeholder="John Doe" class="w-full rounded-2xl border-0 bg-surface-container-high px-4 py-3.5 text-on-surface shadow-none ring-0 focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-bold text-on-surface-variant">Email Address</label>
+              <input type="email" placeholder="john@example.com" class="w-full rounded-2xl border-0 bg-surface-container-high px-4 py-3.5 text-on-surface shadow-none ring-0 focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-bold text-on-surface-variant">Phone Number</label>
+              <input type="tel" placeholder="+49 ..." class="w-full rounded-2xl border-0 bg-surface-container-high px-4 py-3.5 text-on-surface shadow-none ring-0 focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" />
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-bold text-on-surface-variant">Service of Interest</label>
+              <select class="w-full rounded-2xl border-0 bg-surface-container-high px-4 py-3.5 text-on-surface shadow-none ring-0 focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary">
+                <option>Ausbildung</option>
+                <option>University Admission</option>
+                <option>Visa Guidance</option>
+                <option>Consultation</option>
+              </select>
+            </div>
+            <div class="lg:col-span-2">
+              <label class="mb-2 block text-sm font-bold text-on-surface-variant">Message</label>
+              <textarea rows="5" placeholder="Tell us about your background, goal, and where you need help..." class="w-full rounded-[1.6rem] border-0 bg-surface-container-high px-4 py-3.5 text-on-surface shadow-none ring-0 focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary"></textarea>
+            </div>
+            <div class="lg:col-span-2">
+              <div class="rounded-[1.6rem] bg-surface-container-low px-6 py-8 text-center text-on-surface-variant shadow-soft">
+                <span class="material-symbols-outlined mb-3 text-4xl text-primary">cloud_upload</span>
+                <p class="font-semibold text-on-surface">Upload CV / transcript (optional)</p>
+                <p class="mt-2 text-sm">This area can later be wired to your Forms upload field.</p>
+              </div>
+            </div>
+            <div class="lg:col-span-2">
+              <button type="submit" class="w-full rounded-2xl bg-gradient-to-br from-primary to-primary-container px-7 py-4 text-base font-bold text-on-primary shadow-premium transition hover:-translate-y-0.5">
+                Send My Inquiry
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BLOCK: Footer -->
+  <footer class="footer-glow relative overflow-hidden px-4 pb-10 pt-16 text-white sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+      <div class="mb-12 rounded-[2rem] bg-white/6 px-7 py-8 backdrop-blur-sm lg:flex lg:items-center lg:justify-between lg:px-10">
+        <div class="max-w-2xl">
+          <p class="text-xs font-extrabold uppercase tracking-[0.24em] text-primary-fixed/75">Ready to start?</p>
+          <h2 class="mt-3 font-headline text-3xl font-extrabold sm:text-4xl">A premium first impression, with a clearer path for the client.</h2>
+        </div>
+        <button class="mt-6 rounded-full bg-secondary-container px-7 py-3.5 text-sm font-bold text-on-secondary-container transition hover:-translate-y-0.5 lg:mt-0">
+          Schedule an Intro Call
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 gap-12 pb-12 md:grid-cols-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-primary-fixed">
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">school</span>
+            </div>
+            <div>
+              <p class="font-headline text-2xl font-extrabold">Academic Curator</p>
+              <p class="text-xs uppercase tracking-[0.2em] text-primary-fixed/70">Precision meets empathy</p>
+            </div>
+          </div>
+          <p class="mt-6 max-w-sm text-sm leading-7 text-primary-fixed/75">Professional student services agency helping international talent move into education, training, and long-term opportunity in Germany.</p>
+        </div>
+
+        <div>
+          <h3 class="font-headline text-lg font-extrabold">Quick Links</h3>
+          <ul class="mt-5 space-y-3 text-sm text-primary-fixed/75">
+            <li><a href="#home" class="transition hover:text-white">Home</a></li>
+            <li><a href="#services" class="transition hover:text-white">Services</a></li>
+            <li><a href="#process" class="transition hover:text-white">Process</a></li>
+            <li><a href="#faq" class="transition hover:text-white">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-headline text-lg font-extrabold">Support</h3>
+          <ul class="mt-5 space-y-3 text-sm text-primary-fixed/75">
+            <li><a href="#" class="transition hover:text-white">Contact</a></li>
+            <li><a href="#" class="transition hover:text-white">Privacy Policy</a></li>
+            <li><a href="#" class="transition hover:text-white">Terms of Service</a></li>
+            <li><a href="#" class="transition hover:text-white">Imprint</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-headline text-lg font-extrabold">Newsletter</h3>
+          <p class="mt-5 text-sm leading-7 text-primary-fixed/75">Stay updated with changes in admissions, student visas, and planning tips for Germany.</p>
+          <div class="mt-5 flex rounded-full bg-white/8 p-1.5 backdrop-blur-sm">
+            <input type="email" placeholder="Email address" class="w-full border-0 bg-transparent px-4 py-2 text-sm text-white placeholder:text-primary-fixed/55 focus:ring-0" />
+            <button class="rounded-full bg-secondary-container px-4 py-2 text-sm font-bold text-on-secondary-container">Join</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4 border-t border-white/10 pt-7 text-sm text-primary-fixed/65 md:flex-row md:items-center md:justify-between">
+        <p>© 2026 Academic Curator. Crafted for clarity, trust, and conversion.</p>
+        <p>Berlin • Munich • Cairo</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

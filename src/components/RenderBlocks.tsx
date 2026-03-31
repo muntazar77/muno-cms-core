@@ -15,6 +15,9 @@ import { TestimonialsBlock } from '@/blocks/Testimonials'
 import { LogoCloudBlock } from '@/blocks/LogoCloud'
 import { PricingTableBlock } from '@/blocks/PricingTable'
 import { FAQBlock } from '@/blocks/FAQ'
+import { HeroEditorialBlock } from '@/blocks/HeroEditorial'
+import { ServicesBentoBlock } from '@/blocks/ServicesBento'
+import { SplitContentBlock } from '@/blocks/SplitContent'
 
 type Block = NonNullable<Page['blocks']>[number]
 
@@ -34,6 +37,9 @@ const blockComponents: Record<string, React.ComponentType<any>> = {
   logoCloud: LogoCloudBlock,
   pricingTable: PricingTableBlock,
   faq: FAQBlock,
+  heroEditorial: HeroEditorialBlock,
+  servicesBento: ServicesBentoBlock,
+  splitContent: SplitContentBlock,
 }
 
 async function fetchDynamicServices(siteId: string | undefined, limit: number) {
@@ -72,12 +78,8 @@ export async function RenderBlocks({
   const resolvedExtras: Record<number, Record<string, unknown>> = {}
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i]
-    if (
-      block.blockType === 'servicesCards' &&
-      'mode' in block &&
-      block.mode === 'dynamic'
-    ) {
-      const limit = ('limit' in block && typeof block.limit === 'number') ? block.limit : 12
+    if (block.blockType === 'servicesCards' && 'mode' in block && block.mode === 'dynamic') {
+      const limit = 'limit' in block && typeof block.limit === 'number' ? block.limit : 12
       resolvedExtras[i] = {
         resolvedServices: await fetchDynamicServices(siteId, limit),
       }

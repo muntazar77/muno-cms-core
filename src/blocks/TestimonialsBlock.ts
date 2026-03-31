@@ -12,6 +12,7 @@ export const TestimonialsBlock: Block = {
         { label: 'Cards', value: 'cards' },
         { label: 'Single', value: 'single' },
         { label: 'Minimal', value: 'minimal' },
+        { label: 'Featured Center', value: 'featured' },
       ],
     },
     {

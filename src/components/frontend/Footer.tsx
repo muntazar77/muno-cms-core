@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getCurrentSite } from '@/lib/sites'
 
-type FooterVariant = 'default' | 'centered' | 'minimal' | 'columns' | null | undefined
+type FooterVariant = 'default' | 'centered' | 'minimal' | 'columns' | 'editorial' | null | undefined
 
 interface NavLink {
   label: string
@@ -30,7 +30,7 @@ export async function Footer({ variant = 'default', site: siteProp }: FooterProp
     url?: string | null
   }>
   const year = new Date().getFullYear()
-  const v = variant || 'default'
+  const v = variant && variant !== 'default' ? variant : 'editorial'
 
   // Fallback links when none configured
   const fallbackLinks: NavLink[] = [
@@ -168,6 +168,136 @@ export async function Footer({ variant = 'default', site: siteProp }: FooterProp
           <p className="mt-8 text-center text-xs text-[var(--fe-text-on-dark-muted)]">
             &copy; {year} {siteName}. All rights reserved.
           </p>
+        </div>
+      </footer>
+    )
+  }
+
+  if (v === 'editorial') {
+    const showBanner = site?.footerShowCtaBanner === true
+    const bannerHeading = site?.footerCtaHeading
+    const bannerDesc = site?.footerCtaDescription
+    const bannerBtnLabel = site?.footerCtaButtonLabel
+    const bannerBtnUrl = site?.footerCtaButtonUrl
+    const supportLinks: NavLink[] = [
+      { label: 'Contact', url: '#' },
+      { label: 'Privacy Policy', url: '#' },
+      { label: 'Terms of Service', url: '#' },
+      { label: 'Imprint', url: '#' },
+    ]
+
+    return (
+      <footer className="footer-glow relative overflow-hidden px-4 pb-10 pt-16 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          {(showBanner || bannerHeading || bannerBtnLabel) && (
+            <div className="mb-12 rounded-[2rem] bg-white/6 px-7 py-8 backdrop-blur-sm lg:flex lg:items-center lg:justify-between lg:px-10">
+              <div className="max-w-2xl">
+                <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-indigo-100">
+                  Ready to start?
+                </p>
+                <h2 className="mt-3 text-3xl font-extrabold sm:text-4xl">
+                  {bannerHeading ||
+                    'A premium first impression, with a clearer path for the client.'}
+                </h2>
+              </div>
+              {bannerDesc && (
+                <p className="mt-4 max-w-xl text-sm leading-7 text-indigo-100 lg:mt-0">
+                  {bannerDesc}
+                </p>
+              )}
+              {(bannerBtnLabel || bannerBtnUrl) && (
+                <Link
+                  href={bannerBtnUrl || '#'}
+                  className="mt-6 rounded-full bg-amber-200 px-7 py-3.5 text-sm font-bold text-amber-900 transition hover:-translate-y-0.5 lg:mt-0"
+                >
+                  {bannerBtnLabel || 'Schedule an Intro Call'}
+                </Link>
+              )}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-12 pb-12 md:grid-cols-4">
+            <div>
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-indigo-100">
+                  ✦
+                </div>
+                <div>
+                  <p className="text-2xl font-extrabold">{siteName}</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-indigo-100/70">
+                    Precision meets empathy
+                  </p>
+                </div>
+              </div>
+              <p className="mt-6 max-w-sm text-sm leading-7 text-indigo-100/75">{tagline}</p>
+              {footerNote && (
+                <p className="mt-3 max-w-sm text-sm leading-7 text-indigo-100/60">{footerNote}</p>
+              )}
+            </div>
+
+            <div>
+              <h3 className="text-lg font-extrabold">Quick Links</h3>
+              <ul className="mt-5 space-y-3 text-sm text-indigo-100/75">
+                {links.map((link) => (
+                  <li key={link.url}>
+                    <Link href={link.url} className="transition hover:text-white">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-extrabold">Support</h3>
+              <ul className="mt-5 space-y-3 text-sm text-indigo-100/75">
+                {supportLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.url} className="transition hover:text-white">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+                {socialLinks.map((link) => (
+                  <li key={`${link.platform}-${link.url}`}>
+                    <Link href={link.url || '#'} className="transition hover:text-white">
+                      {link.label || link.platform || 'Social'}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-extrabold">Newsletter</h3>
+              <p className="mt-5 text-sm leading-7 text-indigo-100/75">
+                Stay updated with changes in admissions, student visas, and planning tips for
+                Germany.
+              </p>
+              <div className="mt-5 flex rounded-full bg-white/8 p-1.5 backdrop-blur-sm">
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  className="w-full border-0 bg-transparent px-4 py-2 text-sm text-white placeholder:text-indigo-100/55 focus:outline-none"
+                />
+                <button className="rounded-full bg-amber-200 px-4 py-2 text-sm font-bold text-amber-900">
+                  Join
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 border-t border-white/10 pt-7 text-sm text-indigo-100/65 md:flex-row md:items-center md:justify-between">
+            <p>
+              {site?.copyrightText ||
+                `© ${year} ${siteName}. Crafted for clarity, trust, and conversion.`}
+            </p>
+            <div>
+              {email && <span>{email}</span>}
+              {email && phone && <span> • </span>}
+              {phone && <span>{phone}</span>}
+            </div>
+          </div>
         </div>
       </footer>
     )

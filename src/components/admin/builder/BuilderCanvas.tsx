@@ -19,6 +19,9 @@ import { TestimonialsBlock } from '@/blocks/Testimonials'
 import { LogoCloudBlock } from '@/blocks/LogoCloud'
 import { PricingTableBlock } from '@/blocks/PricingTable'
 import { FAQBlock } from '@/blocks/FAQ'
+import { HeroEditorialBlock } from '@/blocks/HeroEditorial'
+import { ServicesBentoBlock } from '@/blocks/ServicesBento'
+import { SplitContentBlock } from '@/blocks/SplitContent'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const blockComponents: Record<string, ComponentType<any>> = {
@@ -36,6 +39,9 @@ const blockComponents: Record<string, ComponentType<any>> = {
   logoCloud: LogoCloudBlock,
   pricingTable: PricingTableBlock,
   faq: FAQBlock,
+  heroEditorial: HeroEditorialBlock,
+  servicesBento: ServicesBentoBlock,
+  splitContent: SplitContentBlock,
 }
 
 const DEVICE_WIDTHS: Record<string, string> = {
@@ -54,8 +60,7 @@ export function BuilderCanvas() {
         className="flex-1 p-6 flex justify-center"
         style={{
           backgroundColor: 'var(--cms-bg-elevated)',
-          backgroundImage:
-            'radial-gradient(circle, var(--cms-border) 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(circle, var(--cms-border) 1px, transparent 1px)',
           backgroundSize: '20px 20px',
         }}
       >

@@ -3,6 +3,58 @@
 @source "../../components";
 
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
 
 @import './styles/frontend-tokens.css';
 @import './styles/frontend-primitives.css';
+
+.font-headline {
+	font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+}
+
+.hero-bleed {
+	background:
+		radial-gradient(circle at 12% 18%, rgba(181, 235, 255, 0.34), transparent 30%),
+		radial-gradient(circle at 88% 22%, rgba(255, 223, 160, 0.22), transparent 22%),
+		linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 249, 250, 1) 72%);
+}
+
+.section-noise::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-image: radial-gradient(rgba(0, 58, 73, 0.05) 0.7px, transparent 0.7px);
+	background-size: 18px 18px;
+	opacity: 0.22;
+	pointer-events: none;
+}
+
+.glass-shell {
+	background: rgba(255, 255, 255, 0.72);
+	backdrop-filter: blur(18px);
+}
+
+.highlight-word {
+	color: var(--fe-primary);
+	position: relative;
+	display: inline-block;
+}
+
+.highlight-word::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0.1em;
+	height: 0.26em;
+	background: rgba(255, 198, 65, 0.5);
+	z-index: -1;
+	border-radius: 999px;
+}
+
+.footer-glow {
+	background:
+		radial-gradient(circle at top left, rgba(181, 235, 255, 0.15), transparent 28%),
+		radial-gradient(circle at bottom right, rgba(255, 223, 160, 0.12), transparent 22%),
+		linear-gradient(180deg, #032b36 0%, #052833 100%);
+}

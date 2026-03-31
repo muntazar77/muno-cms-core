@@ -174,6 +174,10 @@ export interface User {
 export interface Media {
   id: number;
   alt: string;
+  /**
+   * Friendly label shown when selecting this media in the admin picker.
+   */
+  title?: string | null;
   caption?: string | null;
   /**
    * Site context is assigned automatically in normal workflows.
@@ -261,6 +265,11 @@ export interface Site {
   footerTagline?: string | null;
   footerNote?: string | null;
   copyrightText?: string | null;
+  footerShowCtaBanner?: boolean | null;
+  footerCtaHeading?: string | null;
+  footerCtaDescription?: string | null;
+  footerCtaButtonLabel?: string | null;
+  footerCtaButtonUrl?: string | null;
   defaultMetaTitle?: string | null;
   defaultMetaDescription?: string | null;
   ogImage?: (number | null) | Media;
@@ -300,8 +309,8 @@ export interface Page {
   branding?: {
     logoUrl?: string | null;
     faviconUrl?: string | null;
-    headerVariant?: ('default' | 'centered' | 'minimal' | 'transparent') | null;
-    footerVariant?: ('default' | 'centered' | 'minimal' | 'columns') | null;
+    headerVariant?: ('default' | 'centered' | 'minimal' | 'transparent' | 'editorial') | null;
+    footerVariant?: ('default' | 'centered' | 'minimal' | 'columns' | 'editorial') | null;
   };
   meta?: {
     title?: string | null;
@@ -388,9 +397,20 @@ export interface Page {
             blockType: 'cta';
           }
         | {
+            style?: ('default' | 'split') | null;
             form: number | Form;
             heading?: string | null;
             description?: string | null;
+            leftPanelHeading?: string | null;
+            leftPanelDescription?: string | null;
+            contactItems?:
+              | {
+                  icon?: string | null;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            submitLabel?: string | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'form';
@@ -466,7 +486,7 @@ export interface Page {
             blockType: 'statistics';
           }
         | {
-            style?: ('cards' | 'single' | 'minimal') | null;
+            style?: ('cards' | 'single' | 'minimal' | 'featured') | null;
             heading?: string | null;
             testimonials?:
               | {
@@ -520,8 +540,12 @@ export interface Page {
             blockType: 'pricingTable';
           }
         | {
-            style?: ('accordion' | 'grid') | null;
+            style?: ('accordion' | 'grid' | 'sidebar') | null;
             heading?: string | null;
+            /**
+             * Shown in the sidebar panel alongside the heading.
+             */
+            description?: string | null;
             items?:
               | {
                   question: string;
@@ -532,6 +556,136 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'faq';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            /**
+             * Highlighted emphasis word shown inline in heading.
+             */
+            highlightedWord?: string | null;
+            subheading?: string | null;
+            badgeLabel?: string | null;
+            primaryCtaLabel?: string | null;
+            primaryCtaLink?: string | null;
+            secondaryCtaLabel?: string | null;
+            secondaryCtaLink?: string | null;
+            stats?:
+              | {
+                  /**
+                   * e.g. "98%", "15K+"
+                   */
+                  value: string;
+                  label: string;
+                  color?: ('blue' | 'green' | 'purple' | 'amber') | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            mainImage?: (number | null) | Media;
+            sideImages?:
+              | {
+                  image?: (number | null) | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            topOverlayCard?: {
+              cardLabel?: string | null;
+              cardText?: string | null;
+            };
+            bottomOverlayCard?: {
+              cardLabel?: string | null;
+              itemTitle?: string | null;
+              itemDescription?: string | null;
+            };
+            featureHighlights?:
+              | {
+                  /**
+                   * Emoji or icon name
+                   */
+                  icon?: string | null;
+                  title: string;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'heroEditorial';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            description?: string | null;
+            ctaLabel?: string | null;
+            ctaLink?: string | null;
+            items?:
+              | {
+                  /**
+                   * Emoji or icon name
+                   */
+                  icon?: string | null;
+                  title: string;
+                  description?: string | null;
+                  /**
+                   * e.g. "POPULAR", "NEW"
+                   */
+                  badge?: string | null;
+                  ctaLabel?: string | null;
+                  ctaLink?: string | null;
+                  image?: (number | null) | Media;
+                  isFeatured?: boolean | null;
+                  theme?: ('light' | 'dark') | null;
+                  iconStyle?: ('primarySoft' | 'secondarySoft' | 'surfaceHigh' | 'darkGlass') | null;
+                  details?:
+                    | {
+                        detail: string;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  tags?:
+                    | {
+                        tag: string;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'servicesBento';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            description?: string | null;
+            theme?: ('light' | 'brand') | null;
+            imagePosition?: ('left' | 'right') | null;
+            calloutText?: string | null;
+            showSkewAccent?: boolean | null;
+            features?:
+              | {
+                  /**
+                   * Emoji or icon name
+                   */
+                  icon?: string | null;
+                  title: string;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            images?:
+              | {
+                  image?: (number | null) | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'splitContent';
           }
       )[]
     | null;
@@ -824,6 +978,11 @@ export interface SitesSelect<T extends boolean = true> {
   footerTagline?: T;
   footerNote?: T;
   copyrightText?: T;
+  footerShowCtaBanner?: T;
+  footerCtaHeading?: T;
+  footerCtaDescription?: T;
+  footerCtaButtonLabel?: T;
+  footerCtaButtonUrl?: T;
   defaultMetaTitle?: T;
   defaultMetaDescription?: T;
   ogImage?: T;
@@ -845,6 +1004,7 @@ export interface SitesSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  title?: T;
   caption?: T;
   siteId?: T;
   isDeleted?: T;
@@ -962,9 +1122,20 @@ export interface PagesSelect<T extends boolean = true> {
         form?:
           | T
           | {
+              style?: T;
               form?: T;
               heading?: T;
               description?: T;
+              leftPanelHeading?: T;
+              leftPanelDescription?: T;
+              contactItems?:
+                | T
+                | {
+                    icon?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              submitLabel?: T;
               id?: T;
               blockName?: T;
             };
@@ -1089,11 +1260,131 @@ export interface PagesSelect<T extends boolean = true> {
           | {
               style?: T;
               heading?: T;
+              description?: T;
               items?:
                 | T
                 | {
                     question?: T;
                     answer?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        heroEditorial?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              highlightedWord?: T;
+              subheading?: T;
+              badgeLabel?: T;
+              primaryCtaLabel?: T;
+              primaryCtaLink?: T;
+              secondaryCtaLabel?: T;
+              secondaryCtaLink?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    color?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              mainImage?: T;
+              sideImages?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              topOverlayCard?:
+                | T
+                | {
+                    cardLabel?: T;
+                    cardText?: T;
+                  };
+              bottomOverlayCard?:
+                | T
+                | {
+                    cardLabel?: T;
+                    itemTitle?: T;
+                    itemDescription?: T;
+                  };
+              featureHighlights?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        servicesBento?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              description?: T;
+              ctaLabel?: T;
+              ctaLink?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    badge?: T;
+                    ctaLabel?: T;
+                    ctaLink?: T;
+                    image?: T;
+                    isFeatured?: T;
+                    theme?: T;
+                    iconStyle?: T;
+                    details?:
+                      | T
+                      | {
+                          detail?: T;
+                          id?: T;
+                        };
+                    tags?:
+                      | T
+                      | {
+                          tag?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        splitContent?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              description?: T;
+              theme?: T;
+              imagePosition?: T;
+              calloutText?: T;
+              showSkewAccent?: T;
+              features?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
                     id?: T;
                   };
               id?: T;

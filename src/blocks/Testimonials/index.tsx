@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { Star } from 'lucide-react'
 import type { Media } from '@/payload-types'
+import { cn } from '@/lib/utils'
 
 interface TestimonialsBlockProps {
   heading?: string | null
@@ -22,8 +23,7 @@ export function TestimonialsBlock({ heading, testimonials, style }: Testimonials
   // --- Single variant ---
   if (style === 'single') {
     const t = testimonials[0]
-    const avatar =
-      typeof t.avatar === 'object' && t.avatar !== null ? (t.avatar as Media) : null
+    const avatar = typeof t.avatar === 'object' && t.avatar !== null ? (t.avatar as Media) : null
 
     return (
       <section className="fe-bg-gradient-brand py-20 sm:py-28">
@@ -69,12 +69,8 @@ export function TestimonialsBlock({ heading, testimonials, style }: Testimonials
                 </div>
               )}
               <div>
-                <p className="text-base font-semibold text-[var(--fe-text-primary)]">
-                  {t.author}
-                </p>
-                {t.role && (
-                  <p className="text-sm text-[var(--fe-text-secondary)]">{t.role}</p>
-                )}
+                <p className="text-base font-semibold text-[var(--fe-text-primary)]">{t.author}</p>
+                {t.role && <p className="text-sm text-[var(--fe-text-secondary)]">{t.role}</p>}
               </div>
             </div>
           </div>
@@ -122,8 +118,104 @@ export function TestimonialsBlock({ heading, testimonials, style }: Testimonials
                       <p className="text-sm font-semibold text-[var(--fe-text-primary)]">
                         {t.author}
                       </p>
+                      {t.role && <p className="text-xs text-[var(--fe-text-tertiary)]">{t.role}</p>}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // --- Featured Center variant ---
+  if (style === 'featured') {
+    return (
+      <section className="fe-bg-gradient-subtle py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          {heading && (
+            <div className="text-center">
+              <p className="fe-eyebrow">TESTIMONIALS</p>
+              <h2 className="fe-heading-section mt-3 text-center">{heading}</h2>
+            </div>
+          )}
+          <div className="mt-12 grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
+            {testimonials.slice(0, 3).map((t, i) => {
+              const avatar =
+                typeof t.avatar === 'object' && t.avatar !== null ? (t.avatar as Media) : null
+              const isCenterCard = i === 1
+              return (
+                <div
+                  key={t.id ?? t.author}
+                  className={cn(
+                    'p-8 transition-all',
+                    isCenterCard
+                      ? 'fe-card-highlighted text-white shadow-2xl lg:-translate-y-5'
+                      : 'fe-card',
+                  )}
+                >
+                  <div className="mb-4 flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, si) => (
+                      <Star
+                        key={si}
+                        className={cn(
+                          'h-4 w-4',
+                          isCenterCard
+                            ? 'fill-amber-300 text-amber-300'
+                            : 'fill-amber-400 text-amber-400',
+                        )}
+                      />
+                    ))}
+                  </div>
+                  <blockquote
+                    className={cn(
+                      'text-base leading-relaxed',
+                      isCenterCard ? 'text-white/80' : 'text-[var(--fe-text-secondary)]',
+                    )}
+                  >
+                    &ldquo;{t.quote}&rdquo;
+                  </blockquote>
+                  <div className="mt-6 flex items-center gap-3">
+                    {avatar?.url ? (
+                      <Image
+                        src={avatar.url}
+                        alt={t.author}
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 rounded-full object-cover ring-2 ring-white/20"
+                      />
+                    ) : (
+                      <div
+                        className={cn(
+                          'flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium',
+                          isCenterCard
+                            ? 'bg-white/10 text-white'
+                            : 'bg-[var(--fe-primary-soft)] text-[var(--fe-primary)]',
+                        )}
+                      >
+                        {t.author[0]}
+                      </div>
+                    )}
+                    <div>
+                      <p
+                        className={cn(
+                          'text-sm font-semibold',
+                          isCenterCard ? 'text-white' : 'text-[var(--fe-text-primary)]',
+                        )}
+                      >
+                        {t.author}
+                      </p>
                       {t.role && (
-                        <p className="text-xs text-[var(--fe-text-tertiary)]">{t.role}</p>
+                        <p
+                          className={cn(
+                            'text-xs',
+                            isCenterCard ? 'text-white/60' : 'text-[var(--fe-text-tertiary)]',
+                          )}
+                        >
+                          {t.role}
+                        </p>
                       )}
                     </div>
                   </div>

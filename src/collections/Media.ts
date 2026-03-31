@@ -48,6 +48,14 @@ export const Media: CollectionConfig = {
       required: true,
     },
     {
+      name: 'title',
+      type: 'text',
+      label: 'Display Name',
+      admin: {
+        description: 'Friendly label shown when selecting this media in the admin picker.',
+      },
+    },
+    {
       name: 'caption',
       type: 'text',
     },
