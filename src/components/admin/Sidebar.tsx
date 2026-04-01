@@ -364,6 +364,28 @@ function SidebarInner({
               collapsed={collapsed}
               onNavigate={onNavigate}
             />
+
+            {!collapsed && (
+              <p className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-(--cms-text-muted)">
+                Platform
+              </p>
+            )}
+            <NavLink
+              href="/admin/collections/marketing-pages"
+              icon={FileText}
+              label="Marketing Pages"
+              active={Boolean(pathname?.startsWith('/admin/collections/marketing-pages'))}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+            <NavLink
+              href="/admin/globals/platform-settings"
+              icon={Settings}
+              label="Platform Settings"
+              active={Boolean(pathname?.startsWith('/admin/globals/platform-settings'))}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
             <NavLink
               href="/admin/trash"
               icon={Trash2}
