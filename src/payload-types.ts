@@ -74,6 +74,7 @@ export interface Config {
     forms: Form;
     'form-submissions': FormSubmission;
     services: Service;
+    'marketing-pages': MarketingPage;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,6 +89,7 @@ export interface Config {
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
+    'marketing-pages': MarketingPagesSelect<false> | MarketingPagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -97,8 +99,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'platform-settings': PlatformSetting;
+  };
+  globalsSelect: {
+    'platform-settings': PlatformSettingsSelect<false> | PlatformSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -818,6 +824,428 @@ export interface Service {
   createdAt: string;
 }
 /**
+ * Platform marketing pages for monocms.app (super-admin only)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "marketing-pages".
+ */
+export interface MarketingPage {
+  id: number;
+  title: string;
+  /**
+   * Leave empty string for homepage (/). Use "about", "pricing", "contact" etc.
+   */
+  slug: string;
+  status: 'draft' | 'published';
+  /**
+   * Marks this as the root domain homepage (/)
+   */
+  isHome?: boolean | null;
+  /**
+   * Auto-set when first published
+   */
+  publishedAt?: string | null;
+  meta?: {
+    /**
+     * Overrides page title in search results
+     */
+    title?: string | null;
+    /**
+     * Max 160 characters recommended
+     */
+    description?: string | null;
+    /**
+     * Open Graph / social sharing image (1200×630px recommended)
+     */
+    ogImage?: (number | null) | Media;
+  };
+  blocks?:
+    | (
+        | {
+            style?: ('gradient' | 'minimal' | 'split') | null;
+            heading: string;
+            subheading?: string | null;
+            image?: (number | null) | Media;
+            ctaLabel?: string | null;
+            ctaLink?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            subheading?: string | null;
+            image: number | Media;
+            primaryCtaLabel?: string | null;
+            primaryCtaLink?: string | null;
+            secondaryCtaLabel?: string | null;
+            alignment?: ('left' | 'center' | 'right') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'heroWithImage';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            /**
+             * Highlighted emphasis word shown inline in heading.
+             */
+            highlightedWord?: string | null;
+            subheading?: string | null;
+            badgeLabel?: string | null;
+            primaryCtaLabel?: string | null;
+            primaryCtaLink?: string | null;
+            secondaryCtaLabel?: string | null;
+            secondaryCtaLink?: string | null;
+            stats?:
+              | {
+                  /**
+                   * e.g. "98%", "15K+"
+                   */
+                  value: string;
+                  label: string;
+                  color?: ('blue' | 'green' | 'purple' | 'amber') | null;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            mainImage?: (number | null) | Media;
+            sideImages?:
+              | {
+                  image?: (number | null) | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            topOverlayCard?: {
+              cardLabel?: string | null;
+              cardText?: string | null;
+            };
+            bottomOverlayCard?: {
+              cardLabel?: string | null;
+              itemTitle?: string | null;
+              itemDescription?: string | null;
+            };
+            featureHighlights?:
+              | {
+                  /**
+                   * Emoji or icon name
+                   */
+                  icon?: string | null;
+                  title: string;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'heroEditorial';
+          }
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'text';
+          }
+        | {
+            style?: ('cards' | 'list' | 'minimal') | null;
+            heading?: string | null;
+            features?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  /**
+                   * Icon name or identifier
+                   */
+                  icon?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'features';
+          }
+        | {
+            mode?: ('manual' | 'dynamic') | null;
+            style?: ('cards' | 'list') | null;
+            heading?: string | null;
+            subheading?: string | null;
+            /**
+             * Max services to display in dynamic mode.
+             */
+            limit?: number | null;
+            services?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  /**
+                   * Icon name or emoji
+                   */
+                  icon?: string | null;
+                  link?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'servicesCards';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            description?: string | null;
+            ctaLabel?: string | null;
+            ctaLink?: string | null;
+            items?:
+              | {
+                  /**
+                   * Emoji or icon name
+                   */
+                  icon?: string | null;
+                  title: string;
+                  description?: string | null;
+                  /**
+                   * e.g. "POPULAR", "NEW"
+                   */
+                  badge?: string | null;
+                  ctaLabel?: string | null;
+                  ctaLink?: string | null;
+                  image?: (number | null) | Media;
+                  isFeatured?: boolean | null;
+                  theme?: ('light' | 'dark') | null;
+                  iconStyle?: ('primarySoft' | 'secondarySoft' | 'surfaceHigh' | 'darkGlass') | null;
+                  details?:
+                    | {
+                        detail: string;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  tags?:
+                    | {
+                        tag: string;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'servicesBento';
+          }
+        | {
+            style?: ('default' | 'alt' | 'timeline' | 'cards') | null;
+            eyebrow?: string | null;
+            heading?: string | null;
+            description?: string | null;
+            /**
+             * Legacy field kept for older content. Use Section Description for new pages.
+             */
+            subheading?: string | null;
+            steps?:
+              | {
+                  stepLabel?: string | null;
+                  title: string;
+                  /**
+                   * Optional emoji or icon label for the step badge.
+                   */
+                  icon?: string | null;
+                  description?: string | null;
+                  /**
+                   * Optional label shown instead of the auto step number.
+                   */
+                  numberOverride?: string | null;
+                  isHighlighted?: boolean | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'stepsTimeline';
+          }
+        | {
+            style?: ('dark' | 'light' | 'branded') | null;
+            heading?: string | null;
+            stats?:
+              | {
+                  /**
+                   * e.g. "99%", "10k+", "$2M"
+                   */
+                  value: string;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'statistics';
+          }
+        | {
+            style?: ('cards' | 'single' | 'minimal' | 'featured') | null;
+            heading?: string | null;
+            testimonials?:
+              | {
+                  quote: string;
+                  author: string;
+                  role?: string | null;
+                  avatar?: (number | null) | Media;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'testimonials';
+          }
+        | {
+            heading?: string | null;
+            logos?:
+              | {
+                  image: number | Media;
+                  name?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'logoCloud';
+          }
+        | {
+            heading?: string | null;
+            subheading?: string | null;
+            plans?:
+              | {
+                  name: string;
+                  /**
+                   * e.g. "$29/mo" or "Free"
+                   */
+                  price: string;
+                  description?: string | null;
+                  /**
+                   * One feature per line
+                   */
+                  features?: string | null;
+                  ctaLabel?: string | null;
+                  ctaLink?: string | null;
+                  highlighted?: boolean | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pricingTable';
+          }
+        | {
+            style?: ('accordion' | 'grid' | 'sidebar') | null;
+            heading?: string | null;
+            /**
+             * Shown in the sidebar panel alongside the heading.
+             */
+            description?: string | null;
+            items?:
+              | {
+                  question: string;
+                  answer: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
+          }
+        | {
+            heading?: string | null;
+            images?:
+              | {
+                  image: number | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gallery';
+          }
+        | {
+            style?: ('default' | 'split') | null;
+            form: number | Form;
+            heading?: string | null;
+            description?: string | null;
+            leftPanelHeading?: string | null;
+            leftPanelDescription?: string | null;
+            contactItems?:
+              | {
+                  icon?: string | null;
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            submitLabel?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'form';
+          }
+        | {
+            heading: string;
+            description?: string | null;
+            buttonLabel: string;
+            buttonLink: string;
+            style?: ('default' | 'centered' | 'withBackground') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta';
+          }
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            description?: string | null;
+            theme?: ('light' | 'brand') | null;
+            imagePosition?: ('left' | 'right') | null;
+            calloutText?: string | null;
+            showSkewAccent?: boolean | null;
+            features?:
+              | {
+                  /**
+                   * Emoji or icon name
+                   */
+                  icon?: string | null;
+                  title: string;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            images?:
+              | {
+                  image?: (number | null) | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'splitContent';
+          }
+      )[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -868,6 +1296,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'services';
         value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'marketing-pages';
+        value: number | MarketingPage;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1481,6 +1913,368 @@ export interface ServicesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "marketing-pages_select".
+ */
+export interface MarketingPagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  status?: T;
+  isHome?: T;
+  publishedAt?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
+  blocks?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              style?: T;
+              heading?: T;
+              subheading?: T;
+              image?: T;
+              ctaLabel?: T;
+              ctaLink?: T;
+              id?: T;
+              blockName?: T;
+            };
+        heroWithImage?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              subheading?: T;
+              image?: T;
+              primaryCtaLabel?: T;
+              primaryCtaLink?: T;
+              secondaryCtaLabel?: T;
+              alignment?: T;
+              id?: T;
+              blockName?: T;
+            };
+        heroEditorial?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              highlightedWord?: T;
+              subheading?: T;
+              badgeLabel?: T;
+              primaryCtaLabel?: T;
+              primaryCtaLink?: T;
+              secondaryCtaLabel?: T;
+              secondaryCtaLink?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    color?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              mainImage?: T;
+              sideImages?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              topOverlayCard?:
+                | T
+                | {
+                    cardLabel?: T;
+                    cardText?: T;
+                  };
+              bottomOverlayCard?:
+                | T
+                | {
+                    cardLabel?: T;
+                    itemTitle?: T;
+                    itemDescription?: T;
+                  };
+              featureHighlights?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        text?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        features?:
+          | T
+          | {
+              style?: T;
+              heading?: T;
+              features?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    icon?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        servicesCards?:
+          | T
+          | {
+              mode?: T;
+              style?: T;
+              heading?: T;
+              subheading?: T;
+              limit?: T;
+              services?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    icon?: T;
+                    link?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        servicesBento?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              description?: T;
+              ctaLabel?: T;
+              ctaLink?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    badge?: T;
+                    ctaLabel?: T;
+                    ctaLink?: T;
+                    image?: T;
+                    isFeatured?: T;
+                    theme?: T;
+                    iconStyle?: T;
+                    details?:
+                      | T
+                      | {
+                          detail?: T;
+                          id?: T;
+                        };
+                    tags?:
+                      | T
+                      | {
+                          tag?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        stepsTimeline?:
+          | T
+          | {
+              style?: T;
+              eyebrow?: T;
+              heading?: T;
+              description?: T;
+              subheading?: T;
+              steps?:
+                | T
+                | {
+                    stepLabel?: T;
+                    title?: T;
+                    icon?: T;
+                    description?: T;
+                    numberOverride?: T;
+                    isHighlighted?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        statistics?:
+          | T
+          | {
+              style?: T;
+              heading?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        testimonials?:
+          | T
+          | {
+              style?: T;
+              heading?: T;
+              testimonials?:
+                | T
+                | {
+                    quote?: T;
+                    author?: T;
+                    role?: T;
+                    avatar?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        logoCloud?:
+          | T
+          | {
+              heading?: T;
+              logos?:
+                | T
+                | {
+                    image?: T;
+                    name?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        pricingTable?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              plans?:
+                | T
+                | {
+                    name?: T;
+                    price?: T;
+                    description?: T;
+                    features?: T;
+                    ctaLabel?: T;
+                    ctaLink?: T;
+                    highlighted?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        faq?:
+          | T
+          | {
+              style?: T;
+              heading?: T;
+              description?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        gallery?:
+          | T
+          | {
+              heading?: T;
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        form?:
+          | T
+          | {
+              style?: T;
+              form?: T;
+              heading?: T;
+              description?: T;
+              leftPanelHeading?: T;
+              leftPanelDescription?: T;
+              contactItems?:
+                | T
+                | {
+                    icon?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              submitLabel?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cta?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              buttonLabel?: T;
+              buttonLink?: T;
+              style?: T;
+              id?: T;
+              blockName?: T;
+            };
+        splitContent?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              description?: T;
+              theme?: T;
+              imagePosition?: T;
+              calloutText?: T;
+              showSkewAccent?: T;
+              features?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1518,6 +2312,163 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Global settings for the monocms.app platform marketing site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "platform-settings".
+ */
+export interface PlatformSetting {
+  id: number;
+  productName?: string | null;
+  tagline?: string | null;
+  /**
+   * Primary logo (SVG or PNG, transparent bg)
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Favicon (32×32 or 64×64 PNG)
+   */
+  favicon?: (number | null) | Media;
+  navLinks?:
+    | {
+        label: string;
+        url: string;
+        openInNewTab?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  navCta?: {
+    label?: string | null;
+    url?: string | null;
+    variant?: ('primary' | 'ghost' | 'outline') | null;
+  };
+  footerColumns?:
+    | {
+        heading: string;
+        links?:
+          | {
+              label: string;
+              url: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Privacy Policy, Terms of Service, etc.
+   */
+  footerLegalLinks?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Footer copyright line. Use {year} as a placeholder for the current year.
+   */
+  copyrightText?: string | null;
+  socialLinks?:
+    | {
+        platform: 'twitter' | 'linkedin' | 'github' | 'instagram' | 'youtube';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Used when a marketing page has no custom meta title.
+   */
+  defaultSeoTitle?: string | null;
+  defaultSeoDescription?: string | null;
+  /**
+   * Fallback social sharing image (1200×630px)
+   */
+  ogImage?: (number | null) | Media;
+  contactEmail?: string | null;
+  /**
+   * Optional banner shown at the top of the marketing site.
+   */
+  announcementBar?: {
+    enabled?: boolean | null;
+    variant?: ('info' | 'success' | 'warning') | null;
+    message?: string | null;
+    linkLabel?: string | null;
+    linkUrl?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "platform-settings_select".
+ */
+export interface PlatformSettingsSelect<T extends boolean = true> {
+  productName?: T;
+  tagline?: T;
+  logo?: T;
+  favicon?: T;
+  navLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        openInNewTab?: T;
+        id?: T;
+      };
+  navCta?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        variant?: T;
+      };
+  footerColumns?:
+    | T
+    | {
+        heading?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  footerLegalLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  copyrightText?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  defaultSeoTitle?: T;
+  defaultSeoDescription?: T;
+  ogImage?: T;
+  contactEmail?: T;
+  announcementBar?:
+    | T
+    | {
+        enabled?: T;
+        variant?: T;
+        message?: T;
+        linkLabel?: T;
+        linkUrl?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

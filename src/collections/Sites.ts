@@ -1,4 +1,5 @@
 import type { CollectionConfig, CollectionAfterChangeHook, Field } from 'payload'
+import { ValidationError } from 'payload'
 import { access } from '@/access'
 import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
 
@@ -207,6 +208,35 @@ export const Sites: CollectionConfig = {
 
         if (typeof data.subdomain === 'string') {
           data.subdomain = data.subdomain.trim().toLowerCase()
+
+          const RESERVED_SUBDOMAINS = [
+            'www',
+            'admin',
+            'app',
+            'api',
+            'cms',
+            'mail',
+            'support',
+            'status',
+            'dev',
+            'staging',
+            'marketing',
+            'media',
+            'blog',
+            'help',
+            'docs',
+          ]
+
+          if (RESERVED_SUBDOMAINS.includes(data.subdomain)) {
+            throw new ValidationError({
+              errors: [
+                {
+                  message: `"${data.subdomain}" is a reserved subdomain and cannot be used.`,
+                  path: 'subdomain',
+                },
+              ],
+            })
+          }
         }
 
         return data

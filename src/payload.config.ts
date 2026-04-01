@@ -12,6 +12,8 @@ import { Forms } from './collections/Forms'
 import { FormSubmissions } from './collections/FormSubmissions'
 import { Services } from './collections/Services'
 import { Sites } from './collections/Sites'
+import { MarketingPages } from './collections/MarketingPages'
+import { PlatformSettings } from './globals/PlatformSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -68,7 +70,8 @@ export default buildConfig({
       },
     },
   },
-  collections: [Users, Sites, Media, Pages, Forms, FormSubmissions, Services],
+  collections: [Users, Sites, Media, Pages, Forms, FormSubmissions, Services, MarketingPages],
+  globals: [PlatformSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

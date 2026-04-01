@@ -113,6 +113,15 @@ const LIST_VIEW_CONFIGS: Record<string, ListViewCollectionConfig> = {
   'form-submissions': {
     description: 'View form submission responses',
   },
+  'marketing-pages': {
+    description: 'Platform marketing pages for monocms.app',
+    statusField: 'status',
+    statusConfig: {
+      draft: { label: 'Draft', variant: 'warning' },
+      published: { label: 'Published', variant: 'success' },
+    },
+    editURL: (id: string) => `/admin/collections/marketing-pages/${id}`,
+  },
 }
 
 const STATS_COMPONENTS: Record<string, React.ComponentType> = {
