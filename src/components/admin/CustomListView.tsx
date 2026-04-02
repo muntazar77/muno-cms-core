@@ -613,7 +613,8 @@ export default function CustomListView() {
   const StatsComponent = STATS_COMPONENTS[slug]
 
   // Block native Pages list for non-super-admin: redirect to their Site Pages workspace
-  const userSiteId = user && 'siteId' in user ? String((user as { siteId?: string }).siteId ?? '') : ''
+  const userSiteId =
+    user && 'siteId' in user ? String((user as { siteId?: string }).siteId ?? '') : ''
   React.useEffect(() => {
     if (slug === 'pages' && userRole !== 'super-admin') {
       // Resolve the client's site doc ID so we can redirect to the workspace

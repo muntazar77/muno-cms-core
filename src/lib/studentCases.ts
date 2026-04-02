@@ -57,8 +57,7 @@ export function extractStudentCaseSeed(data: unknown): StudentCaseSeed {
     'unknown@example.com'
 
   const phone =
-    findByKeys(data, new Set(['phone', 'phonenumber', 'mobile', 'whatsapp', 'contactnumber'])) ??
-    ''
+    findByKeys(data, new Set(['phone', 'phonenumber', 'mobile', 'whatsapp', 'contactnumber'])) ?? ''
 
   const nationality =
     findByKeys(data, new Set(['nationality', 'citizenship', 'countryofcitizenship'])) ?? ''

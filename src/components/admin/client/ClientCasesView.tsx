@@ -35,9 +35,7 @@ function notDeletedWhere() {
 
 function pretty(value?: string | null): string {
   if (!value) return '—'
-  return value
-    .replace(/[-_]/g, ' ')
-    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+  return value.replace(/[-_]/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
 function formatDate(value?: string | null): string {
@@ -133,7 +131,9 @@ export default async function ClientCasesView(props: DocumentViewServerProps) {
           aside={
             <Card className="rounded-3xl border-(--cms-card-border)">
               <CardHeader>
-                <CardTitle className="text-sm font-semibold text-(--cms-text)">Operations Focus</CardTitle>
+                <CardTitle className="text-sm font-semibold text-(--cms-text)">
+                  Operations Focus
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-(--cms-text-secondary)">
                 <p className="inline-flex items-center gap-2">
@@ -205,8 +205,12 @@ export default async function ClientCasesView(props: DocumentViewServerProps) {
                 >
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="font-semibold text-(--cms-text)">{item.fullName || 'Untitled Case'}</p>
-                      <p className="mt-0.5 text-xs text-(--cms-text-secondary)">{item.email || '—'}</p>
+                      <p className="font-semibold text-(--cms-text)">
+                        {item.fullName || 'Untitled Case'}
+                      </p>
+                      <p className="mt-0.5 text-xs text-(--cms-text-secondary)">
+                        {item.email || '—'}
+                      </p>
                     </div>
                     <div className="text-xs text-(--cms-text-secondary)">
                       {pretty(item.currentStage)} • {pretty(item.status)} • {pretty(item.priority)}

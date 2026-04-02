@@ -9,7 +9,8 @@ const pillars = [
   {
     icon: ShieldCheck,
     title: 'Role-Safe Access',
-    description: 'Strict platform and site-scoped permissions keep every tenant workspace isolated.',
+    description:
+      'Strict platform and site-scoped permissions keep every tenant workspace isolated.',
   },
   {
     icon: Sparkles,
@@ -25,8 +26,8 @@ export default function MonoLoginShell() {
         <p className="mono-login-shell__eyebrow">MonoCMS Platform</p>
         <h2 className="mono-login-shell__title">Operate every tenant site with confidence.</h2>
         <p className="mono-login-shell__subtitle">
-          A single command interface for platform operators, client workspaces, content delivery, and
-          student-case execution workflows.
+          A single command interface for platform operators, client workspaces, content delivery,
+          and student-case execution workflows.
         </p>
 
         <div className="mono-login-shell__list">

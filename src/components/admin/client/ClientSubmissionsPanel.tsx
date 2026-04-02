@@ -252,7 +252,9 @@ export default function ClientSubmissionsPanel({ submissions }: ClientSubmission
                         </Button>
                       </Link>
                       {item.existingCaseId ? (
-                        <Link href={`/admin/collections/student-cases/${item.existingCaseId}/workspace`}>
+                        <Link
+                          href={`/admin/collections/student-cases/${item.existingCaseId}/workspace`}
+                        >
                           <Button size="sm" className="h-10 rounded-xl px-3">
                             Open Case
                           </Button>

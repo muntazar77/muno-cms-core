@@ -27,7 +27,11 @@ export default function UserActions() {
       ? (user.avatar as string | { url?: string | null } | null)
       : null
   const avatarUrl =
-    avatar && typeof avatar === 'object' ? (avatar.url ?? null) : typeof avatar === 'string' ? avatar : null
+    avatar && typeof avatar === 'object'
+      ? (avatar.url ?? null)
+      : typeof avatar === 'string'
+        ? avatar
+        : null
 
   async function handleLogout() {
     if (isLoggingOut) return
@@ -70,8 +74,12 @@ export default function UserActions() {
           className="w-60 rounded-xl border-(--cms-border) bg-(--cms-card-bg) p-2 shadow-lg"
         >
           <DropdownMenuLabel className="px-2 py-1.5">
-            <p className="truncate text-xs font-semibold text-(--cms-text)">{fullName || 'Account'}</p>
-            <p className="truncate text-[11px] font-normal text-(--cms-text-muted)">{email || '—'}</p>
+            <p className="truncate text-xs font-semibold text-(--cms-text)">
+              {fullName || 'Account'}
+            </p>
+            <p className="truncate text-[11px] font-normal text-(--cms-text-muted)">
+              {email || '—'}
+            </p>
           </DropdownMenuLabel>
           <DropdownMenuSeparator className="my-1 bg-(--cms-border-subtle)" />
           <DropdownMenuItem

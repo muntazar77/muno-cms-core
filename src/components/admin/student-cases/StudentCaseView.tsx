@@ -42,9 +42,7 @@ interface StudentCaseDoc {
 
 function pretty(value?: string | null): string {
   if (!value) return '—'
-  return value
-    .replace(/[-_]/g, ' ')
-    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+  return value.replace(/[-_]/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
 
 function formatDate(value?: string | null): string {
@@ -172,7 +170,9 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                       key={`task-${idx}`}
                       className="rounded-xl border border-(--cms-border) bg-(--cms-bg-muted) p-3 text-sm"
                     >
-                      <p className="font-medium text-(--cms-text)">{task.title || 'Untitled task'}</p>
+                      <p className="font-medium text-(--cms-text)">
+                        {task.title || 'Untitled task'}
+                      </p>
                       <p className="mt-1 text-(--cms-text-secondary)">
                         {pretty(task.status)} • Due {formatDate(task.dueDate)}
                       </p>
@@ -222,7 +222,9 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                 </div>
                 <div className="rounded-xl border border-(--cms-border) bg-(--cms-bg-muted) p-3">
                   <p className="text-(--cms-text-muted)">Due</p>
-                  <p className="mt-1 font-medium text-(--cms-text)">{formatDate(doc.nextActionDate)}</p>
+                  <p className="mt-1 font-medium text-(--cms-text)">
+                    {formatDate(doc.nextActionDate)}
+                  </p>
                 </div>
               </CardContent>
             </Card>
