@@ -1,8 +1,9 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Twitter, Linkedin, Github, Instagram, Youtube } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { PlatformSetting } from '@/payload-types'
+import type { Media, PlatformSetting } from '@/payload-types'
 
 interface MarketingFooterProps {
   settings: PlatformSetting | null
@@ -15,7 +16,11 @@ type FooterColumn = {
 }
 
 type LegalLink = { label: string; url: string; id?: string | null }
-type SocialLink = { platform: 'twitter' | 'linkedin' | 'github' | 'instagram' | 'youtube'; url: string; id?: string | null }
+type SocialLink = {
+  platform: 'twitter' | 'linkedin' | 'github' | 'instagram' | 'youtube'
+  url: string
+  id?: string | null
+}
 
 const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   twitter: Twitter,
@@ -33,6 +38,8 @@ const ANNOUNCEMENT_VARIANTS: Record<string, string> = {
 
 export function MarketingFooter({ settings }: MarketingFooterProps) {
   const productName = settings?.productName || 'MonoCMS'
+  const logo =
+    typeof settings?.logo === 'object' && settings.logo !== null ? (settings.logo as Media) : null
   const tagline = settings?.tagline || 'Build & manage multiple websites from one dashboard.'
   const footerColumns = (settings?.footerColumns as FooterColumn[] | null) ?? []
   const legalLinks = (settings?.footerLegalLinks as LegalLink[] | null) ?? []
@@ -66,7 +73,6 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
 
       <footer className="border-t border-(--fe-border) bg-(--fe-surface-primary)">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-
           {/* Top row: brand + columns */}
           <div
             className={cn(
@@ -82,14 +88,24 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
                 href="/"
                 className="flex items-center gap-2 font-bold text-base text-(--fe-text-primary) hover:opacity-90 transition-opacity"
               >
-                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-(--fe-primary) text-white text-xs font-black shrink-0">
-                  M
-                </span>
+                {logo?.url ? (
+                  <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-md bg-(--fe-surface-secondary) shrink-0">
+                    <Image
+                      src={logo.url}
+                      alt={productName}
+                      width={28}
+                      height={28}
+                      className="h-full w-full object-cover"
+                    />
+                  </span>
+                ) : (
+                  <span className="flex h-7 w-7 items-center justify-center rounded-md bg-(--fe-primary) text-white text-xs font-black shrink-0">
+                    M
+                  </span>
+                )}
                 <span>{productName}</span>
               </Link>
-              <p className="mt-3 text-sm text-(--fe-text-secondary) leading-relaxed">
-                {tagline}
-              </p>
+              <p className="mt-3 text-sm text-(--fe-text-secondary) leading-relaxed">{tagline}</p>
 
               {/* Social links */}
               {socialLinks.length > 0 && (

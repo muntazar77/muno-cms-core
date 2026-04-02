@@ -2,6 +2,7 @@ import type { CollectionConfig, CollectionAfterChangeHook, Field } from 'payload
 import { ValidationError } from 'payload'
 import { access } from '@/access'
 import { softDeleteFields, softDeleteHooks } from '@/utilities/softDelete'
+import { RESERVED_TENANT_IDENTIFIERS } from '@/lib/routing'
 
 /**
  * After a site is saved, keep the owner's user.siteId in sync.
@@ -196,6 +197,21 @@ export const Sites: CollectionConfig = {
 
         if (typeof data.siteId === 'string') {
           data.siteId = data.siteId.trim().toLowerCase().replace(/\s+/g, '-')
+
+          if (
+            RESERVED_TENANT_IDENTIFIERS.includes(
+              data.siteId as (typeof RESERVED_TENANT_IDENTIFIERS)[number],
+            )
+          ) {
+            throw new ValidationError({
+              errors: [
+                {
+                  message: `"${data.siteId}" is reserved and cannot be used as a site identifier.`,
+                  path: 'siteId',
+                },
+              ],
+            })
+          }
         }
 
         if (typeof data.domain === 'string') {
@@ -209,25 +225,11 @@ export const Sites: CollectionConfig = {
         if (typeof data.subdomain === 'string') {
           data.subdomain = data.subdomain.trim().toLowerCase()
 
-          const RESERVED_SUBDOMAINS = [
-            'www',
-            'admin',
-            'app',
-            'api',
-            'cms',
-            'mail',
-            'support',
-            'status',
-            'dev',
-            'staging',
-            'marketing',
-            'media',
-            'blog',
-            'help',
-            'docs',
-          ]
-
-          if (RESERVED_SUBDOMAINS.includes(data.subdomain)) {
+          if (
+            RESERVED_TENANT_IDENTIFIERS.includes(
+              data.subdomain as (typeof RESERVED_TENANT_IDENTIFIERS)[number],
+            )
+          ) {
             throw new ValidationError({
               errors: [
                 {

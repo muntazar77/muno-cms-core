@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { PlatformSetting } from '@/payload-types'
+import type { Media, PlatformSetting } from '@/payload-types'
 
 interface MarketingNavProps {
   settings: PlatformSetting | null
@@ -29,6 +30,8 @@ export function MarketingNav({ settings }: MarketingNavProps) {
   }, [])
 
   const productName = settings?.productName || 'MonoCMS'
+  const logo =
+    typeof settings?.logo === 'object' && settings.logo !== null ? (settings.logo as Media) : null
   const navLinks = (settings?.navLinks as NavLink[] | null) ?? []
   const cta = settings?.navCta
   const ctaLabel = cta?.label || 'Get Started'
@@ -50,9 +53,21 @@ export function MarketingNav({ settings }: MarketingNavProps) {
           href="/"
           className="flex items-center gap-2 font-bold text-lg text-(--fe-text-primary) hover:opacity-90 transition-opacity"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-(--fe-primary) text-white text-sm font-black shrink-0">
-            M
-          </span>
+          {logo?.url ? (
+            <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-(--fe-surface-secondary) shrink-0">
+              <Image
+                src={logo.url}
+                alt={productName}
+                width={32}
+                height={32}
+                className="h-full w-full object-cover"
+              />
+            </span>
+          ) : (
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-(--fe-primary) text-white text-sm font-black shrink-0">
+              M
+            </span>
+          )}
           <span>{productName}</span>
         </Link>
 

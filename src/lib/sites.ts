@@ -1,6 +1,12 @@
 import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import {
+  extractPathModeSiteSlug,
+  extractSubdomainFromHost,
+  isPlatformHost,
+  normalizeHost,
+} from '@/lib/routing'
 
 interface SiteLike {
   id: number | string
@@ -38,65 +44,81 @@ interface SiteLike {
   socialLinks?: unknown[] | null
 }
 
-function normalizeHost(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\//, '')
-    .replace(/:\d+$/, '')
-}
-
-function extractSubdomain(host: string): string | null {
-  const normalized = normalizeHost(host)
-  if (!normalized) return null
-  if (normalized.endsWith('.localhost')) return normalized.replace('.localhost', '')
-
-  const parts = normalized.split('.')
-  return parts.length > 2 ? parts[0] : null
-}
-
 export function getSiteDomain(site: Pick<SiteLike, 'domain' | 'subdomain'>): string {
   if (site.domain) return site.domain
   if (site.subdomain) return `${site.subdomain}.localhost`
   return 'Unassigned domain'
 }
 
-export async function getCurrentSite(depth = 1): Promise<SiteLike | null> {
-  const payload = await getPayload({ config })
-  const headerStore = await headers()
-  const rawHost = headerStore.get('x-forwarded-host') || headerStore.get('host') || ''
-  const host = normalizeHost(rawHost)
-  const subdomain = extractSubdomain(host)
-
-  if (host) {
-    const currentSite = await payload.find({
-      collection: 'sites',
-      depth,
-      limit: 1,
-      where: {
-        or: [
-          { domain: { equals: host } },
-          ...(subdomain ? [{ subdomain: { equals: subdomain } }] : []),
-        ],
-      },
-    })
-
-    if (currentSite.docs[0]) {
-      return currentSite.docs[0] as SiteLike
-    }
+function publicSiteStatusConstraint() {
+  return {
+    and: [
+      { or: [{ status: { equals: 'active' } }, { status: { equals: 'maintenance' } }] },
+      { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
+    ],
   }
+}
 
-  const fallbackSite = await payload.find({
+export async function resolveSiteByHost(host: string, depth = 1): Promise<SiteLike | null> {
+  const normalizedHost = normalizeHost(host)
+  if (!normalizedHost || isPlatformHost(normalizedHost)) return null
+
+  const payload = await getPayload({ config })
+  const subdomain = extractSubdomainFromHost(normalizedHost)
+
+  const result = await payload.find({
     collection: 'sites',
     depth,
     limit: 1,
-    sort: '-updatedAt',
     where: {
-      or: [{ status: { equals: 'active' } }, { status: { equals: 'maintenance' } }],
+      and: [
+        publicSiteStatusConstraint(),
+        {
+          or: [
+            { domain: { equals: normalizedHost } },
+            ...(subdomain ? [{ subdomain: { equals: subdomain } }] : []),
+          ],
+        },
+      ],
     },
   })
 
-  return (fallbackSite.docs[0] as SiteLike | undefined) ?? null
+  return (result.docs[0] as SiteLike | undefined) ?? null
+}
+
+export async function resolveSiteBySiteSlug(siteSlug: string, depth = 1): Promise<SiteLike | null> {
+  const normalizedSlug = siteSlug.trim().toLowerCase()
+  if (!normalizedSlug) return null
+
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'sites',
+    depth,
+    limit: 1,
+    where: {
+      and: [
+        publicSiteStatusConstraint(),
+        {
+          siteId: { equals: normalizedSlug },
+        },
+      ],
+    },
+  })
+
+  return (result.docs[0] as SiteLike | undefined) ?? null
+}
+
+export async function getCurrentSite(depth = 1): Promise<SiteLike | null> {
+  const headerStore = await headers()
+  const pathname = headerStore.get('x-pathname') || headerStore.get('next-url') || ''
+  const pathSiteSlug = pathname ? extractPathModeSiteSlug(pathname) : null
+
+  if (pathSiteSlug) {
+    return resolveSiteBySiteSlug(pathSiteSlug, depth)
+  }
+
+  const rawHost = headerStore.get('x-forwarded-host') || headerStore.get('host') || ''
+  return resolveSiteByHost(rawHost, depth)
 }
 
 export async function getSiteBySiteId(siteId: string, depth = 1): Promise<SiteLike | null> {

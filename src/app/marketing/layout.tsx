@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { MarketingNav } from '@/components/marketing/MarketingNav'
 import { MarketingFooter } from '@/components/marketing/MarketingFooter'
-import type { PlatformSetting } from '@/payload-types'
+import type { Media, PlatformSetting } from '@/payload-types'
 import '../(frontend)/styles.css'
 
 export const metadata: Metadata = {
@@ -31,10 +31,15 @@ async function getPlatformSettings(): Promise<PlatformSetting | null> {
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
   const settings: PlatformSetting | null = await getPlatformSettings()
+  const favicon =
+    typeof settings?.favicon === 'object' && settings.favicon !== null
+      ? (settings.favicon as Media)
+      : null
 
   return (
     <html lang="en">
       <head>
+        {favicon?.url && <link rel="icon" href={favicon.url} />}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

@@ -1,16 +1,20 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { getPage } from '@/lib/getPage'
 import { RenderBlocks } from '@/components/RenderBlocks'
 import { Header } from '@/components/frontend/Header'
 import { Footer } from '@/components/frontend/Footer'
 import type { Media } from '@/payload-types'
-import Link from 'next/link'
+import { getCurrentSite } from '@/lib/sites'
 
 export const revalidate = 60
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPage('home')
-  if (!page) return { title: 'Home' }
+  const site = await getCurrentSite(0)
+  if (!site?.siteId) return { title: 'Site Not Found' }
+
+  const page = await getPage('home', site.siteId)
+  if (!page) return { title: site.defaultMetaTitle || site.siteName || 'Site Home' }
 
   const ogImage = typeof page.meta?.image === 'object' ? (page.meta.image as Media)?.url : undefined
 
@@ -22,40 +26,22 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const page = await getPage('home')
+  const site = await getCurrentSite(1)
+  if (!site?.siteId) notFound()
 
-  if (!page) {
-    return (
-      <>
-        <Header />
-        <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-          <h1 className="fe-heading-display">Welcome to Muno CMS</h1>
-          <p className="fe-subheading mt-4">
-            Create a page with slug &quot;home&quot; in the{' '}
-            <Link
-              href="/admin/collections/pages/create"
-              className="font-medium text-[var(--fe-primary)] underline underline-offset-4 hover:text-[var(--fe-primary-dark)]"
-            >
-              admin panel
-            </Link>{' '}
-            to get started.
-          </p>
-        </div>
-        <Footer />
-      </>
-    )
-  }
+  const page = await getPage('home', site.siteId)
+  if (!page) notFound()
 
   const headerVariant = page.branding?.headerVariant ?? 'default'
   const footerVariant = page.branding?.footerVariant ?? 'default'
 
   return (
     <>
-      <Header variant={headerVariant} />
+      <Header variant={headerVariant} site={site} />
       <main>
         <RenderBlocks blocks={page.blocks} siteId={page.siteId ?? undefined} />
       </main>
-      <Footer variant={footerVariant} />
+      <Footer variant={footerVariant} site={site} />
     </>
   )
 }

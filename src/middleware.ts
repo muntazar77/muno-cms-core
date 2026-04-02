@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { ROOT_DOMAIN, isPlatformHost, normalizeHost } from '@/lib/routing'
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-
-const ROOT_DOMAIN = process.env.ROOT_DOMAIN || 'monocms.app'
 
 /**
  * Paths that bypass marketing rewrites entirely.
@@ -13,6 +12,7 @@ const BYPASS_PREFIXES = [
   '/admin',
   '/api',
   '/_next',
+  '/preview',
   '/my-route',
   '/favicon.ico',
   '/robots.txt',
@@ -21,17 +21,14 @@ const BYPASS_PREFIXES = [
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function normalizeHost(req: NextRequest): string {
+function getRequestHost(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-host')
   const host = forwarded ?? req.headers.get('host') ?? ''
-  return host
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\//, '')
-    .replace(/:\d+$/, '')
+  return normalizeHost(host)
 }
 
 function shouldBypass(pathname: string): boolean {
+  if (pathname === '/s' || pathname.startsWith('/s/')) return true
   return BYPASS_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 }
 
@@ -39,11 +36,17 @@ function shouldBypass(pathname: string): boolean {
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-  const host = normalizeHost(req)
+  const host = getRequestHost(req)
+  const requestHeaders = new Headers(req.headers)
+  requestHeaders.set('x-pathname', pathname)
 
   // Always pass through admin/API/static paths
   if (shouldBypass(pathname)) {
-    return NextResponse.next()
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    })
   }
 
   // www → root redirect (301, preserves path)
@@ -56,17 +59,25 @@ export function middleware(req: NextRequest) {
   }
 
   // Root domain → rewrite to /marketing/* (URL bar stays clean)
-  if (host === ROOT_DOMAIN) {
+  if (isPlatformHost(host) && host !== `www.${ROOT_DOMAIN}`) {
     const url = req.nextUrl.clone()
     // Rewrite / → /marketing, /pricing → /marketing/pricing, etc.
     url.pathname = '/marketing' + (pathname === '/' ? '' : pathname)
-    return NextResponse.rewrite(url)
+    return NextResponse.rewrite(url, {
+      request: {
+        headers: requestHeaders,
+      },
+    })
   }
 
   // All other hosts (tenant subdomains + custom domains) → pass through unchanged.
   // The tenant resolution is handled at render time by getCurrentSite() in each
   // Server Component.
-  return NextResponse.next()
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  })
 }
 
 // ─── Matcher ──────────────────────────────────────────────────────────────────

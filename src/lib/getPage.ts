@@ -12,6 +12,7 @@ import { getCurrentSite } from '@/lib/sites'
 export async function getPage(slug: string, overrideSiteId?: string): Promise<Page | null> {
   const payload = await getPayload({ config })
   const siteId = overrideSiteId ?? (await getCurrentSite(0))?.siteId
+  if (!siteId) return null
   const normalizedSlug = slug.replace(/^\/+/, '')
   const where: Where = {
     and: [
@@ -20,7 +21,7 @@ export async function getPage(slug: string, overrideSiteId?: string): Promise<Pa
       {
         or: [{ slug: { equals: normalizedSlug } }, { slug: { equals: `/${normalizedSlug}` } }],
       },
-      ...(siteId ? [{ siteId: { equals: siteId } }] : []),
+      { siteId: { equals: siteId } },
     ],
   }
   const result = await payload.find({
@@ -38,13 +39,14 @@ export async function getPage(slug: string, overrideSiteId?: string): Promise<Pa
 export async function getAllPageSlugs(): Promise<string[]> {
   const payload = await getPayload({ config })
   const currentSite = await getCurrentSite(0)
+  if (!currentSite?.siteId) return []
   const result = await payload.find({
     collection: 'pages',
     where: {
       and: [
         { status: { equals: 'published' } },
         { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] },
-        ...(currentSite?.siteId ? [{ siteId: { equals: currentSite.siteId } }] : []),
+        { siteId: { equals: currentSite.siteId } },
       ],
     },
     limit: 1000,

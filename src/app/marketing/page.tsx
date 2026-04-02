@@ -7,6 +7,11 @@ import type { MarketingPage, PlatformSetting, Media } from '@/payload-types'
 
 export const revalidate = 60
 
+function hasRenderableBlocks(page: MarketingPage | null): boolean {
+  if (!page) return false
+  return Array.isArray(page.blocks) && page.blocks.length > 0
+}
+
 async function getHomePage(): Promise<MarketingPage | null> {
   try {
     const payload = await getPayload({ config })
@@ -60,9 +65,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function MarketingHomePage() {
   const page = await getHomePage()
 
-  if (!page) {
+  if (!hasRenderableBlocks(page)) {
     return <MarketingHomeDemoContent />
   }
 
-  return <RenderBlocks blocks={page.blocks} />
+  return <RenderBlocks blocks={page?.blocks ?? []} />
 }

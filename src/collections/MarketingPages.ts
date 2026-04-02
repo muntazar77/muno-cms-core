@@ -24,6 +24,7 @@ import { access } from '@/access'
 export const MarketingPages: CollectionConfig = {
   slug: 'marketing-pages',
   admin: {
+    group: 'Platform',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'isHome', 'updatedAt'],
     description: 'Platform marketing pages for monocms.app (super-admin only)',

@@ -5,6 +5,7 @@ import { RenderBlocks } from '@/components/RenderBlocks'
 import { Header } from '@/components/frontend/Header'
 import { Footer } from '@/components/frontend/Footer'
 import type { Media } from '@/payload-types'
+import { getCurrentSite } from '@/lib/sites'
 
 export const revalidate = 60
 
@@ -18,7 +19,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const page = await getPage(slug)
+  const site = await getCurrentSite(0)
+  if (!site?.siteId) return {}
+
+  const page = await getPage(slug, site.siteId)
   if (!page) return {}
 
   const ogImage = typeof page.meta?.image === 'object' ? (page.meta.image as Media)?.url : undefined
@@ -32,7 +36,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function DynamicPage({ params }: PageProps) {
   const { slug } = await params
-  const page = await getPage(slug)
+  const site = await getCurrentSite(1)
+  if (!site?.siteId) notFound()
+
+  const page = await getPage(slug, site.siteId)
 
   if (!page) notFound()
 
@@ -41,11 +48,11 @@ export default async function DynamicPage({ params }: PageProps) {
 
   return (
     <>
-      <Header variant={headerVariant} />
+      <Header variant={headerVariant} site={site} />
       <main>
         <RenderBlocks blocks={page.blocks} siteId={page.siteId ?? undefined} />
       </main>
-      <Footer variant={footerVariant} />
+      <Footer variant={footerVariant} site={site} />
     </>
   )
 }
