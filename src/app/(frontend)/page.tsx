@@ -31,9 +31,7 @@ export default async function HomePage() {
   const site = await getCurrentSite(1)
   if (!site?.siteId) {
     const headerStore = await headers()
-    const host = normalizeHost(
-      headerStore.get('x-forwarded-host') || headerStore.get('host') || '',
-    )
+    const host = normalizeHost(headerStore.get('x-forwarded-host') || headerStore.get('host') || '')
     const fromMiddleware = headerStore.get('x-platform-host') === 'true'
 
     if (fromMiddleware || isPlatformHost(host)) {

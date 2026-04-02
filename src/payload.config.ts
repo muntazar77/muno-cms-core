@@ -41,6 +41,7 @@ export default buildConfig({
       // frame #1 with no visible flash on page reload.
       header: ['/components/admin/ClientShellInit'],
       beforeLogin: [
+        '/components/admin/login/LoginFormHeader',
         '/components/admin/login/LoginSubmitEnhancer',
         '/components/admin/login/MonoLoginShell',
       ],

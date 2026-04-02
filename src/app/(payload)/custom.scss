@@ -402,44 +402,31 @@ html {
   box-shadow: 0 24px 70px rgba(16, 35, 71, 0.16);
 }
 
+/* Hidden — LoginFormHeader component provides branding, title, and subtitle */
 .template-minimal .template-minimal__content .login__brand {
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: none !important;
 }
-
-.template-minimal .template-minimal__content .login__brand svg,
-.template-minimal .template-minimal__content .login__brand img {
+.template-minimal .template-minimal__content .login__title {
+  display: none !important;
+}
+/* Suppress Payload's static description paragraph above the form */
+.template-minimal .template-minimal__content .login > p {
   display: none !important;
 }
 
-.template-minimal .template-minimal__content .login__brand::before {
-  content: 'MonoCMS';
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(24, 95, 255, 0.24);
-  background: rgba(24, 95, 255, 0.08);
-  color: #1f4ed8;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+/* ── Login input field polish ─────────────────────────────────────────── */
+.template-minimal .template-minimal__content .field-type input[type='email'],
+.template-minimal .template-minimal__content .field-type input[type='password'],
+.template-minimal .template-minimal__content .field-type input[type='text'] {
+  border-radius: 12px !important;
+  height: 46px !important;
+  font-size: 14px !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
-
-.template-minimal .template-minimal__content .login__title {
-  font-size: 30px !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.03em;
-  color: #102347 !important;
-}
-
-.template-minimal .template-minimal__content .login p {
-  color: #4b5f83 !important;
+.template-minimal .template-minimal__content .field-type input[type='email']:focus,
+.template-minimal .template-minimal__content .field-type input[type='password']:focus,
+.template-minimal .template-minimal__content .field-type input[type='text']:focus {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
 }
 
 .template-minimal .template-minimal__content .field-type,
@@ -473,6 +460,68 @@ html {
   justify-content: center;
   background: inherit;
   border-radius: inherit;
+}
+
+/* ── MonoCMS login form header component ─────────────────────────────── */
+.mono-login-header {
+  margin-bottom: 22px;
+}
+
+.mono-login-header__lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.mono-login-header__mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(135deg, #1f4ed8 0%, #3b82f6 100%);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+  flex-shrink: 0;
+  letter-spacing: -0.01em;
+}
+
+.mono-login-header__brand {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.mono-login-header__platform {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6b7a99;
+  margin: 2px 0 0;
+}
+
+.mono-login-header__title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0 0 4px;
+}
+
+.mono-login-header__sub {
+  font-size: 13px;
+  color: #6b7a99;
+  line-height: 1.5;
+  margin: 0 0 2px;
 }
 
 .mono-login-shell {
@@ -949,3 +998,112 @@ html {
     align-items: flex-start;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * Phase 6 — Array / Row / Select / Tab field polish
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Array field rows ────────────────────────────────────────────────── */
+.array-field__draggable-row,
+.array-field__draggable {
+  border: 1px solid var(--cms-card-border) !important;
+  border-radius: 12px !important;
+  background: var(--cms-card-bg) !important;
+  margin-bottom: 8px !important;
+  overflow: hidden !important;
+}
+
+/* Drag handle subtle */
+.array-field__row-handle,
+.array-field__drag-handle,
+[class*='row-handle'],
+[class*='drag-handle'] {
+  color: var(--cms-text-muted) !important;
+  opacity: 0.5 !important;
+  transition: opacity 0.15s !important;
+}
+
+[class*='drag-handle']:hover,
+[class*='row-handle']:hover {
+  opacity: 1 !important;
+}
+
+/* Array "Add Row" button at bottom of array */
+.array-actions,
+.array-field > .btn,
+.array-field__add-row {
+  margin-top: 6px !important;
+}
+
+/* ── Tabs field (Profile/Workflow/etc. in collection editor) ──────────── */
+.tabs-field__tabs {
+  gap: 4px !important;
+  padding-bottom: 2px !important;
+}
+
+.tabs-field__tab-button {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 8px 14px !important;
+  color: var(--cms-text-secondary) !important;
+  border: none !important;
+  transition: background 0.15s, color 0.15s !important;
+}
+
+.tabs-field__tab-button--active {
+  background: var(--cms-primary-soft) !important;
+  color: var(--cms-primary-text) !important;
+  font-weight: 600 !important;
+}
+
+.tabs-field__tab-button:not(.tabs-field__tab-button--active):hover {
+  background: var(--cms-bg-muted) !important;
+  color: var(--cms-text) !important;
+}
+
+/* Tab underline — remove Payload default line, we use background instead */
+.tabs-field__tab-button::after {
+  display: none !important;
+}
+
+/* ── Row field layout spacing ────────────────────────────────────────── */
+.row__fields {
+  gap: 16px !important;
+}
+
+/* ── React-Select multi-value chips (relationship fields) ────────────── */
+.rs__multi-value {
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  background: var(--cms-primary-soft) !important;
+  color: var(--cms-primary-text) !important;
+}
+
+.rs__multi-value__label {
+  color: var(--cms-primary-text) !important;
+  font-size: 12px !important;
+  padding: 2px 6px !important;
+}
+
+.rs__multi-value__remove {
+  border-radius: 0 6px 6px 0 !important;
+  color: var(--cms-primary-text) !important;
+}
+
+.rs__multi-value__remove:hover {
+  background: var(--cms-danger-soft) !important;
+  color: var(--cms-danger-text) !important;
+}
+
+/* ── Select field option hover (react-select menu) ───────────────────── */
+.rs__option--is-focused {
+  background: var(--cms-primary-soft) !important;
+  color: var(--cms-primary-text) !important;
+}
+
+.rs__option--is-selected {
+  background: var(--cms-primary) !important;
+  color: #fff !important;
+}
+

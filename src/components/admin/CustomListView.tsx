@@ -30,6 +30,7 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
+  Check,
   Plus,
   FileText,
   Globe,
@@ -37,6 +38,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -78,6 +80,12 @@ interface StatusBadgeDef {
   variant: 'success' | 'warning' | 'danger' | 'info' | 'default'
 }
 
+interface FilterDef {
+  field: string
+  label: string
+  options: Array<{ label: string; value: string }>
+}
+
 interface ListViewCollectionConfig {
   description?: string
   statusField?: string
@@ -85,6 +93,7 @@ interface ListViewCollectionConfig {
   columnLabels?: Record<string, string>
   columnType?: Record<string, 'email' | 'role' | 'site'>
   editURL?: (id: string) => string
+  filters?: FilterDef[]
 }
 
 const LIST_VIEW_CONFIGS: Record<string, ListViewCollectionConfig> = {
@@ -148,6 +157,41 @@ const LIST_VIEW_CONFIGS: Record<string, ListViewCollectionConfig> = {
       siteId: 'site',
     },
     editURL: (id: string) => `/admin/collections/student-cases/${id}/workspace`,
+    filters: [
+      {
+        field: 'currentStage',
+        label: 'Stage',
+        options: [
+          { label: 'Lead', value: 'lead' },
+          { label: 'Consultation', value: 'consultation' },
+          { label: 'Application', value: 'application' },
+          { label: 'Visa', value: 'visa' },
+          { label: 'Enrolled', value: 'enrolled' },
+        ],
+      },
+      {
+        field: 'status',
+        label: 'Status',
+        options: [
+          { label: 'New', value: 'new' },
+          { label: 'In Progress', value: 'in-progress' },
+          { label: 'Waiting Student', value: 'waiting-student' },
+          { label: 'Waiting Institution', value: 'waiting-institution' },
+          { label: 'Completed', value: 'completed' },
+          { label: 'Closed Lost', value: 'closed-lost' },
+        ],
+      },
+      {
+        field: 'priority',
+        label: 'Priority',
+        options: [
+          { label: 'Low', value: 'low' },
+          { label: 'Medium', value: 'medium' },
+          { label: 'High', value: 'high' },
+          { label: 'Urgent', value: 'urgent' },
+        ],
+      },
+    ],
   },
 }
 
@@ -562,10 +606,105 @@ function ActionMenu({
   )
 }
 
+// ─── Filter Bar ──────────────────────────────────────────────────
+
+function FilterBar({
+  filters,
+  activeFilters,
+  onFilterChange,
+  onClearAll,
+}: {
+  filters: FilterDef[]
+  activeFilters: Record<string, string>
+  onFilterChange: (field: string, value: string | null) => void
+  onClearAll: () => void
+}) {
+  const hasActive = Object.values(activeFilters).some(Boolean)
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {filters.map((filter) => {
+        const activeValue = activeFilters[filter.field]
+        const activeOption = filter.options.find((o) => o.value === activeValue)
+        return (
+          <DropdownMenu key={filter.field}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  'inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium outline-none transition-colors',
+                  activeValue
+                    ? 'border-(--cms-primary-soft) bg-(--cms-primary-soft) text-(--cms-primary-text)'
+                    : 'border-(--cms-border) bg-(--cms-bg) text-(--cms-text-secondary) hover:bg-(--cms-bg-muted)',
+                )}
+              >
+                {filter.label}
+                {activeOption ? (
+                  <>
+                    <span className="opacity-40">·</span>
+                    <span className="font-semibold">{activeOption.label}</span>
+                    <X
+                      className="size-3 opacity-60"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onFilterChange(filter.field, null)
+                      }}
+                    />
+                  </>
+                ) : (
+                  <ChevronDown className="size-3 opacity-50" />
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="w-44 rounded-xl border-(--cms-border) bg-(--cms-card-bg) shadow-lg"
+            >
+              <DropdownMenuItem
+                className={cn('rounded-lg text-xs text-(--cms-text-secondary)', !activeValue && 'font-medium text-(--cms-text)')}
+                onSelect={() => onFilterChange(filter.field, null)}
+              >
+                All
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-(--cms-border-subtle)" />
+              {filter.options.map((option) => (
+                <DropdownMenuItem
+                  key={option.value}
+                  className={cn(
+                    'rounded-lg text-xs',
+                    activeValue === option.value
+                      ? 'font-semibold text-(--cms-primary)'
+                      : 'text-(--cms-text-secondary)',
+                  )}
+                  onSelect={() => onFilterChange(filter.field, option.value)}
+                >
+                  {option.label}
+                  {activeValue === option.value && (
+                    <Check className="ml-auto size-3.5" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      })}
+      {hasActive && (
+        <button
+          type="button"
+          onClick={onClearAll}
+          className="inline-flex h-8 items-center gap-1 rounded-lg border border-(--cms-border) bg-(--cms-bg-muted) px-2.5 text-xs font-medium text-(--cms-text-secondary) transition-colors hover:border-(--cms-danger-soft) hover:bg-(--cms-danger-soft) hover:text-(--cms-danger-text)"
+        >
+          <X className="size-3" />
+          Clear filters
+        </button>
+      )}
+    </div>
+  )
+}
+
 // ─── Main Component ──────────────────────────────────────────────────
 
 export default function CustomListView() {
-  const { data, handleSortChange, handlePageChange } = useListQuery()
+  const { data, handleSortChange, handlePageChange, handleWhereChange } = useListQuery()
   const { config } = useConfig()
   const { user } = useAuth()
   const pathname = usePathname()
@@ -602,6 +741,38 @@ export default function CustomListView() {
     : ['id']
 
   const currentSort = searchParams?.get('sort') ?? ''
+
+  // Filter state — tracks active filter values per field
+  const [activeFilters, setActiveFilters] = React.useState<Record<string, string>>({})
+
+  function applyFilters(updated: Record<string, string>) {
+    const constraints = Object.entries(updated)
+      .filter(([, v]) => Boolean(v))
+      .map(([f, v]) => ({ [f]: { equals: v } }))
+    if (constraints.length === 0) {
+      void handleWhereChange?.({})
+    } else if (constraints.length === 1) {
+      void handleWhereChange?.(constraints[0])
+    } else {
+      void handleWhereChange?.({ and: constraints })
+    }
+  }
+
+  function onFilterChange(field: string, value: string | null) {
+    const updated = { ...activeFilters }
+    if (value === null) {
+      delete updated[field]
+    } else {
+      updated[field] = value
+    }
+    setActiveFilters(updated)
+    applyFilters(updated)
+  }
+
+  function onClearAllFilters() {
+    setActiveFilters({})
+    void handleWhereChange?.({})
+  }
 
   function toggleSort(field: string) {
     void handleSortChange?.(currentSort === field ? `-${field}` : field)
@@ -697,10 +868,21 @@ export default function CustomListView() {
               {isTrashView ? `Deleted ${pluralLabel}` : pluralLabel}
             </h2>
             <p className="mt-0.5 text-[13px] text-(--cms-text-muted)">
-              {`${totalDocs.toLocaleString()} ${totalDocs === 1 ? singularLabel.toLowerCase() : pluralLabel.toLowerCase()}`}
-            </p>
+              {`${totalDocs.toLocaleString()} ${totalDocs === 1 ? singularLabel.toLowerCase() : pluralLabel.toLowerCase()}`}</p>
           </div>
         </div>
+
+        {/* Per-collection filter bar */}
+        {listCfg?.filters && listCfg.filters.length > 0 && (
+          <div className="border-b border-(--cms-border-subtle) px-6 py-3">
+            <FilterBar
+              filters={listCfg.filters}
+              activeFilters={activeFilters}
+              onFilterChange={onFilterChange}
+              onClearAll={onClearAllFilters}
+            />
+          </div>
+        )}
 
         {docs.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-6 py-24 text-center">

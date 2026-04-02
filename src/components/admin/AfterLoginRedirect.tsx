@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth, useConfig } from '@payloadcms/ui'
 import { useRouter } from 'next/navigation'
 
@@ -8,30 +8,30 @@ export default function AfterLoginRedirect() {
   const { user } = useAuth()
   const { config } = useConfig()
   const router = useRouter()
-  const [redirecting, setRedirecting] = useState(false)
+  // useRef so toggling this never causes an effect cleanup/re-run cycle
+  const hasRedirected = useRef(false)
+  const [showOverlay, setShowOverlay] = useState(false)
 
   useEffect(() => {
-    if (!user || redirecting) return
+    if (!user || hasRedirected.current) return
 
     const role = 'role' in user ? String((user as { role?: string }).role ?? '') : ''
     const siteId = 'siteId' in user ? String((user as { siteId?: string }).siteId ?? '') : ''
 
     if (role === 'super-admin') {
-      setRedirecting(true)
-      const timeout = window.setTimeout(() => {
+      hasRedirected.current = true
+      setShowOverlay(true)
+      window.setTimeout(() => {
         router.replace('/admin')
       }, 220)
-
-      return () => {
-        window.clearTimeout(timeout)
-        setRedirecting(false)
-      }
+      return
     }
 
     if (!siteId) return
 
     // Client user: resolve their site doc ID and redirect
-    setRedirecting(true)
+    hasRedirected.current = true
+    setShowOverlay(true)
     const apiRoute = (config?.routes?.api as string | undefined) ?? '/api'
 
     fetch(`${apiRoute}/sites?where[siteId][equals]=${encodeURIComponent(siteId)}&limit=1&depth=0`, {
@@ -42,13 +42,17 @@ export default function AfterLoginRedirect() {
         const doc = data?.docs?.[0]
         if (doc?.id) {
           router.replace(`/admin/collections/sites/${doc.id}/dashboard`)
+        } else {
+          // Fallback: go to admin root if site can't be resolved
+          router.replace('/admin')
         }
       })
-      .catch(() => {})
-      .finally(() => setRedirecting(false))
-  }, [user, config?.routes?.api, router, redirecting])
+      .catch(() => {
+        router.replace('/admin')
+      })
+  }, [user, config?.routes?.api, router])
 
-  if (!redirecting) return null
+  if (!showOverlay) return null
 
   return (
     <div className="fixed inset-0 z-120 grid place-items-center bg-white/75 backdrop-blur-sm">

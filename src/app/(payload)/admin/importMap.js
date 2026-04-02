@@ -48,6 +48,7 @@ import { default as default_8168c66c450ea4c48d8f083f3ca761b8 } from '../../../co
 import { default as default_7130eca2f5356ca338458f80c216a64d } from '../../../components/admin/dashboard/SearchAction'
 import { default as default_0a8df66eb6b1381af6f87d9d553b7329 } from '../../../components/admin/dashboard/UserActions'
 import { default as default_54301f0aaf1f6906feed1634d2a468bb } from '../../../components/admin/AfterLoginRedirect'
+import { default as default_241043fa6a5764273ec778e0c6caa410 } from '../../../components/admin/login/LoginFormHeader'
 import { default as default_214373d7862a2054f0f9cf6148a15381 } from '../../../components/admin/login/LoginSubmitEnhancer'
 import { default as default_22e9c88506f2e0938bc8daf147327853 } from '../../../components/admin/login/MonoLoginShell'
 import { default as default_87174a96e964349564e02fc37eed4968 } from '../../../components/admin/GlobalProvider'
@@ -108,6 +109,7 @@ export const importMap = {
   "./components/admin/dashboard/SearchAction#default": default_7130eca2f5356ca338458f80c216a64d,
   "./components/admin/dashboard/UserActions#default": default_0a8df66eb6b1381af6f87d9d553b7329,
   "/components/admin/AfterLoginRedirect#default": default_54301f0aaf1f6906feed1634d2a468bb,
+  "/components/admin/login/LoginFormHeader#default": default_241043fa6a5764273ec778e0c6caa410,
   "/components/admin/login/LoginSubmitEnhancer#default": default_214373d7862a2054f0f9cf6148a15381,
   "/components/admin/login/MonoLoginShell#default": default_22e9c88506f2e0938bc8daf147327853,
   "/components/admin/GlobalProvider#default": default_87174a96e964349564e02fc37eed4968,

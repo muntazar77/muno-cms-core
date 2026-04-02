@@ -101,7 +101,11 @@ export default function UserActions() {
             }}
             disabled={isLoggingOut}
           >
-            {isLoggingOut ? <Loader2 className="mr-2 size-4 animate-spin" /> : <LogOut className="mr-2 size-4" />}
+            {isLoggingOut ? (
+              <Loader2 className="mr-2 size-4 animate-spin" />
+            ) : (
+              <LogOut className="mr-2 size-4" />
+            )}
             {isLoggingOut ? 'Logging out...' : 'Logout'}
           </DropdownMenuItem>
         </DropdownMenuContent>
