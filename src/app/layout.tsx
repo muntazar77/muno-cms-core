@@ -7,8 +7,7 @@ export const metadata: Metadata = {
     default: 'MonoCMS — Multi-Site Website Builder',
     template: '%s | MonoCMS',
   },
-  description:
-    'Build and manage multiple client websites from one powerful dashboard.',
+  description: 'Build and manage multiple client websites from one powerful dashboard.',
 }
 
 /**
@@ -29,9 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-white text-[#0f172a] antialiased">
-        {children}
-      </body>
+      <body className="min-h-screen bg-white text-[#0f172a] antialiased">{children}</body>
     </html>
   )
 }

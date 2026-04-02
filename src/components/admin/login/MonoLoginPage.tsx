@@ -30,10 +30,7 @@ export default function MonoLoginPage() {
 
       if (!res.ok) {
         const body = await res.json().catch(() => null)
-        const msg =
-          body?.errors?.[0]?.message ||
-          body?.message ||
-          'Invalid email or password.'
+        const msg = body?.errors?.[0]?.message || body?.message || 'Invalid email or password.'
         setError(msg)
         setLoading(false)
         return
@@ -85,9 +82,7 @@ export default function MonoLoginPage() {
         <h1 className="text-xl font-bold tracking-tight text-[#0f172a] mb-1">
           Sign in to your workspace
         </h1>
-        <p className="text-[13px] text-[#64748b] mb-6">
-          Enter your credentials to continue.
-        </p>
+        <p className="text-[13px] text-[#64748b] mb-6">Enter your credentials to continue.</p>
 
         {/* Error */}
         {error && (
@@ -145,11 +140,7 @@ export default function MonoLoginPage() {
           >
             {loading ? (
               <span className="flex items-center gap-2">
-                <svg
-                  className="h-4 w-4 animate-spin"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
                   <circle
                     className="opacity-25"
                     cx="12"
