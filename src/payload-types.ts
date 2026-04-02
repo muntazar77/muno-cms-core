@@ -74,6 +74,7 @@ export interface Config {
     forms: Form;
     'form-submissions': FormSubmission;
     services: Service;
+    'student-cases': StudentCase;
     'marketing-pages': MarketingPage;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -89,6 +90,7 @@ export interface Config {
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
+    'student-cases': StudentCasesSelect<false> | StudentCasesSelect<true>;
     'marketing-pages': MarketingPagesSelect<false> | MarketingPagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -824,6 +826,77 @@ export interface Service {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "student-cases".
+ */
+export interface StudentCase {
+  id: number;
+  fullName: string;
+  email: string;
+  phone?: string | null;
+  nationality?: string | null;
+  dateOfBirth?: string | null;
+  currentStage: 'lead' | 'consultation' | 'application' | 'visa' | 'enrolled';
+  status: 'new' | 'in-progress' | 'waiting-student' | 'waiting-institution' | 'completed' | 'closed-lost';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  assignedTo?: (number | null) | User;
+  nextAction?: string | null;
+  nextActionDate?: string | null;
+  consultationOutcome?: string | null;
+  targetCountry?: string | null;
+  targetCity?: string | null;
+  targetField?: string | null;
+  educationLevel?: string | null;
+  languageLevel?: string | null;
+  visaType?: string | null;
+  preferredStartDate?: string | null;
+  tasks?:
+    | {
+        title: string;
+        status?: ('todo' | 'in-progress' | 'done') | null;
+        dueDate?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  documents?:
+    | {
+        name: string;
+        status?: ('pending' | 'received' | 'verified') | null;
+        file?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  timeline?:
+    | {
+        at: string;
+        title: string;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  internalNotes?:
+    | {
+        note: string;
+        createdAt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Linked form submission that created this case.
+   */
+  sourceSubmission?: (number | null) | FormSubmission;
+  sourceChannel?: ('form' | 'manual' | 'import') | null;
+  /**
+   * Site context is assigned automatically in normal workflows.
+   */
+  siteId?: string | null;
+  isDeleted?: boolean | null;
+  deletedAt?: string | null;
+  deletedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Platform marketing pages for monocms.app (super-admin only)
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1296,6 +1369,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'services';
         value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'student-cases';
+        value: number | StudentCase;
       } | null)
     | ({
         relationTo: 'marketing-pages';
@@ -1904,6 +1981,70 @@ export interface ServicesSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   featuredImage?: T;
+  siteId?: T;
+  isDeleted?: T;
+  deletedAt?: T;
+  deletedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "student-cases_select".
+ */
+export interface StudentCasesSelect<T extends boolean = true> {
+  fullName?: T;
+  email?: T;
+  phone?: T;
+  nationality?: T;
+  dateOfBirth?: T;
+  currentStage?: T;
+  status?: T;
+  priority?: T;
+  assignedTo?: T;
+  nextAction?: T;
+  nextActionDate?: T;
+  consultationOutcome?: T;
+  targetCountry?: T;
+  targetCity?: T;
+  targetField?: T;
+  educationLevel?: T;
+  languageLevel?: T;
+  visaType?: T;
+  preferredStartDate?: T;
+  tasks?:
+    | T
+    | {
+        title?: T;
+        status?: T;
+        dueDate?: T;
+        id?: T;
+      };
+  documents?:
+    | T
+    | {
+        name?: T;
+        status?: T;
+        file?: T;
+        id?: T;
+      };
+  timeline?:
+    | T
+    | {
+        at?: T;
+        title?: T;
+        note?: T;
+        id?: T;
+      };
+  internalNotes?:
+    | T
+    | {
+        note?: T;
+        createdAt?: T;
+        id?: T;
+      };
+  sourceSubmission?: T;
+  sourceChannel?: T;
   siteId?: T;
   isDeleted?: T;
   deletedAt?: T;

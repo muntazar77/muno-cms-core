@@ -13,6 +13,7 @@ import { FormSubmissions } from './collections/FormSubmissions'
 import { Services } from './collections/Services'
 import { Sites } from './collections/Sites'
 import { MarketingPages } from './collections/MarketingPages'
+import { StudentCases } from './collections/StudentCases'
 import { PlatformSettings } from './globals/PlatformSettings'
 
 const filename = fileURLToPath(import.meta.url)
@@ -39,6 +40,7 @@ export default buildConfig({
       // role/route data attributes on <html>, enabling CSS to apply from
       // frame #1 with no visible flash on page reload.
       header: ['/components/admin/ClientShellInit'],
+      beforeLogin: ['/components/admin/login/MonoLoginShell'],
 
       actions: [
         './components/admin/dashboard/SearchAction',
@@ -70,7 +72,17 @@ export default buildConfig({
       },
     },
   },
-  collections: [Users, Sites, Media, Pages, Forms, FormSubmissions, Services, MarketingPages],
+  collections: [
+    Users,
+    Sites,
+    Media,
+    Pages,
+    Forms,
+    FormSubmissions,
+    Services,
+    StudentCases,
+    MarketingPages,
+  ],
   globals: [PlatformSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

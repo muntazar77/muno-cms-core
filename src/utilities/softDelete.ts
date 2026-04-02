@@ -147,6 +147,7 @@ export const SOFT_DELETE_COLLECTIONS = [
   'media',
   'forms',
   'form-submissions',
+  'student-cases',
   'services',
   'sites',
 ] as const

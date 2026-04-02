@@ -170,6 +170,10 @@ export const Sites: CollectionConfig = {
             path: '/submissions',
             Component: '/components/admin/client/ClientSubmissionsView',
           },
+          cases: {
+            path: '/cases',
+            Component: '/components/admin/client/ClientCasesView',
+          },
           services: {
             path: '/services',
             Component: '/components/admin/client/ClientServicesView',

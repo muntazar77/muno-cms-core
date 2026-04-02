@@ -1,0 +1,5 @@
+here writing some good improvement for my app :
+
+1-If you want, next I can add one more improvement: 
+for /s/[siteSlug], automatically fall back to the first published page when home is missing. 
+That would make testing even smoother across partially configured sites.

@@ -13,6 +13,7 @@ import {
   PanelLeftOpen,
   FileText,
   Briefcase,
+  GraduationCap,
   Settings,
   Trash2,
   Globe,
@@ -29,7 +30,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 function isClientSiteWorkspacePath(pathname: string): boolean {
-  return /^\/admin\/collections\/sites\/[^/?#]+(?:\/(dashboard|pages|media|forms|submissions|services|settings))?$/.test(
+  return /^\/admin\/collections\/sites\/[^/?#]+(?:\/(dashboard|pages|media|forms|submissions|cases|services|settings))?$/.test(
     pathname,
   )
 }
@@ -228,6 +229,11 @@ function SidebarInner({
           label: 'Services',
           icon: Briefcase,
         },
+        {
+          href: `/admin/collections/sites/${siteDocId}/cases`,
+          label: 'Cases',
+          icon: GraduationCap,
+        },
       ]
     : []
 
@@ -361,6 +367,14 @@ function SidebarInner({
               icon={Inbox}
               label="Submissions"
               active={Boolean(pathname?.startsWith('/admin/collections/form-submissions'))}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+            <NavLink
+              href="/admin/collections/student-cases"
+              icon={GraduationCap}
+              label="Student Cases"
+              active={Boolean(pathname?.startsWith('/admin/collections/student-cases'))}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />

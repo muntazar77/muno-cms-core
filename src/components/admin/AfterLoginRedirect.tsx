@@ -37,5 +37,14 @@ export default function AfterLoginRedirect() {
       .finally(() => setRedirecting(false))
   }, [user, config?.routes?.api, router, redirecting])
 
-  return null
+  if (!redirecting) return null
+
+  return (
+    <div className="fixed inset-0 z-120 grid place-items-center bg-white/75 backdrop-blur-sm">
+      <div className="flex items-center gap-3 rounded-2xl border border-(--cms-border) bg-(--cms-card-bg) px-5 py-3 shadow-lg">
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-(--cms-primary) border-t-transparent" />
+        <p className="text-sm font-medium text-(--cms-text)">Preparing your workspace…</p>
+      </div>
+    </div>
+  )
 }

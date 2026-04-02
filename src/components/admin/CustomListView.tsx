@@ -68,6 +68,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import UsersListStats from '@/components/admin/collection/UsersListStats'
 import PagesListStats from '@/components/admin/collection/PagesListStats'
+import StudentCasesListStats from '@/components/admin/collection/StudentCasesListStats'
 import AdminPageHeader from '@/components/admin/shared/AdminPageHeader'
 
 // ─── Per-Collection Config ───────────────────────────────────────────
@@ -122,11 +123,38 @@ const LIST_VIEW_CONFIGS: Record<string, ListViewCollectionConfig> = {
     },
     editURL: (id: string) => `/admin/collections/marketing-pages/${id}`,
   },
+  'student-cases': {
+    description: 'Track student consultation and admissions workflow',
+    statusField: 'status',
+    statusConfig: {
+      new: { label: 'New', variant: 'info' },
+      'in-progress': { label: 'In Progress', variant: 'info' },
+      'waiting-student': { label: 'Waiting Student', variant: 'warning' },
+      'waiting-institution': { label: 'Waiting Institution', variant: 'warning' },
+      completed: { label: 'Completed', variant: 'success' },
+      'closed-lost': { label: 'Closed Lost', variant: 'danger' },
+    },
+    columnLabels: {
+      fullName: 'Student',
+      email: 'Email',
+      currentStage: 'Stage',
+      priority: 'Priority',
+      nextActionDate: 'Next Action',
+      siteId: 'Site',
+      updatedAt: 'Updated',
+    },
+    columnType: {
+      email: 'email',
+      siteId: 'site',
+    },
+    editURL: (id: string) => `/admin/collections/student-cases/${id}/workspace`,
+  },
 }
 
 const STATS_COMPONENTS: Record<string, React.ComponentType> = {
   users: UsersListStats,
   pages: PagesListStats,
+  'student-cases': StudentCasesListStats,
 }
 
 // ─── Status Variant Styles ───────────────────────────────────────────
@@ -616,6 +644,22 @@ export default function CustomListView() {
   }
 
   if (slug === 'pages' && userRole !== 'super-admin') return null
+
+  if (!data) {
+    return (
+      <div className="px-6 pb-6 pt-5">
+        <div className="mb-6 h-20 animate-pulse rounded-2xl border border-(--cms-card-border) bg-(--cms-bg-muted)" />
+        <div className="space-y-3 rounded-2xl border border-(--cms-card-border) bg-(--cms-card-bg) p-4">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <div
+              key={`list-skeleton-${idx}`}
+              className="h-12 animate-pulse rounded-xl bg-(--cms-bg-muted)"
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="px-6 pb-6 pt-5">

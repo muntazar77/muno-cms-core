@@ -2,6 +2,7 @@
 import { Bell, LogOut, Settings2 } from 'lucide-react'
 import { useAuth } from '@payloadcms/ui'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { ThemeToggle } from '../ThemeToggle'
 import AccountAvatar from '@/components/admin/account/AccountAvatar'
 import {
@@ -16,6 +17,7 @@ import {
 export default function UserActions() {
   const { user, logOut } = useAuth()
   const router = useRouter()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const fullName =
     user && typeof user === 'object' && 'fullName' in user ? String(user.fullName ?? '') : ''
@@ -28,9 +30,16 @@ export default function UserActions() {
     avatar && typeof avatar === 'object' ? (avatar.url ?? null) : typeof avatar === 'string' ? avatar : null
 
   async function handleLogout() {
-    await logOut()
-    router.replace('/admin/login')
-    router.refresh()
+    if (isLoggingOut) return
+
+    setIsLoggingOut(true)
+    try {
+      await logOut()
+      router.replace('/admin/login')
+      router.refresh()
+    } finally {
+      setIsLoggingOut(false)
+    }
   }
 
   return (
@@ -82,9 +91,10 @@ export default function UserActions() {
               event.preventDefault()
               void handleLogout()
             }}
+            disabled={isLoggingOut}
           >
             <LogOut className="mr-2 size-4" />
-            Logout
+            {isLoggingOut ? 'Logging out...' : 'Logout'}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

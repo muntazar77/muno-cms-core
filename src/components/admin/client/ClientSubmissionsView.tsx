@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import WorkspaceHeader from '@/components/admin/shared/WorkspaceHeader'
 import WorkspaceMetricCard from '@/components/admin/shared/WorkspaceMetricCard'
 import ClientSubmissionsPanel, { type SubmissionListItem } from './ClientSubmissionsPanel'
+import { extractStudentCaseSeed } from '@/lib/studentCases'
 
 interface UserWithSite {
   id?: string | number
@@ -23,62 +24,11 @@ interface SubmissionDoc {
   form?: number | string | { id?: number | string; title?: string | null } | null
   data?: unknown
   createdAt?: string | null
+  siteId?: string | null
 }
 
 function notDeletedWhere() {
   return { or: [{ isDeleted: { equals: false } }, { isDeleted: { exists: false } }] }
-}
-
-function findByKeys(value: unknown, keys: Set<string>): string | undefined {
-  if (value === null || value === undefined) return undefined
-  if (typeof value === 'string') return undefined
-  if (typeof value === 'number' || typeof value === 'boolean') return undefined
-
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const found = findByKeys(item, keys)
-      if (found) return found
-    }
-    return undefined
-  }
-
-  if (typeof value === 'object') {
-    for (const [rawKey, rawVal] of Object.entries(value as Record<string, unknown>)) {
-      const key = rawKey.toLowerCase()
-      if (keys.has(key)) {
-        if (typeof rawVal === 'string' && rawVal.trim()) return rawVal.trim()
-        if (typeof rawVal === 'number' || typeof rawVal === 'boolean') return String(rawVal)
-      }
-      const nested = findByKeys(rawVal, keys)
-      if (nested) return nested
-    }
-  }
-
-  return undefined
-}
-
-function findEmail(value: unknown): string | undefined {
-  const fromKey = findByKeys(value, new Set(['email', 'emailaddress', 'contactemail', 'workemail']))
-  if (fromKey) return fromKey
-
-  const stack: unknown[] = [value]
-  while (stack.length) {
-    const next = stack.pop()
-    if (!next) continue
-    if (typeof next === 'string') {
-      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(next)) return next
-      continue
-    }
-    if (Array.isArray(next)) {
-      stack.push(...next)
-      continue
-    }
-    if (typeof next === 'object') {
-      stack.push(...Object.values(next as Record<string, unknown>))
-    }
-  }
-
-  return undefined
 }
 
 function isNewSubmission(value?: string | null): boolean {
@@ -162,13 +112,33 @@ export default async function ClientSubmissionsView(props: DocumentViewServerPro
 
   const list = listResult.docs as unknown as SubmissionDoc[]
 
+  const sourceSubmissionIds = list.map((item) => String(item.id))
+  const linkedCasesResult = sourceSubmissionIds.length
+    ? await props.payload.find({
+        collection: 'student-cases',
+        depth: 0,
+        limit: 200,
+        user,
+        overrideAccess: false,
+        where: {
+          and: [{ sourceSubmission: { in: sourceSubmissionIds } }, notDeletedWhere()],
+        },
+      })
+    : { docs: [] }
+
+  const linkedCasesBySubmission = new Map<string, string>()
+  for (const rawCase of linkedCasesResult.docs as Array<{
+    id: string | number
+    sourceSubmission?: string | number | null
+  }>) {
+    const submissionId = rawCase.sourceSubmission ? String(rawCase.sourceSubmission) : ''
+    if (!submissionId) continue
+    linkedCasesBySubmission.set(submissionId, String(rawCase.id))
+  }
+
   const submissions: SubmissionListItem[] = list.map((item) => {
-    const name =
-      findByKeys(
-        item.data,
-        new Set(['name', 'fullname', 'first_name', 'firstname', 'contactname']),
-      ) || 'Unknown submitter'
-    const email = findEmail(item.data) || 'No email provided'
+    const seed = extractStudentCaseSeed(item.data)
+    const caseId = linkedCasesBySubmission.get(String(item.id))
 
     const formName =
       typeof item.form === 'object' && item.form
@@ -178,10 +148,15 @@ export default async function ClientSubmissionsView(props: DocumentViewServerPro
     return {
       id: String(item.id),
       formName,
-      submitterName: name,
-      submitterEmail: email,
+      submitterName: seed.fullName,
+      submitterEmail: seed.email,
+      submitterPhone: seed.phone,
       createdAt: item.createdAt || null,
       isNew: isNewSubmission(item.createdAt),
+      siteId: String(item.siteId ?? siteKey),
+      existingCaseId: caseId,
+      targetCountry: seed.targetCountry,
+      nationality: seed.nationality,
     }
   })
 
@@ -218,7 +193,7 @@ export default async function ClientSubmissionsView(props: DocumentViewServerPro
 
   return (
     <div className="min-h-screen bg-(--cms-bg-elevated)">
-      <div className="mx-auto w-full max-w-[1680px] space-y-6 px-4 py-4 sm:px-6 sm:py-6 xl:px-8 xl:py-8">
+      <div className="mx-auto w-full max-w-420 space-y-6 px-4 py-4 sm:px-6 sm:py-6 xl:px-8 xl:py-8">
         <WorkspaceHeader
           eyebrow={site.siteName || siteKey}
           title="Form Submissions"
@@ -229,7 +204,7 @@ export default async function ClientSubmissionsView(props: DocumentViewServerPro
             { label: 'Forms', value: `${formsResult.totalDocs} active` },
           ]}
           aside={
-            <Card className="rounded-[24px] border-(--cms-card-border) bg-(--cms-bg)/90 backdrop-blur-sm">
+            <Card className="rounded-3xl border-(--cms-card-border) bg-(--cms-bg)/90 backdrop-blur-sm">
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2 text-(--cms-text)">
                   <Mail className="size-4 text-(--cms-primary)" />

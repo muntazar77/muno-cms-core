@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Inbox, Search, Filter, Mail, User, ArrowUpRight, Clock3 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,8 +15,13 @@ export interface SubmissionListItem {
   formName: string
   submitterName: string
   submitterEmail: string
+  submitterPhone?: string
   createdAt: string | null
   isNew: boolean
+  siteId: string
+  existingCaseId?: string
+  targetCountry?: string
+  nationality?: string
 }
 
 interface ClientSubmissionsPanelProps {
@@ -43,6 +49,70 @@ function formatRelativeTime(value?: string | null): string {
 export default function ClientSubmissionsPanel({ submissions }: ClientSubmissionsPanelProps) {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<'all' | 'new'>('all')
+  const [creatingId, setCreatingId] = useState<string | null>(null)
+
+  async function handleCreateCase(item: SubmissionListItem) {
+    if (item.existingCaseId) {
+      window.location.href = `/admin/collections/student-cases/${item.existingCaseId}/workspace`
+      return
+    }
+
+    if (creatingId) return
+    setCreatingId(item.id)
+
+    try {
+      const existingRes = await fetch(
+        `/api/student-cases?limit=1&depth=0&where[sourceSubmission][equals]=${encodeURIComponent(item.id)}`,
+        { credentials: 'include' },
+      )
+      const existingData = await existingRes.json()
+      const existingDoc = existingData?.docs?.[0]
+
+      if (existingDoc?.id) {
+        toast.info('This submission is already linked to a case.')
+        window.location.href = `/admin/collections/student-cases/${existingDoc.id}/workspace`
+        return
+      }
+
+      const createRes = await fetch('/api/student-cases', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: item.submitterName,
+          email: item.submitterEmail,
+          phone: item.submitterPhone || '',
+          sourceChannel: 'form',
+          sourceSubmission: item.id,
+          siteId: item.siteId,
+          targetCountry: item.targetCountry || '',
+          nationality: item.nationality || '',
+          currentStage: 'lead',
+          status: 'new',
+          priority: 'medium',
+          nextAction: 'Initial consultation call',
+        }),
+      })
+
+      if (!createRes.ok) {
+        throw new Error(`Request failed with status ${createRes.status}`)
+      }
+
+      const created = await createRes.json()
+      const createdId = created?.doc?.id ?? created?.id
+      if (!createdId) {
+        throw new Error('Could not resolve created case id')
+      }
+
+      toast.success('Case created successfully.')
+      window.location.href = `/admin/collections/student-cases/${createdId}/workspace`
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      toast.error(`Unable to create case (${message})`)
+    } finally {
+      setCreatingId(null)
+    }
+  }
 
   const visibleSubmissions = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -121,7 +191,7 @@ export default function ClientSubmissionsPanel({ submissions }: ClientSubmission
           </div>
 
           {visibleSubmissions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-[24px] border border-dashed border-(--cms-border) bg-(--cms-bg-muted) px-6 py-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-(--cms-border) bg-(--cms-bg-muted) px-6 py-16 text-center">
               <div className="flex size-14 items-center justify-center rounded-2xl bg-(--cms-card-bg) text-(--cms-primary)">
                 <Inbox className="size-6" />
               </div>
@@ -181,6 +251,22 @@ export default function ClientSubmissionsPanel({ submissions }: ClientSubmission
                           <ArrowUpRight className="size-4" />
                         </Button>
                       </Link>
+                      {item.existingCaseId ? (
+                        <Link href={`/admin/collections/student-cases/${item.existingCaseId}/workspace`}>
+                          <Button size="sm" className="h-10 rounded-xl px-3">
+                            Open Case
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button
+                          size="sm"
+                          className="h-10 rounded-xl px-3"
+                          disabled={creatingId === item.id}
+                          onClick={() => void handleCreateCase(item)}
+                        >
+                          {creatingId === item.id ? 'Creating…' : 'Create Case'}
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

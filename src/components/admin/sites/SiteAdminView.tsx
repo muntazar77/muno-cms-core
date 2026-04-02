@@ -4,6 +4,7 @@ import type { DocumentViewServerProps, ListViewServerProps } from 'payload'
 import {
   ArrowRight,
   Briefcase,
+  GraduationCap,
   FileText,
   FolderKanban,
   Image as ImageIcon,
@@ -76,7 +77,7 @@ interface SiteDoc {
 interface SectionConfig {
   label: string
   description: string
-  collection: 'pages' | 'media' | 'forms' | 'services'
+  collection: 'pages' | 'media' | 'forms' | 'services' | 'student-cases'
   createHref: (siteId: string) => string
   editHref: (docId: string) => string
   icon: typeof FileText
@@ -115,6 +116,15 @@ const sectionConfigs: Record<string, SectionConfig> = {
       `/admin/collections/services/create?siteId=${encodeURIComponent(siteId)}`,
     editHref: (docId) => `/admin/collections/services/${docId}`,
     icon: Briefcase,
+  },
+  cases: {
+    label: 'Cases',
+    description: 'Track student admission workflow and follow-up actions.',
+    collection: 'student-cases',
+    createHref: (siteId) =>
+      `/admin/collections/student-cases/create?siteId=${encodeURIComponent(siteId)}`,
+    editHref: (docId) => `/admin/collections/student-cases/${docId}/workspace`,
+    icon: GraduationCap,
   },
 }
 
@@ -192,6 +202,7 @@ function ContextTabs({ siteDocID, activeSection }: { siteDocID: string; activeSe
     { key: 'media', label: 'Media', href: navHref(siteDocID, 'media'), icon: ImageIcon },
     { key: 'forms', label: 'Forms', href: navHref(siteDocID, 'forms'), icon: Mail },
     { key: 'services', label: 'Services', href: navHref(siteDocID, 'services'), icon: Briefcase },
+    { key: 'cases', label: 'Cases', href: navHref(siteDocID, 'cases'), icon: GraduationCap },
     { key: 'settings', label: 'Settings', href: navHref(siteDocID, 'settings'), icon: Settings2 },
   ]
 

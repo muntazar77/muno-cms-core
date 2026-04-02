@@ -344,6 +344,143 @@ html {
   background: linear-gradient(135deg, #f0f4ff 0%, #f8faff 50%, #f0f4ff 100%) !important;
 }
 
+.template-minimal .template-minimal__wrap {
+  display: grid !important;
+  grid-template-columns: minmax(360px, 480px) minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 100vh;
+}
+
+.template-minimal .template-minimal__content {
+  order: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+}
+
+.template-minimal .template-minimal__content .login {
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid var(--cms-card-border);
+  border-radius: 24px;
+  padding: 24px;
+  background: var(--cms-card-bg);
+  box-shadow: var(--cms-card-shadow);
+}
+
+.template-minimal .template-minimal__content .login__brand {
+  margin-bottom: 16px;
+}
+
+.template-minimal .template-minimal__content .login__title {
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+}
+
+.template-minimal .template-minimal__content .btn--style-primary {
+  height: 44px !important;
+  border-radius: 12px !important;
+}
+
+.mono-login-shell {
+  position: relative;
+  order: 2;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 48px;
+  border-left: 1px solid var(--cms-border-subtle);
+  background:
+    radial-gradient(circle at 15% 20%, rgba(24, 95, 255, 0.18), transparent 48%),
+    radial-gradient(circle at 85% 75%, rgba(15, 182, 138, 0.14), transparent 52%),
+    linear-gradient(135deg, #f8fbff 0%, #eef4ff 40%, #f4fbf7 100%);
+}
+
+.mono-login-shell__inner {
+  max-width: 560px;
+}
+
+.mono-login-shell__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(24, 95, 255, 0.25);
+  background: rgba(24, 95, 255, 0.08);
+  color: #1f4ed8;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.mono-login-shell__title {
+  margin-top: 22px;
+  font-size: 44px;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: #102347;
+}
+
+.mono-login-shell__subtitle {
+  margin-top: 14px;
+  max-width: 52ch;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #41567e;
+}
+
+.mono-login-shell__list {
+  margin-top: 30px;
+  display: grid;
+  gap: 12px;
+}
+
+.mono-login-shell__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(16, 35, 71, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 14px;
+}
+
+.mono-login-shell__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(24, 95, 255, 0.1);
+  color: #1f4ed8;
+}
+
+.mono-login-shell__item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #102347;
+}
+
+.mono-login-shell__item-description {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #41567e;
+}
+
+@media (max-width: 1279px) {
+  .template-minimal .template-minimal__wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .template-minimal .template-minimal__content {
+    order: 2;
+  }
+}
+
 [data-theme='dark'] .template-minimal {
   background: linear-gradient(135deg, #0d1120 0%, #0f1117 50%, #0d1120 100%) !important;
 }
