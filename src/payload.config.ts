@@ -40,11 +40,7 @@ export default buildConfig({
       // role/route data attributes on <html>, enabling CSS to apply from
       // frame #1 with no visible flash on page reload.
       header: ['/components/admin/ClientShellInit'],
-      beforeLogin: [
-        '/components/admin/login/LoginFormHeader',
-        '/components/admin/login/LoginSubmitEnhancer',
-        '/components/admin/login/MonoLoginShell',
-      ],
+      beforeLogin: ['/components/admin/login/MonoLoginPage'],
 
       actions: [
         './components/admin/dashboard/SearchAction',
@@ -52,7 +48,6 @@ export default buildConfig({
       ],
       Nav: '/components/admin/Sidebar#default',
       providers: ['/components/admin/GlobalProvider#default'],
-      afterLogin: ['/components/admin/AfterLoginRedirect#default'],
 
       views: {
         dashboard: {

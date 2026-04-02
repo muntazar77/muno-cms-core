@@ -295,7 +295,9 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                     </div>
                     <div className="min-w-0">
                       <p className="text-(--cms-text-muted)">{label}</p>
-                      <p className="mt-0.5 truncate font-medium text-(--cms-text)">{value || '—'}</p>
+                      <p className="mt-0.5 truncate font-medium text-(--cms-text)">
+                        {value || '—'}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -369,9 +371,7 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                             {task.dueDate && (
                               <span
                                 className={`inline-flex items-center gap-1 text-[11px] font-medium ${
-                                  overdue
-                                    ? 'text-(--cms-danger-text)'
-                                    : 'text-(--cms-text-muted)'
+                                  overdue ? 'text-(--cms-danger-text)' : 'text-(--cms-text-muted)'
                                 }`}
                               >
                                 {overdue ? (
@@ -448,7 +448,9 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="font-medium text-(--cms-text)">{item.name || 'Document'}</p>
+                            <p className="font-medium text-(--cms-text)">
+                              {item.name || 'Document'}
+                            </p>
                             <Badge
                               className={`rounded-full border-0 px-2 py-0.5 text-[11px] font-semibold ${statusClass}`}
                             >
@@ -475,7 +477,9 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                                 {hrefLabel}
                               </a>
                             ) : (
-                              <span className="text-xs text-(--cms-text-muted)">No file attached</span>
+                              <span className="text-xs text-(--cms-text-muted)">
+                                No file attached
+                              </span>
                             )}
                           </div>
                         </div>
@@ -484,7 +488,10 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                   })
                 )}
                 <Link href={`/admin/collections/student-cases/${docId}#field-documents`}>
-                  <Button variant="outline" className="h-9 rounded-xl border-(--cms-border) text-xs">
+                  <Button
+                    variant="outline"
+                    className="h-9 rounded-xl border-(--cms-border) text-xs"
+                  >
                     <FolderOpen className="mr-1.5 size-3.5" />
                     Add or Update Documents
                   </Button>
@@ -510,7 +517,8 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                     </p>
                     <Badge
                       className={`rounded-full border-0 px-3 py-1 text-xs font-semibold ${
-                        statusTone[doc.status ?? ''] ?? 'bg-(--cms-bg-muted) text-(--cms-text-secondary)'
+                        statusTone[doc.status ?? ''] ??
+                        'bg-(--cms-bg-muted) text-(--cms-text-secondary)'
                       }`}
                     >
                       {pretty(doc.status)}
@@ -522,7 +530,8 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                     </p>
                     <Badge
                       className={`rounded-full border-0 px-3 py-1 text-xs font-semibold ${
-                        priorityTone[doc.priority ?? ''] ?? 'bg-(--cms-bg-muted) text-(--cms-text-secondary)'
+                        priorityTone[doc.priority ?? ''] ??
+                        'bg-(--cms-bg-muted) text-(--cms-text-secondary)'
                       }`}
                     >
                       {pretty(doc.priority)}
@@ -613,7 +622,9 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                           <p className="text-sm font-medium leading-snug text-(--cms-text)">
                             {event.title || 'Event'}
                           </p>
-                          <p className="mt-0.5 text-xs text-(--cms-text-muted)">{formatDate(event.at)}</p>
+                          <p className="mt-0.5 text-xs text-(--cms-text-muted)">
+                            {formatDate(event.at)}
+                          </p>
                           {event.note && (
                             <p className="mt-1 text-xs text-(--cms-text-secondary)">{event.note}</p>
                           )}
@@ -680,10 +691,9 @@ export default function StudentCaseView(props: DocumentViewServerProps) {
                     { Icon: Phone, value: doc.phone },
                     {
                       Icon: GraduationCap,
-                      value:
-                        doc.targetCountry
-                          ? `${doc.targetCountry} / ${doc.targetField || '—'}`
-                          : null,
+                      value: doc.targetCountry
+                        ? `${doc.targetCountry} / ${doc.targetField || '—'}`
+                        : null,
                     },
                   ].map(({ Icon, value }, i) => (
                     <p key={i} className="flex items-center gap-2 text-(--cms-text)">

@@ -660,7 +660,10 @@ function FilterBar({
               className="w-44 rounded-xl border-(--cms-border) bg-(--cms-card-bg) shadow-lg"
             >
               <DropdownMenuItem
-                className={cn('rounded-lg text-xs text-(--cms-text-secondary)', !activeValue && 'font-medium text-(--cms-text)')}
+                className={cn(
+                  'rounded-lg text-xs text-(--cms-text-secondary)',
+                  !activeValue && 'font-medium text-(--cms-text)',
+                )}
                 onSelect={() => onFilterChange(filter.field, null)}
               >
                 All
@@ -678,9 +681,7 @@ function FilterBar({
                   onSelect={() => onFilterChange(filter.field, option.value)}
                 >
                   {option.label}
-                  {activeValue === option.value && (
-                    <Check className="ml-auto size-3.5" />
-                  )}
+                  {activeValue === option.value && <Check className="ml-auto size-3.5" />}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -868,7 +869,8 @@ export default function CustomListView() {
               {isTrashView ? `Deleted ${pluralLabel}` : pluralLabel}
             </h2>
             <p className="mt-0.5 text-[13px] text-(--cms-text-muted)">
-              {`${totalDocs.toLocaleString()} ${totalDocs === 1 ? singularLabel.toLowerCase() : pluralLabel.toLowerCase()}`}</p>
+              {`${totalDocs.toLocaleString()} ${totalDocs === 1 ? singularLabel.toLowerCase() : pluralLabel.toLowerCase()}`}
+            </p>
           </div>
         </div>
 
