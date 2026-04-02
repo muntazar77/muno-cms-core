@@ -836,12 +836,33 @@ export interface StudentCase {
   phone?: string | null;
   nationality?: string | null;
   dateOfBirth?: string | null;
+  /**
+   * Current stage in the student journey lifecycle.
+   */
   currentStage: 'lead' | 'consultation' | 'application' | 'visa' | 'enrolled';
+  /**
+   * Operational status for day-to-day follow-up decisions.
+   */
   status: 'new' | 'in-progress' | 'waiting-student' | 'waiting-institution' | 'completed' | 'closed-lost';
+  /**
+   * Set urgency to help teams triage workload quickly.
+   */
   priority: 'low' | 'medium' | 'high' | 'urgent';
+  /**
+   * Team member accountable for the next action.
+   */
   assignedTo?: (number | null) | User;
+  /**
+   * Write a clear immediate task (call, follow-up, doc request).
+   */
   nextAction?: string | null;
+  /**
+   * Expected completion time for the next action.
+   */
   nextActionDate?: string | null;
+  /**
+   * Key notes and decisions from consultation sessions.
+   */
   consultationOutcome?: string | null;
   targetCountry?: string | null;
   targetCity?: string | null;
@@ -858,11 +879,22 @@ export interface StudentCase {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Attach case files and classify each document by type and operational status.
+   */
   documents?:
     | {
         name: string;
+        documentType: 'identity' | 'academic' | 'financial' | 'visa' | 'other';
         status?: ('pending' | 'received' | 'verified') | null;
-        file?: (number | null) | Media;
+        /**
+         * Upload or select a file from Media library.
+         */
+        file: number | Media;
+        /**
+         * Optional note for this document item.
+         */
+        note?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2024,8 +2056,10 @@ export interface StudentCasesSelect<T extends boolean = true> {
     | T
     | {
         name?: T;
+        documentType?: T;
         status?: T;
         file?: T;
+        note?: T;
         id?: T;
       };
   timeline?:

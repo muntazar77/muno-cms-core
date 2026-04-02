@@ -23,7 +23,15 @@ export default function MonoLoginShell() {
   return (
     <aside className="mono-login-shell hidden xl:flex">
       <div className="mono-login-shell__inner">
-        <p className="mono-login-shell__eyebrow">MonoCMS Platform</p>
+        <div className="mono-login-shell__brand">
+          <div className="mono-login-shell__brand-mark">M</div>
+          <div>
+            <p className="mono-login-shell__brand-title">MonoCMS</p>
+            <p className="mono-login-shell__brand-subtitle">Platform Console</p>
+          </div>
+        </div>
+
+        <p className="mono-login-shell__eyebrow">Multi-site Operations</p>
         <h2 className="mono-login-shell__title">Operate every tenant site with confidence.</h2>
         <p className="mono-login-shell__subtitle">
           A single command interface for platform operators, client workspaces, content delivery,

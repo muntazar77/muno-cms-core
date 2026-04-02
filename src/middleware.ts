@@ -39,6 +39,7 @@ export function middleware(req: NextRequest) {
   const host = getRequestHost(req)
   const requestHeaders = new Headers(req.headers)
   requestHeaders.set('x-pathname', pathname)
+  requestHeaders.set('x-platform-host', String(isPlatformHost(host)))
 
   // Always pass through admin/API/static paths
   if (shouldBypass(pathname)) {
@@ -56,6 +57,17 @@ export function middleware(req: NextRequest) {
     // Ensure port isn't carried over into production redirect
     url.port = ''
     return NextResponse.redirect(url, 301)
+  }
+
+  // Defensive: root request on a known platform host must always reach marketing.
+  if (pathname === '/' && isPlatformHost(host)) {
+    const url = req.nextUrl.clone()
+    url.pathname = '/marketing'
+    return NextResponse.rewrite(url, {
+      request: {
+        headers: requestHeaders,
+      },
+    })
   }
 
   // Root domain → rewrite to /marketing/* (URL bar stays clean)

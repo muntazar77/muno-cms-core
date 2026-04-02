@@ -93,14 +93,24 @@ export const StudentCases: CollectionConfig = {
                   name: 'fullName',
                   type: 'text',
                   required: true,
-                  admin: { width: '50%' },
+                  admin: {
+                    width: '50%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
                 },
                 {
                   name: 'email',
                   type: 'email',
                   required: true,
                   index: true,
-                  admin: { width: '50%' },
+                  admin: {
+                    width: '50%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
                 },
               ],
             },
@@ -110,12 +120,22 @@ export const StudentCases: CollectionConfig = {
                 {
                   name: 'phone',
                   type: 'text',
-                  admin: { width: '33%' },
+                  admin: {
+                    width: '33%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
                 },
                 {
                   name: 'nationality',
                   type: 'text',
-                  admin: { width: '33%' },
+                  admin: {
+                    width: '33%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
                 },
                 {
                   name: 'dateOfBirth',
@@ -141,7 +161,13 @@ export const StudentCases: CollectionConfig = {
                   required: true,
                   defaultValue: 'lead',
                   options: stageOptions,
-                  admin: { width: '25%' },
+                  admin: {
+                    width: '25%',
+                    description: 'Current stage in the student journey lifecycle.',
+                    components: {
+                      Field: '/components/admin/fields/SelectField',
+                    },
+                  },
                 },
                 {
                   name: 'status',
@@ -149,7 +175,13 @@ export const StudentCases: CollectionConfig = {
                   required: true,
                   defaultValue: 'new',
                   options: statusOptions,
-                  admin: { width: '25%' },
+                  admin: {
+                    width: '25%',
+                    description: 'Operational status for day-to-day follow-up decisions.',
+                    components: {
+                      Field: '/components/admin/fields/SelectField',
+                    },
+                  },
                 },
                 {
                   name: 'priority',
@@ -157,13 +189,22 @@ export const StudentCases: CollectionConfig = {
                   required: true,
                   defaultValue: 'medium',
                   options: priorityOptions,
-                  admin: { width: '25%' },
+                  admin: {
+                    width: '25%',
+                    description: 'Set urgency to help teams triage workload quickly.',
+                    components: {
+                      Field: '/components/admin/fields/SelectField',
+                    },
+                  },
                 },
                 {
                   name: 'assignedTo',
                   type: 'relationship',
                   relationTo: 'users',
-                  admin: { width: '25%' },
+                  admin: {
+                    width: '25%',
+                    description: 'Team member accountable for the next action.',
+                  },
                 },
               ],
             },
@@ -173,7 +214,13 @@ export const StudentCases: CollectionConfig = {
                 {
                   name: 'nextAction',
                   type: 'text',
-                  admin: { width: '65%' },
+                  admin: {
+                    width: '65%',
+                    description: 'Write a clear immediate task (call, follow-up, doc request).',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
                 },
                 {
                   name: 'nextActionDate',
@@ -181,6 +228,7 @@ export const StudentCases: CollectionConfig = {
                   admin: {
                     width: '35%',
                     date: { pickerAppearance: 'dayAndTime' },
+                    description: 'Expected completion time for the next action.',
                   },
                 },
               ],
@@ -188,7 +236,13 @@ export const StudentCases: CollectionConfig = {
             {
               name: 'consultationOutcome',
               type: 'textarea',
-              admin: { rows: 4 },
+              admin: {
+                rows: 4,
+                description: 'Key notes and decisions from consultation sessions.',
+                components: {
+                  Field: '/components/admin/fields/TextareaField',
+                },
+              },
             },
           ],
         },
@@ -199,16 +253,61 @@ export const StudentCases: CollectionConfig = {
               type: 'row',
               fields: [
                 { name: 'targetCountry', type: 'text', admin: { width: '25%' } },
-                { name: 'targetCity', type: 'text', admin: { width: '25%' } },
-                { name: 'targetField', type: 'text', admin: { width: '25%' } },
-                { name: 'educationLevel', type: 'text', admin: { width: '25%' } },
+                {
+                  name: 'targetCity',
+                  type: 'text',
+                  admin: {
+                    width: '25%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
+                },
+                {
+                  name: 'targetField',
+                  type: 'text',
+                  admin: {
+                    width: '25%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
+                },
+                {
+                  name: 'educationLevel',
+                  type: 'text',
+                  admin: {
+                    width: '25%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
+                },
               ],
             },
             {
               type: 'row',
               fields: [
-                { name: 'languageLevel', type: 'text', admin: { width: '33%' } },
-                { name: 'visaType', type: 'text', admin: { width: '33%' } },
+                {
+                  name: 'languageLevel',
+                  type: 'text',
+                  admin: {
+                    width: '33%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
+                },
+                {
+                  name: 'visaType',
+                  type: 'text',
+                  admin: {
+                    width: '33%',
+                    components: {
+                      Field: '/components/admin/fields/InputField',
+                    },
+                  },
+                },
                 {
                   name: 'preferredStartDate',
                   type: 'date',
@@ -239,7 +338,12 @@ export const StudentCases: CollectionConfig = {
                         { label: 'In Progress', value: 'in-progress' },
                         { label: 'Done', value: 'done' },
                       ],
-                      admin: { width: '20%' },
+                      admin: {
+                        width: '20%',
+                        components: {
+                          Field: '/components/admin/fields/SelectField',
+                        },
+                      },
                     },
                     {
                       name: 'dueDate',
@@ -254,11 +358,44 @@ export const StudentCases: CollectionConfig = {
               name: 'documents',
               type: 'array',
               labels: { singular: 'Document', plural: 'Documents' },
+              admin: {
+                description:
+                  'Attach case files and classify each document by type and operational status.',
+              },
               fields: [
                 {
                   type: 'row',
                   fields: [
-                    { name: 'name', type: 'text', required: true, admin: { width: '40%' } },
+                    {
+                      name: 'name',
+                      type: 'text',
+                      required: true,
+                      admin: {
+                        width: '30%',
+                        components: {
+                          Field: '/components/admin/fields/InputField',
+                        },
+                      },
+                    },
+                    {
+                      name: 'documentType',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'identity',
+                      options: [
+                        { label: 'Identity', value: 'identity' },
+                        { label: 'Academic', value: 'academic' },
+                        { label: 'Financial', value: 'financial' },
+                        { label: 'Visa', value: 'visa' },
+                        { label: 'Other', value: 'other' },
+                      ],
+                      admin: {
+                        width: '20%',
+                        components: {
+                          Field: '/components/admin/fields/SelectField',
+                        },
+                      },
+                    },
                     {
                       name: 'status',
                       type: 'select',
@@ -268,10 +405,35 @@ export const StudentCases: CollectionConfig = {
                         { label: 'Received', value: 'received' },
                         { label: 'Verified', value: 'verified' },
                       ],
-                      admin: { width: '25%' },
+                      admin: {
+                        width: '20%',
+                        components: {
+                          Field: '/components/admin/fields/SelectField',
+                        },
+                      },
                     },
-                    { name: 'file', type: 'upload', relationTo: 'media', admin: { width: '35%' } },
+                    {
+                      name: 'file',
+                      type: 'upload',
+                      relationTo: 'media',
+                      required: true,
+                      admin: {
+                        width: '30%',
+                        description: 'Upload or select a file from Media library.',
+                      },
+                    },
                   ],
+                },
+                {
+                  name: 'note',
+                  type: 'textarea',
+                  admin: {
+                    rows: 2,
+                    description: 'Optional note for this document item.',
+                    components: {
+                      Field: '/components/admin/fields/TextareaField',
+                    },
+                  },
                 },
               ],
             },
@@ -307,7 +469,13 @@ export const StudentCases: CollectionConfig = {
                       name: 'note',
                       type: 'textarea',
                       required: true,
-                      admin: { width: '70%', rows: 2 },
+                      admin: {
+                        width: '70%',
+                        rows: 2,
+                        components: {
+                          Field: '/components/admin/fields/TextareaField',
+                        },
+                      },
                     },
                     {
                       name: 'createdAt',

@@ -1,6 +1,41 @@
-export const ROOT_DOMAIN = (process.env.ROOT_DOMAIN || 'monocms.app').trim().toLowerCase()
+function toHost(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/:\d+$/, '')
+    .replace(/\/$/, '')
+}
 
-export const PLATFORM_HOST_ALIASES = [ROOT_DOMAIN, `www.${ROOT_DOMAIN}`, 'localhost', '127.0.0.1']
+function parseAliasList(value: string | undefined): string[] {
+  if (!value) return []
+  return value
+    .split(',')
+    .map((item) => toHost(item))
+    .filter(Boolean)
+}
+
+const envRootDomain =
+  process.env.ROOT_DOMAIN || process.env.NEXT_PUBLIC_ROOT_DOMAIN || process.env.NEXT_PUBLIC_SITE_URL
+
+export const ROOT_DOMAIN = toHost(envRootDomain || 'munocms.app')
+
+const explicitAliases = parseAliasList(process.env.PLATFORM_HOST_ALIASES)
+
+export const PLATFORM_HOST_ALIASES = Array.from(
+  new Set([
+    ROOT_DOMAIN,
+    `www.${ROOT_DOMAIN}`,
+    // Keep backward-compatible platform aliases for existing deployments.
+    'monocms.app',
+    'www.monocms.app',
+    'munocms.app',
+    'www.munocms.app',
+    'localhost',
+    '127.0.0.1',
+    ...explicitAliases,
+  ]),
+)
 
 export const RESERVED_TENANT_IDENTIFIERS = [
   'about',
@@ -26,11 +61,7 @@ export const RESERVED_TENANT_IDENTIFIERS = [
 ] as const
 
 export function normalizeHost(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\//, '')
-    .replace(/:\d+$/, '')
+  return toHost(value)
 }
 
 export function extractSubdomainFromHost(host: string): string | null {

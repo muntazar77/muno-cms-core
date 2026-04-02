@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { getPage } from '@/lib/getPage'
 import { RenderBlocks } from '@/components/RenderBlocks'
 import { Header } from '@/components/frontend/Header'
 import { Footer } from '@/components/frontend/Footer'
 import type { Media } from '@/payload-types'
 import { getCurrentSite } from '@/lib/sites'
+import { isPlatformHost, normalizeHost } from '@/lib/routing'
 
 export const revalidate = 60
 
@@ -27,7 +29,19 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const site = await getCurrentSite(1)
-  if (!site?.siteId) notFound()
+  if (!site?.siteId) {
+    const headerStore = await headers()
+    const host = normalizeHost(
+      headerStore.get('x-forwarded-host') || headerStore.get('host') || '',
+    )
+    const fromMiddleware = headerStore.get('x-platform-host') === 'true'
+
+    if (fromMiddleware || isPlatformHost(host)) {
+      redirect('/marketing')
+    }
+
+    notFound()
+  }
 
   const page = await getPage('home', site.siteId)
   if (!page) notFound()

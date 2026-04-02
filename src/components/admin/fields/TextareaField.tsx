@@ -1,10 +1,10 @@
 'use client'
 
-import type { TextFieldClientComponent } from 'payload'
-import { useField, FieldLabel, FieldError } from '@payloadcms/ui'
+import type { TextareaFieldClientComponent } from 'payload'
+import { FieldError, FieldLabel, useField } from '@payloadcms/ui'
 import { cn } from '@/lib/utils'
 
-const InputField: TextFieldClientComponent = ({ field, path }) => {
+const TextareaField: TextareaFieldClientComponent = ({ field, path }) => {
   const { value, setValue, showError } = useField<string>({ path })
   const fieldLabel = field.label as string | undefined
 
@@ -15,26 +15,28 @@ const InputField: TextFieldClientComponent = ({ field, path }) => {
         label={field.label}
         required={'required' in field ? (field.required as boolean) : false}
       />
-      <input
+
+      <textarea
         id={`field-${path}`}
-        type="text"
         value={value ?? ''}
         onChange={(e) => setValue(e.target.value)}
+        rows={('admin' in field && field.admin?.rows) || 4}
         placeholder={
           'placeholder' in field && typeof field.placeholder === 'string'
             ? field.placeholder
             : `Enter ${fieldLabel ?? path}`
         }
         className={cn(
-          'flex h-10 w-full rounded-lg border border-(--cms-input-border) bg-(--cms-input-bg) px-3 py-2 text-sm text-(--cms-text)',
+          'w-full resize-y rounded-lg border border-(--cms-input-border) bg-(--cms-input-bg) px-3 py-2.5 text-sm text-(--cms-text)',
           'placeholder:text-(--cms-text-muted) transition-colors',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--cms-primary) focus-visible:border-(--cms-primary)',
           showError && 'border-(--cms-danger) focus-visible:ring-(--cms-danger)',
         )}
       />
+
       {showError && <FieldError path={path} />}
     </div>
   )
 }
 
-export default InputField
+export default TextareaField

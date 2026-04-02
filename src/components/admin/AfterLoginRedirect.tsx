@@ -16,7 +16,19 @@ export default function AfterLoginRedirect() {
     const role = 'role' in user ? String((user as { role?: string }).role ?? '') : ''
     const siteId = 'siteId' in user ? String((user as { siteId?: string }).siteId ?? '') : ''
 
-    if (role === 'super-admin' || !siteId) return
+    if (role === 'super-admin') {
+      setRedirecting(true)
+      const timeout = window.setTimeout(() => {
+        router.replace('/admin')
+      }, 220)
+
+      return () => {
+        window.clearTimeout(timeout)
+        setRedirecting(false)
+      }
+    }
+
+    if (!siteId) return
 
     // Client user: resolve their site doc ID and redirect
     setRedirecting(true)

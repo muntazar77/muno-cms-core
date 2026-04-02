@@ -38,6 +38,9 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { default as default_46a58227e629294d7cac900b5d014853 } from '../../../components/admin/fields/InputField'
+import { default as default_bce321553fb52aae35099fbbccc644a2 } from '../../../components/admin/fields/SelectField'
+import { default as default_85f1757d9647751e5f22ee88b1fae43e } from '../../../components/admin/fields/TextareaField'
 import { default as default_e9afa50e91751a389be5db8807e9036e } from '../../../components/admin/student-cases/StudentCaseView'
 import { default as default_01e017127998f270640a4360219a17be } from '../../../components/admin/ShellAvatar'
 import { default as default_a03c966868bf6fe3a5fdb337136b5f42 } from '../../../components/admin/Sidebar'
@@ -45,6 +48,7 @@ import { default as default_8168c66c450ea4c48d8f083f3ca761b8 } from '../../../co
 import { default as default_7130eca2f5356ca338458f80c216a64d } from '../../../components/admin/dashboard/SearchAction'
 import { default as default_0a8df66eb6b1381af6f87d9d553b7329 } from '../../../components/admin/dashboard/UserActions'
 import { default as default_54301f0aaf1f6906feed1634d2a468bb } from '../../../components/admin/AfterLoginRedirect'
+import { default as default_214373d7862a2054f0f9cf6148a15381 } from '../../../components/admin/login/LoginSubmitEnhancer'
 import { default as default_22e9c88506f2e0938bc8daf147327853 } from '../../../components/admin/login/MonoLoginShell'
 import { default as default_87174a96e964349564e02fc37eed4968 } from '../../../components/admin/GlobalProvider'
 import { default as default_90d94a8a05a7cf2177ecc4e95646ec1f } from '../../../components/admin/dashboard/DashboardView'
@@ -94,6 +98,9 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/components/admin/fields/InputField#default": default_46a58227e629294d7cac900b5d014853,
+  "/components/admin/fields/SelectField#default": default_bce321553fb52aae35099fbbccc644a2,
+  "/components/admin/fields/TextareaField#default": default_85f1757d9647751e5f22ee88b1fae43e,
   "/components/admin/student-cases/StudentCaseView#default": default_e9afa50e91751a389be5db8807e9036e,
   "/components/admin/ShellAvatar#default": default_01e017127998f270640a4360219a17be,
   "/components/admin/Sidebar#default": default_a03c966868bf6fe3a5fdb337136b5f42,
@@ -101,6 +108,7 @@ export const importMap = {
   "./components/admin/dashboard/SearchAction#default": default_7130eca2f5356ca338458f80c216a64d,
   "./components/admin/dashboard/UserActions#default": default_0a8df66eb6b1381af6f87d9d553b7329,
   "/components/admin/AfterLoginRedirect#default": default_54301f0aaf1f6906feed1634d2a468bb,
+  "/components/admin/login/LoginSubmitEnhancer#default": default_214373d7862a2054f0f9cf6148a15381,
   "/components/admin/login/MonoLoginShell#default": default_22e9c88506f2e0938bc8daf147327853,
   "/components/admin/GlobalProvider#default": default_87174a96e964349564e02fc37eed4968,
   "/components/admin/dashboard/DashboardView#default": default_90d94a8a05a7cf2177ecc4e95646ec1f,

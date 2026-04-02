@@ -1,5 +1,5 @@
 'use client'
-import { Bell, LogOut, Settings2 } from 'lucide-react'
+import { Bell, Loader2, LogOut, Settings2 } from 'lucide-react'
 import { useAuth } from '@payloadcms/ui'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -101,7 +101,7 @@ export default function UserActions() {
             }}
             disabled={isLoggingOut}
           >
-            <LogOut className="mr-2 size-4" />
+            {isLoggingOut ? <Loader2 className="mr-2 size-4 animate-spin" /> : <LogOut className="mr-2 size-4" />}
             {isLoggingOut ? 'Logging out...' : 'Logout'}
           </DropdownMenuItem>
         </DropdownMenuContent>

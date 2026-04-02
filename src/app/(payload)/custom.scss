@@ -108,6 +108,34 @@ html {
   resize: vertical;
 }
 
+.field-type select {
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  min-height: 40px !important;
+  padding: 0 36px 0 12px !important;
+  border: 1.5px solid var(--cms-input-border) !important;
+  background: var(--cms-input-bg) !important;
+  color: var(--cms-text) !important;
+  appearance: none !important;
+  background-image: linear-gradient(45deg, transparent 50%, var(--cms-text-muted) 50%),
+    linear-gradient(135deg, var(--cms-text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 52%, calc(100% - 12px) 52%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.field-type select:focus {
+  border-color: var(--cms-primary) !important;
+  box-shadow: 0 0 0 3px var(--cms-input-focus-ring) !important;
+  outline: none !important;
+}
+
+.field-type .checkbox-input,
+.field-type input[type='checkbox'],
+.field-type input[type='radio'] {
+  accent-color: var(--cms-primary) !important;
+}
+
 .field-type input[type='text']:focus,
 .field-type input[type='email']:focus,
 .field-type input[type='password']:focus,
@@ -136,6 +164,11 @@ html {
   background-color: var(--cms-input-bg) !important;
   transition: border-color 0.1s, box-shadow 0.1s !important;
   box-shadow: none !important;
+}
+
+.rs__control--is-disabled {
+  background: var(--cms-bg-muted) !important;
+  opacity: 0.75 !important;
 }
 
 .rs__control:hover {
@@ -220,14 +253,14 @@ html {
 
 .rs__multi-value {
   border-radius: 999px !important;
-  background: var(--cms-bg-muted) !important;
-  border: 1px solid var(--cms-border-subtle) !important;
+  background: var(--cms-primary-soft) !important;
+  border: 1px solid var(--cms-primary-soft) !important;
 }
 
 .rs__multi-value__label {
-  color: var(--cms-text-secondary) !important;
+  color: var(--cms-primary-text) !important;
   font-size: 12px !important;
-  padding: 1px 6px !important;
+  padding: 2px 6px !important;
 }
 
 .rs__multi-value__remove {
@@ -361,27 +394,85 @@ html {
 
 .template-minimal .template-minimal__content .login {
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
   border: 1px solid var(--cms-card-border);
-  border-radius: 24px;
-  padding: 24px;
+  border-radius: 28px;
+  padding: 28px;
   background: var(--cms-card-bg);
-  box-shadow: var(--cms-card-shadow);
+  box-shadow: 0 24px 70px rgba(16, 35, 71, 0.16);
 }
 
 .template-minimal .template-minimal__content .login__brand {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.template-minimal .template-minimal__content .login__brand svg,
+.template-minimal .template-minimal__content .login__brand img {
+  display: none !important;
+}
+
+.template-minimal .template-minimal__content .login__brand::before {
+  content: 'MonoCMS';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(24, 95, 255, 0.24);
+  background: rgba(24, 95, 255, 0.08);
+  color: #1f4ed8;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .template-minimal .template-minimal__content .login__title {
-  font-size: 26px !important;
+  font-size: 30px !important;
   font-weight: 700 !important;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  color: #102347 !important;
+}
+
+.template-minimal .template-minimal__content .login p {
+  color: #4b5f83 !important;
+}
+
+.template-minimal .template-minimal__content .field-type,
+.template-minimal .template-minimal__content .field-type + .field-type {
+  margin-top: 14px !important;
 }
 
 .template-minimal .template-minimal__content .btn--style-primary {
-  height: 44px !important;
-  border-radius: 12px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  margin-top: 8px;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+}
+
+:root[data-login-pending='true'] .template-minimal .template-minimal__content .btn--style-primary {
+  opacity: 0.8;
+  pointer-events: none;
+  position: relative;
+}
+
+:root[data-login-pending='true']
+  .template-minimal
+  .template-minimal__content
+  .btn--style-primary::after {
+  content: 'Signing in...';
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: inherit;
+  border-radius: inherit;
 }
 
 .mono-login-shell {
@@ -395,6 +486,42 @@ html {
     radial-gradient(circle at 15% 20%, rgba(24, 95, 255, 0.18), transparent 48%),
     radial-gradient(circle at 85% 75%, rgba(15, 182, 138, 0.14), transparent 52%),
     linear-gradient(135deg, #f8fbff 0%, #eef4ff 40%, #f4fbf7 100%);
+}
+
+.mono-login-shell__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mono-login-shell__brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 800;
+  color: white;
+  background: linear-gradient(135deg, #1f4ed8 0%, #2563eb 100%);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.32);
+}
+
+.mono-login-shell__brand-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #102347;
+}
+
+.mono-login-shell__brand-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #4b5f83;
 }
 
 .mono-login-shell__inner {
